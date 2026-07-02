@@ -807,6 +807,28 @@ const conceptAnchors: Record<string, ConceptAnchor> = {
   "topic-model": { syllabus: ["8"], pipeline: "stage-4" },
   lda: { syllabus: ["8"], pipeline: "stage-4" },
   silhouette: { syllabus: ["8"], pipeline: "stage-5" },
+
+  // --- reinforcement ---
+  agent: { syllabus: ["1", "9"], timeline: "era-13" },
+  environment: { syllabus: ["9"], timeline: "era-13" },
+  state: { syllabus: ["9"], timeline: "era-13" },
+  action: { syllabus: ["9"], timeline: "era-13" },
+  reward: { syllabus: ["9"], timeline: "era-13" },
+  policy: { syllabus: ["9"], timeline: "era-13" },
+  "state-value": { syllabus: ["9"], timeline: "era-13" },
+  "action-value": { syllabus: ["9"], timeline: "era-13" },
+  mdp: { syllabus: ["9"], timeline: "era-13" },
+  "discount-rate": { syllabus: ["9"], timeline: "era-13" },
+  "q-learning": { syllabus: ["9"], timeline: "era-13", status: "complete" },
+  sarsa: { syllabus: ["9"], timeline: "era-13" },
+  "policy-gradient": { syllabus: ["9"], timeline: "era-13" },
+  reinforce: { syllabus: ["9"], timeline: "era-13" },
+  "actor-critic": { syllabus: ["9"], timeline: "era-13" },
+  a3c: { syllabus: ["29"], timeline: "era-13" },
+  bandit: { syllabus: ["9"], timeline: "era-13" },
+  "exploration-exploitation": { syllabus: ["9"], timeline: "era-13" },
+  "epsilon-greedy": { syllabus: ["9"], timeline: "era-13" },
+  "reward-shaping": { syllabus: ["29"], timeline: "era-13" },
 };
 
 for (const concept of concepts) {
