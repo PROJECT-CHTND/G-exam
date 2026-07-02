@@ -848,6 +848,24 @@ const conceptAnchors: Record<string, ConceptAnchor> = {
   "error-function": { syllabus: ["13"], pipeline: "stage-4" },
   occam: { syllabus: ["10"], pipeline: "stage-5" },
   "aic-bic": { syllabus: ["10"], pipeline: "stage-5" },
+
+  // --- dl-foundation ---
+  "neural-network": { syllabus: ["11"], pipeline: "stage-4", status: "complete" },
+  perceptron: { syllabus: ["11"], timeline: "era-03" },
+  mlp: { syllabus: ["11"], pipeline: "stage-4" },
+  "input-hidden-output": { syllabus: ["11"], pipeline: "stage-4" },
+  "weight-bias": { syllabus: ["17"], pipeline: "stage-4" },
+  forward: { syllabus: ["11"], pipeline: "stage-4" },
+  "loss-function": { syllabus: ["13"], pipeline: "stage-4" },
+  "cross-entropy": { syllabus: ["13"], pipeline: "stage-4" },
+  backprop: { syllabus: ["15"], timeline: "era-05", status: "complete" },
+  "chain-rule": { syllabus: ["15"], timeline: "era-05" },
+  gradient: { syllabus: ["16"], pipeline: "stage-4" },
+  "gradient-descent": { syllabus: ["16"], pipeline: "stage-4", status: "complete" },
+  "local-minimum": { syllabus: ["16"], pipeline: "stage-4" },
+  "learning-rate": { syllabus: ["16"], pipeline: "stage-4" },
+  "epoch-batch": { syllabus: ["16"], pipeline: "stage-4" },
+  "gpu-tpu": { syllabus: ["11"], timeline: "era-07" },
 };
 
 for (const concept of concepts) {
