@@ -11,15 +11,45 @@ export type ConceptCategory =
   | "deep-rl"
   | "generative-ai"
   | "xai-compression";
+// 注記(Phase 1): "ai-history" / "ai-project" の新設2カテゴリは
+// RESTRUCTURE_PLAN.md §3.3 で定義済みだが、実カードの投入は Phase 3 で行う。
+// 型への追加はカードが実際に増える Phase 3 のタイミングで行う(先行して型だけ増やさない)。
 
+/**
+ * 関係の型。方向規約(from → to の意味)は RESTRUCTURE_PLAN.md §3.2 に準拠する。
+ * この10種以外の型を追加してはならない。
+ *
+ * - is_a:            from は to の一種(下位 → 上位)
+ * - part_of:         from は to の構成要素
+ * - solves:          from は to という問題を解決・緩和する(to は問題側であること)
+ * - suffers_from:    from は to という問題を抱える
+ * - evolves_to:      from は to を改良して生まれた(from=後継、to=前身。系譜の矢印は必ずこの向き)
+ * - contrasts_with:  試験で対比されがち(対称関係。1方向1本だけ登録する)
+ * - requires:        from は to を前提とする
+ * - used_for:        from は to で採用・応用される/〜に使う
+ * - pipeline_next:    手順上、from の次に to が来る
+ * - proposed:        (person専用) from は to を提案した。from は必ず kind: "person" のカード
+ */
 export type RelationType =
   | "is_a"
   | "part_of"
   | "evolves_to"
   | "solves"
+  | "suffers_from"
   | "used_for"
   | "contrasts_with"
-  | "pipeline_next";
+  | "requires"
+  | "pipeline_next"
+  | "proposed";
+
+/** カードの種別。省略時は "concept" として扱う。 */
+export type ConceptKind = "concept" | "problem" | "person";
+/** カードの完成度。省略時は "draft" として扱う(P2: 2質問が埋まらない用語は無理にcompleteにしない)。 */
+export type ConceptStatus = "draft" | "complete";
+/** timeline.ts で定義される era の ID(era-01 〜 era-14)。 */
+export type EraId = `era-${string}`;
+/** pipeline.ts で定義される stage の ID(stage-1 〜 stage-7)。 */
+export type StageId = `stage-${string}`;
 
 export type Concept = {
   id: string;
@@ -27,10 +57,25 @@ export type Concept = {
   reading?: string;
   category: ConceptCategory;
   summary: string;
-  purpose?: string;
-  difference?: string;
   examHint: string;
   demo?: string;
+
+  /** 省略時 "concept"。problem は cause/consequence、person は業績の読み替えを行う(§3.1)。 */
+  kind?: ConceptKind;
+  /** syllabus.ts の項目ID(複数可)。Phase 0 監査時点では暫定(provisional)。 */
+  syllabus?: string[];
+  /** 技術史タイムラインへのアンカー。concept の complete カードは timeline/pipeline の少なくとも一方が必須。 */
+  timeline?: EraId;
+  /** 社会実装パイプラインへのアンカー。 */
+  pipeline?: StageId;
+  /** 質問①(concept)/ cause(problem): 何の問題を解決するために生まれたか。 */
+  bornToSolve?: string;
+  /** 質問②(concept)/ consequence(problem): その前は何が使われていて、何が足りなかったか。 */
+  beforeAndGap?: string;
+  /** この用語を含む白紙再現のお題を1つ。 */
+  recall?: string;
+  /** 省略時 "draft"。2質問・エッジ・背骨アンカーが揃って初めて "complete" にする。 */
+  status?: ConceptStatus;
 };
 
 export type ConceptRelation = {
@@ -139,194 +184,192 @@ const demoLinks: Record<string, string> = {
   bandit: "#bandit",
 };
 
-const coreLearningNotes: Record<string, Pick<Concept, "purpose" | "difference">> = {
+const coreLearningNotes: Record<string, Pick<Concept, "bornToSolve" | "beforeAndGap">> = {
   ml: {
-    purpose: "人が明示的なルールを書きにくい判断や予測を、データから学ばせるために使う。",
-    difference: "通常のプログラムは人がルールを書く。機械学習はデータからルールに相当するモデルを作る。",
+    bornToSolve: "人が明示的なルールを書きにくい判断や予測を、データから学ばせるために使う。",
+    beforeAndGap: "通常のプログラムは人がルールを書く。機械学習はデータからルールに相当するモデルを作る。",
   },
   "supervised-learning": {
-    purpose: "過去の正解付きデータを使って、未知データのラベルや数値を予測するために使う。",
-    difference: "教師なし学習は正解ラベルなしで構造を見つける。強化学習は正解ラベルではなく報酬から行動を学ぶ。",
+    bornToSolve: "過去の正解付きデータを使って、未知データのラベルや数値を予測するために使う。",
+    beforeAndGap: "教師なし学習は正解ラベルなしで構造を見つける。強化学習は正解ラベルではなく報酬から行動を学ぶ。",
   },
   "unsupervised-learning": {
-    purpose: "正解がないデータから、まとまり・軸・潜在トピック・推薦の手がかりを見つけるために使う。",
-    difference: "教師あり学習は正解ラベルを使う。教師なし学習はラベルなしでデータの構造を探す。",
+    bornToSolve: "正解がないデータから、まとまり・軸・潜在トピック・推薦の手がかりを見つけるために使う。",
+    beforeAndGap: "教師あり学習は正解ラベルを使う。教師なし学習はラベルなしでデータの構造を探す。",
   },
   "reinforcement-learning": {
-    purpose: "試行錯誤しながら、長期的な報酬が大きくなる行動の選び方を学ぶために使う。",
-    difference: "教師あり学習は入力ごとの正解を学ぶ。強化学習は状態・行動・報酬の流れから方策を学ぶ。",
+    bornToSolve: "試行錯誤しながら、長期的な報酬が大きくなる行動の選び方を学ぶために使う。",
+    beforeAndGap: "教師あり学習は入力ごとの正解を学ぶ。強化学習は状態・行動・報酬の流れから方策を学ぶ。",
   },
   "regression-task": {
-    purpose: "価格、体重、需要、温度など連続値を予測するために使う。",
-    difference: "分類はカテゴリを当てる。回帰は数値を当てる。",
+    bornToSolve: "価格、体重、需要、温度など連続値を予測するために使う。",
+    beforeAndGap: "分類はカテゴリを当てる。回帰は数値を当てる。",
   },
   "classification-task": {
-    purpose: "画像の種類、迷惑メール判定、陽性/陰性などカテゴリを予測するために使う。",
-    difference: "回帰は連続値を予測する。分類は離散的なクラスを予測する。",
+    bornToSolve: "画像の種類、迷惑メール判定、陽性/陰性などカテゴリを予測するために使う。",
+    beforeAndGap: "回帰は連続値を予測する。分類は離散的なクラスを予測する。",
   },
   overfitting: {
-    purpose: "モデルが訓練データだけを覚えていないかを判断し、汎化性能を守るために押さえる概念。",
-    difference: "未学習は訓練データにも合わない。過学習は訓練データには合うが未知データに弱い。",
+    bornToSolve: "モデルが訓練データだけを覚えていないかを判断し、汎化性能を守るために押さえる概念。",
+    beforeAndGap: "未学習は訓練データにも合わない。過学習は訓練データには合うが未知データに弱い。",
   },
   underfitting: {
-    purpose: "モデルが単純すぎる、学習不足、特徴量不足などで性能が出ない状態を見分けるために使う。",
-    difference: "過学習は訓練性能だけ高い。未学習は訓練性能もテスト性能も低い。",
+    bornToSolve: "モデルが単純すぎる、学習不足、特徴量不足などで性能が出ない状態を見分けるために使う。",
+    beforeAndGap: "過学習は訓練性能だけ高い。未学習は訓練性能もテスト性能も低い。",
   },
   generalization: {
-    purpose: "試験や実務で本当に欲しい、未知データに対する性能を考えるための中心概念。",
-    difference: "訓練精度は学習済みデータへの当てはまり。汎化は未見データへの強さ。",
+    bornToSolve: "試験や実務で本当に欲しい、未知データに対する性能を考えるための中心概念。",
+    beforeAndGap: "訓練精度は学習済みデータへの当てはまり。汎化は未見データへの強さ。",
   },
   regularization: {
-    purpose: "モデルの複雑さを抑え、過学習を防ぐために使う。",
-    difference: "Dropoutはニューロンをランダムに無効化する正則化手法。L1/L2正則化は損失にペナルティを足す。",
+    bornToSolve: "モデルの複雑さを抑え、過学習を防ぐために使う。",
+    beforeAndGap: "Dropoutはニューロンをランダムに無効化する正則化手法。L1/L2正則化は損失にペナルティを足す。",
   },
-  dropout: {
-    purpose: "ニューラルネットワークが特定のニューロンに依存しすぎるのを防ぎ、過学習を抑えるために使う。",
-    difference: "L1/L2正則化は重みにペナルティをかける。Dropoutは訓練時に一部ユニットを無効化する。",
-  },
+  // dropout は Phase 1 で見本カード化し、concepts配列側に直接オブジェクトリテラルで
+  // bornToSolve/beforeAndGap を書いたため、このエントリは不要になった(重複防止のため削除)。
   "linear-regression": {
-    purpose: "説明変数と目的変数の関係を直線や平面で近似し、連続値を予測するために使う。",
-    difference: "ロジスティック回帰は名前に回帰とあるが分類に使う。線形回帰は連続値予測に使う。",
+    bornToSolve: "説明変数と目的変数の関係を直線や平面で近似し、連続値を予測するために使う。",
+    beforeAndGap: "ロジスティック回帰は名前に回帰とあるが分類に使う。線形回帰は連続値予測に使う。",
   },
   "logistic-regression": {
-    purpose: "確率を出して二値分類や多クラス分類を行うために使う。",
-    difference: "線形回帰は数値をそのまま予測する。ロジスティック回帰はシグモイドなどで確率に変換して分類する。",
+    bornToSolve: "確率を出して二値分類や多クラス分類を行うために使う。",
+    beforeAndGap: "線形回帰は数値をそのまま予測する。ロジスティック回帰はシグモイドなどで確率に変換して分類する。",
   },
   svm: {
-    purpose: "クラス間の境界を、最も余裕のある位置に引いて分類するために使う。",
-    difference: "決定木は条件分岐で分類する。SVMはマージン最大化で境界を決める。",
+    bornToSolve: "クラス間の境界を、最も余裕のある位置に引いて分類するために使う。",
+    beforeAndGap: "決定木は条件分岐で分類する。SVMはマージン最大化で境界を決める。",
   },
   "decision-tree": {
-    purpose: "条件分岐で予測ルールを表し、解釈しやすい分類・回帰を行うために使う。",
-    difference: "SVMは境界を数式的に決める。決定木はif文のような分岐で決める。",
+    bornToSolve: "条件分岐で予測ルールを表し、解釈しやすい分類・回帰を行うために使う。",
+    beforeAndGap: "SVMは境界を数式的に決める。決定木はif文のような分岐で決める。",
   },
   "random-forest": {
-    purpose: "多数の決定木を組み合わせ、単独の木より安定した予測をするために使う。",
-    difference: "決定木は1本の木。ランダムフォレストは多数の木をバギングで作るアンサンブル。",
+    bornToSolve: "多数の決定木を組み合わせ、単独の木より安定した予測をするために使う。",
+    beforeAndGap: "決定木は1本の木。ランダムフォレストは多数の木をバギングで作るアンサンブル。",
   },
   kmeans: {
-    purpose: "ラベルなしデータを、近さにもとづいてk個のグループに分けるために使う。",
-    difference: "階層的クラスタリングは樹形図を作る。k-meansは中心点と割り当てを反復更新する。",
+    bornToSolve: "ラベルなしデータを、近さにもとづいてk個のグループに分けるために使う。",
+    beforeAndGap: "階層的クラスタリングは樹形図を作る。k-meansは中心点と割り当てを反復更新する。",
   },
   pca: {
-    purpose: "高次元データを情報をなるべく保ったまま少ない軸に圧縮・可視化するために使う。",
-    difference: "クラスタリングはグループ化。PCAは軸を取り直して次元を減らす。",
+    bornToSolve: "高次元データを情報をなるべく保ったまま少ない軸に圧縮・可視化するために使う。",
+    beforeAndGap: "クラスタリングはグループ化。PCAは軸を取り直して次元を減らす。",
   },
   "neural-network": {
-    purpose: "入力から出力への複雑な非線形関係を、多数の重みで表現するために使う。",
-    difference: "線形モデルは単純な関係を仮定する。ニューラルネットワークは層と活性化関数で非線形を表す。",
+    bornToSolve: "入力から出力への複雑な非線形関係を、多数の重みで表現するために使う。",
+    beforeAndGap: "線形モデルは単純な関係を仮定する。ニューラルネットワークは層と活性化関数で非線形を表す。",
   },
   "gradient-descent": {
-    purpose: "損失を小さくする方向へ重みを少しずつ更新するために使う。",
-    difference: "誤差逆伝播法は勾配を計算する仕組み。勾配降下法はその勾配で重みを更新する方法。",
+    bornToSolve: "損失を小さくする方向へ重みを少しずつ更新するために使う。",
+    beforeAndGap: "誤差逆伝播法は勾配を計算する仕組み。勾配降下法はその勾配で重みを更新する方法。",
   },
   backprop: {
-    purpose: "各重みが損失にどれだけ影響したかを効率よく計算するために使う。",
-    difference: "勾配降下法は更新方法。誤差逆伝播法は更新に必要な勾配を後ろ向きに計算する方法。",
+    bornToSolve: "各重みが損失にどれだけ影響したかを効率よく計算するために使う。",
+    beforeAndGap: "勾配降下法は更新方法。誤差逆伝播法は更新に必要な勾配を後ろ向きに計算する方法。",
   },
   activation: {
-    purpose: "ニューラルネットワークに非線形性を与え、複雑な関係を学習できるようにするために使う。",
-    difference: "重み付き和だけでは線形変換の重ね合わせに近い。活性化関数を入れると非線形表現ができる。",
+    bornToSolve: "ニューラルネットワークに非線形性を与え、複雑な関係を学習できるようにするために使う。",
+    beforeAndGap: "重み付き和だけでは線形変換の重ね合わせに近い。活性化関数を入れると非線形表現ができる。",
   },
   relu: {
-    purpose: "中間層で計算を単純にしつつ、勾配消失を起こしにくくするために使う。",
-    difference: "シグモイドは0〜1に圧縮する。ReLUは正の値をそのまま通し、負の値を0にする。",
+    bornToSolve: "中間層で計算を単純にしつつ、勾配消失を起こしにくくするために使う。",
+    beforeAndGap: "シグモイドは0〜1に圧縮する。ReLUは正の値をそのまま通し、負の値を0にする。",
   },
   cnn: {
-    purpose: "画像の局所的な模様や形を段階的に捉えるために使う。",
-    difference: "RNNは系列方向の依存を扱う。CNNは画像などの空間的・局所的特徴を扱う。",
+    bornToSolve: "画像の局所的な模様や形を段階的に捉えるために使う。",
+    beforeAndGap: "RNNは系列方向の依存を扱う。CNNは画像などの空間的・局所的特徴を扱う。",
   },
   "convolution-layer": {
-    purpose: "小さなフィルタを画像上で動かし、エッジや模様などの局所特徴を取り出すために使う。",
-    difference: "全結合層は全入力を結ぶ。畳み込み層は近い範囲に同じフィルタを適用する。",
+    bornToSolve: "小さなフィルタを画像上で動かし、エッジや模様などの局所特徴を取り出すために使う。",
+    beforeAndGap: "全結合層は全入力を結ぶ。畳み込み層は近い範囲に同じフィルタを適用する。",
   },
   pooling: {
-    purpose: "特徴マップを縮小し、位置ずれへの強さと計算量削減を得るために使う。",
-    difference: "畳み込みは特徴を抽出する。プーリングは抽出した特徴を要約する。",
+    bornToSolve: "特徴マップを縮小し、位置ずれへの強さと計算量削減を得るために使う。",
+    beforeAndGap: "畳み込みは特徴を抽出する。プーリングは抽出した特徴を要約する。",
   },
   rnn: {
-    purpose: "文章、音声、時系列など、順序のあるデータを扱うために使う。",
-    difference: "CNNは空間的特徴に強い。RNNは前の情報を隠れ状態として次へ渡す。",
+    bornToSolve: "文章、音声、時系列など、順序のあるデータを扱うために使う。",
+    beforeAndGap: "CNNは空間的特徴に強い。RNNは前の情報を隠れ状態として次へ渡す。",
   },
   lstm: {
-    purpose: "長い系列でも重要な情報を保持し、長期依存を扱うために使う。",
-    difference: "通常のRNNは長期依存で勾配消失しやすい。LSTMはゲートとセル状態で記憶を制御する。",
+    bornToSolve: "長い系列でも重要な情報を保持し、長期依存を扱うために使う。",
+    beforeAndGap: "通常のRNNは長期依存で勾配消失しやすい。LSTMはゲートとセル状態で記憶を制御する。",
   },
   attention: {
-    purpose: "系列の中で、今見るべき入力部分に重みを置くために使う。",
-    difference: "RNNは順番に処理する。Attentionは入力同士の関係を重みとして直接見る。",
+    bornToSolve: "系列の中で、今見るべき入力部分に重みを置くために使う。",
+    beforeAndGap: "RNNは順番に処理する。Attentionは入力同士の関係を重みとして直接見る。",
   },
   transformer: {
-    purpose: "Self-Attentionで系列全体の関係を並列に扱い、大規模言語モデルの土台にするために使う。",
-    difference: "RNNは逐次処理。TransformerはSelf-Attentionにより並列化しやすい。",
+    bornToSolve: "Self-Attentionで系列全体の関係を並列に扱い、大規模言語モデルの土台にするために使う。",
+    beforeAndGap: "RNNは逐次処理。TransformerはSelf-Attentionにより並列化しやすい。",
   },
   bert: {
-    purpose: "文脈を双方向に読んで、文章理解系タスクに強い表現を作るために使う。",
-    difference: "GPTは次トークンを生成するデコーダ型。BERTはマスク語を当てるエンコーダ型。",
+    bornToSolve: "文脈を双方向に読んで、文章理解系タスクに強い表現を作るために使う。",
+    beforeAndGap: "GPTは次トークンを生成するデコーダ型。BERTはマスク語を当てるエンコーダ型。",
   },
   gpt: {
-    purpose: "直前までの文脈から次のトークンを予測し、文章を生成するために使う。",
-    difference: "BERTは理解系のエンコーダ型。GPTは生成系のデコーダ型。",
+    bornToSolve: "直前までの文脈から次のトークンを予測し、文章を生成するために使う。",
+    beforeAndGap: "BERTは理解系のエンコーダ型。GPTは生成系のデコーダ型。",
   },
   word2vec: {
-    purpose: "単語の意味的な近さや関係をベクトル空間で扱うために使う。",
-    difference: "ワンホットは単語間の近さを表せない。word2vecは意味の近さを距離や方向で表す。",
+    bornToSolve: "単語の意味的な近さや関係をベクトル空間で扱うために使う。",
+    beforeAndGap: "ワンホットは単語間の近さを表せない。word2vecは意味の近さを距離や方向で表す。",
   },
   "generative-model": {
-    purpose: "学習したデータ分布から、新しい画像・文章・音などを作るために使う。",
-    difference: "識別モデルは入力を分類する。生成モデルはデータそのものを生成する。",
+    bornToSolve: "学習したデータ分布から、新しい画像・文章・音などを作るために使う。",
+    beforeAndGap: "識別モデルは入力を分類する。生成モデルはデータそのものを生成する。",
   },
   gan: {
-    purpose: "生成器と識別器を競わせて、リアルなデータを生成するために使う。",
-    difference: "VAEは潜在分布から生成する。GANは生成器と識別器の敵対的学習で生成する。",
+    bornToSolve: "生成器と識別器を競わせて、リアルなデータを生成するために使う。",
+    beforeAndGap: "VAEは潜在分布から生成する。GANは生成器と識別器の敵対的学習で生成する。",
   },
   vae: {
-    purpose: "データを潜在空間に圧縮し、その分布から新しいデータを生成するために使う。",
-    difference: "GANは敵対的学習。VAEは確率的な潜在変数と再構成で学習する。",
+    bornToSolve: "データを潜在空間に圧縮し、その分布から新しいデータを生成するために使う。",
+    beforeAndGap: "GANは敵対的学習。VAEは確率的な潜在変数と再構成で学習する。",
   },
   diffusion: {
-    purpose: "ノイズを少しずつ取り除く過程として、高品質な画像などを生成するために使う。",
-    difference: "GANは生成器が一気に生成する。拡散モデルはノイズ除去を段階的に行う。",
+    bornToSolve: "ノイズを少しずつ取り除く過程として、高品質な画像などを生成するために使う。",
+    beforeAndGap: "GANは生成器が一気に生成する。拡散モデルはノイズ除去を段階的に行う。",
   },
   llm: {
-    purpose: "大量のテキストから言語パターンを学び、理解・生成・要約・対話を行うために使う。",
-    difference: "従来の個別NLPモデルはタスクごとに作る。LLMは大規模事前学習で多様なタスクに使える。",
+    bornToSolve: "大量のテキストから言語パターンを学び、理解・生成・要約・対話を行うために使う。",
+    beforeAndGap: "従来の個別NLPモデルはタスクごとに作る。LLMは大規模事前学習で多様なタスクに使える。",
   },
   rag: {
-    purpose: "外部文書を検索して回答に使い、知識不足やハルシネーションを減らすために使う。",
-    difference: "ファインチューニングは重みを変える。RAGは検索結果を入力に足し、重みは基本的に変えない。",
+    bornToSolve: "外部文書を検索して回答に使い、知識不足やハルシネーションを減らすために使う。",
+    beforeAndGap: "ファインチューニングは重みを変える。RAGは検索結果を入力に足し、重みは基本的に変えない。",
   },
   "fine-tuning": {
-    purpose: "学習済みモデルを特定タスクやデータに適応させるために使う。",
-    difference: "転移学習は広い概念。ファインチューニングは学習済みモデルを追加学習する具体的手法。",
+    bornToSolve: "学習済みモデルを特定タスクやデータに適応させるために使う。",
+    beforeAndGap: "転移学習は広い概念。ファインチューニングは学習済みモデルを追加学習する具体的手法。",
   },
   "transfer-learning": {
-    purpose: "既に学んだ特徴や知識を別タスクに流用し、少ないデータでも性能を出すために使う。",
-    difference: "ファインチューニングは転移学習の一形態で、学習済みモデルを追加で調整する。",
+    bornToSolve: "既に学んだ特徴や知識を別タスクに流用し、少ないデータでも性能を出すために使う。",
+    beforeAndGap: "ファインチューニングは転移学習の一形態で、学習済みモデルを追加で調整する。",
   },
   "confusion-matrix": {
-    purpose: "分類結果の当たり外れをTP/FP/FN/TNに分け、指標を計算するために使う。",
-    difference: "正解率は全体の正しさだけを見る。混同行列は誤検出と見逃しを分けて見る。",
+    bornToSolve: "分類結果の当たり外れをTP/FP/FN/TNに分け、指標を計算するために使う。",
+    beforeAndGap: "正解率は全体の正しさだけを見る。混同行列は誤検出と見逃しを分けて見る。",
   },
   precision: {
-    purpose: "陽性と予測したものの信頼性を測るために使う。",
-    difference: "再現率は実際の陽性をどれだけ拾えたか。適合率は陽性予測がどれだけ正しいか。",
+    bornToSolve: "陽性と予測したものの信頼性を測るために使う。",
+    beforeAndGap: "再現率は実際の陽性をどれだけ拾えたか。適合率は陽性予測がどれだけ正しいか。",
   },
   recall: {
-    purpose: "本当に陽性のものをどれだけ見逃さず拾えたかを測るために使う。",
-    difference: "適合率は誤検出の少なさ。再現率は見逃しの少なさ。",
+    bornToSolve: "本当に陽性のものをどれだけ見逃さず拾えたかを測るために使う。",
+    beforeAndGap: "適合率は誤検出の少なさ。再現率は見逃しの少なさ。",
   },
   "cross-validation": {
-    purpose: "データ分割の偶然に左右されにくく、汎化性能を見積もるために使う。",
-    difference: "ホールドアウトは一度だけ分割する。交差検証は評価役を入れ替えて平均する。",
+    bornToSolve: "データ分割の偶然に左右されにくく、汎化性能を見積もるために使う。",
+    beforeAndGap: "ホールドアウトは一度だけ分割する。交差検証は評価役を入れ替えて平均する。",
   },
   "q-learning": {
-    purpose: "状態と行動の価値を学び、将来報酬が高い行動を選ぶために使う。",
-    difference: "SARSAは実際に選んだ次行動で更新する。Q学習は次状態で最大のQ値を使う。",
+    bornToSolve: "状態と行動の価値を学び、将来報酬が高い行動を選ぶために使う。",
+    beforeAndGap: "SARSAは実際に選んだ次行動で更新する。Q学習は次状態で最大のQ値を使う。",
   },
   dqn: {
-    purpose: "Q学習の価値関数をニューラルネットワークで近似し、高次元状態を扱うために使う。",
-    difference: "Q学習は表形式でも扱える。DQNは深層学習でQ値を近似する。",
+    bornToSolve: "Q学習の価値関数をニューラルネットワークで近似し、高次元状態を扱うために使う。",
+    beforeAndGap: "Q学習は表形式でも扱える。DQNは深層学習でQ値を近似する。",
   },
 };
 
@@ -443,7 +486,7 @@ export const concepts: Concept[] = [
   c("f1", "F値", "evaluation", "適合率と再現率の調和平均。", "不均衡データでバランスを見る。", "metrics"),
   c("roc-auc", "ROC曲線とAUC", "evaluation", "しきい値を変えた分類性能をTPR/FPRで見る指標。", "AUCは1に近いほど良い。0.5はランダム。", "metrics"),
   c("type-errors", "第一種/第二種の過誤", "evaluation", "偽陽性と偽陰性に対応する統計的な誤り。", "FPとFNの意味を文脈で判断する。"),
-  c("mse", "平均二乗誤差(MSE)", "evaluation", "誤差の二乗平均。大きな誤差を重く見る回帰指標。", "回帰評価。小さいほど良い。", "regression"),
+  c("mse", "平均二乗誤差関数(MSE)", "evaluation", "誤差の二乗平均。大きな誤差を重く見る回帰指標。", "回帰評価。小さいほど良い。", "regression"),
   c("rmse", "RMSE", "evaluation", "MSEの平方根。目的変数と同じ単位で誤差を表す。", "回帰評価。外れ値に比較的敏感。"),
   c("mae", "MAE", "evaluation", "絶対誤差の平均。外れ値の影響がMSEより小さい。", "回帰評価。小さいほど良い。"),
   c("r2", "決定係数R²", "evaluation", "回帰モデルが目的変数の分散をどれだけ説明できるか。", "1に近いほど説明力が高い。"),
@@ -474,7 +517,25 @@ export const concepts: Concept[] = [
   c("relu", "ReLU", "dl-tech", "0以下を0、正の値をそのまま出す活性化関数。", "中間層の標準。勾配消失を緩和。", "nn"),
   c("leaky-relu", "Leaky ReLU", "dl-tech", "負の入力にも小さな傾きを残すReLUの派生。", "Dead ReLU問題対策。"),
   c("gelu", "GELU", "dl-tech", "入力を滑らかにゲートする活性化関数。", "Transformer系で使われることがある。"),
-  c("vanishing-gradient", "勾配消失", "dl-tech", "層を逆伝播するうちに勾配が小さくなり学習が進まない問題。", "RNNや深いネットで頻出。ReLU/LSTM/ResNetで緩和。", "lstm"),
+  {
+    id: "vanishing-gradient",
+    term: "勾配消失問題",
+    category: "dl-tech",
+    kind: "problem",
+    syllabus: ["12", "15"],
+    timeline: "era-05",
+    summary: "層を逆伝播するうちに勾配が小さくなり学習が進まない問題。",
+    bornToSolve:
+      "誤差逆伝播では勾配を出力層から入力層へ層ごとの微分の掛け算で伝える。" +
+      "シグモイド関数の微分は最大0.25なので、層が深いほど勾配が指数的に小さくなる。",
+    beforeAndGap:
+      "入力に近い層の重みがほぼ更新されず、層を深くしても学習が進まない。" +
+      "第3次ブーム以前に「深層化」を阻んだ最大の技術的障壁だった。",
+    examHint: "解決策の系譜を順不同で問われる: 事前学習 → ReLU → スキップ結合(ResNet)、系列方向ではLSTMのゲート機構。",
+    recall: "勾配消失はなぜ起きるかを式を使わずに説明し、これを解決・緩和した技術を系譜順に4つ挙げよ。",
+    demo: demoLinks.lstm,
+    status: "complete",
+  },
   c("exploding-gradient", "勾配爆発", "dl-tech", "勾配が大きくなりすぎて学習が不安定になる問題。", "勾配クリッピングで抑える。"),
   c("gradient-clipping", "勾配クリッピング", "dl-tech", "勾配の大きさを上限で切り詰める手法。", "勾配爆発対策。RNNで頻出。"),
   c("sgd", "SGD", "dl-tech", "一部データの勾配で確率的に更新する最適化手法。", "勾配降下法の基本。"),
@@ -483,7 +544,26 @@ export const concepts: Concept[] = [
   c("rmsprop", "RMSProp", "dl-tech", "勾配二乗の移動平均で学習率を調整する手法。", "AdaGradの学習率減衰しすぎを改善。"),
   c("adam", "Adam", "dl-tech", "MomentumとRMSPropの考えを組み合わせた代表的最適化手法。", "深層学習で標準的。"),
   c("adamw", "AdamW", "dl-tech", "Adamの重み減衰の扱いを改善した手法。", "LLMなどでも頻出。"),
-  c("dropout", "Dropout", "dl-tech", "訓練時に一部ニューロンをランダムに無効化する正則化。", "過学習対策。推論時は使わない。", "overfit"),
+  {
+    id: "dropout",
+    term: "Dropout",
+    category: "dl-tech",
+    kind: "concept",
+    syllabus: ["14"],
+    timeline: "era-07",
+    pipeline: "stage-4",
+    summary: "訓練時に一部ニューロンをランダムに無効化する正則化。",
+    bornToSolve:
+      "多層ニューラルネットワークが訓練データに過剰適合(過学習)し、未知データで性能が落ちる問題。" +
+      "特に大きなネットワークでは特定のニューロン同士が共適応し、訓練データにしか通用しない特徴の拾い方を覚えてしまう。",
+    beforeAndGap:
+      "L2正則化や早期終了は存在したが、ニューロン間の共適応そのものを直接壊す手段がなかった。" +
+      "複数モデルの平均を取るアンサンブルは有効だが、巨大NNを何個も訓練するのは計算コストが高すぎた。",
+    examHint: "学習時にランダムに無効化し、推論時は全ニューロンを使う——推論時にも無効化する、と誤らせる選択肢が定番。",
+    recall: "過学習への対策を知っている限り挙げ、それぞれが「何を抑え込んでいるのか」を一言ずつ添えよ。",
+    demo: demoLinks.overfit,
+    status: "complete",
+  },
   c("early-stopping", "早期終了", "dl-tech", "検証性能が悪化し始めたら学習を止める過学習対策。", "検証データを監視する。"),
   c("batchnorm", "バッチ正規化", "dl-tech", "ミニバッチ内で層入力を正規化し学習を安定化する手法。", "CNNなどで頻出。"),
   c("layernorm", "レイヤー正規化", "dl-tech", "サンプルごとに層内を正規化する手法。", "Transformerで頻出。", "attention"),
@@ -505,6 +585,17 @@ export const concepts: Concept[] = [
   c("gap", "グローバルアベレージプーリング(GAP)", "cnn-image", "特徴マップ全体の平均を取り全結合層を減らす方法。", "パラメータ削減・軽量化。"),
   c("fully-connected", "全結合層", "cnn-image", "前層の全ユニットと接続する層。", "分類器の最後で使われることが多い。"),
   c("neocognitron", "ネオコグニトロン", "cnn-image", "CNNの原型となる視覚認識モデル。", "LeNetより前の歴史的モデル。"),
+  {
+    id: "fukushima-kunihiko",
+    term: "福島邦彦",
+    reading: "ふくしま くにひこ",
+    category: "cnn-image",
+    kind: "person",
+    syllabus: ["6"],
+    summary: "視覚野の構造を模した階層型ニューラルネットワーク「ネオコグニトロン」を提案した研究者。",
+    examHint: "ネオコグニトロンの提案者として、LeNet以降のCNN系譜(neocognitron→LeNet→…)の起点で問われる。",
+    status: "complete",
+  },
   c("lenet", "LeNet", "cnn-image", "手書き数字認識で知られる初期CNN。", "CNNの元祖的モデル。", "cnn"),
   c("ilsvrc", "ILSVRC", "cnn-image", "ImageNetを用いた画像認識コンペティション。", "AlexNetによる第3次AIブームの契機。"),
   c("alexnet", "AlexNet", "cnn-image", "2012年ILSVRCで大きな性能向上を示したCNN。", "深層学習ブームの象徴。"),
@@ -586,7 +677,7 @@ export const concepts: Concept[] = [
   c("mcts", "モンテカルロ木探索", "deep-rl", "シミュレーションで有望な手を探索する木探索。", "AlphaGoで深層学習と組み合わせる。"),
   c("alphago", "AlphaGo / AlphaGo Zero", "deep-rl", "深層強化学習とMCTSで囲碁を攻略したシステム。", "AlphaGo Zeroは自己対局のみで学習。"),
   c("alphazero", "AlphaZero", "deep-rl", "囲碁以外のゲームにも適用可能な汎用強化学習システム。", "自己対局とMCTS。"),
-  c("multi-agent", "マルチエージェント強化学習", "deep-rl", "複数エージェントが相互作用する強化学習。", "協調・競合がある。"),
+  c("multi-agent", "マルチエージェント強化学習(MARL)", "deep-rl", "複数エージェントが相互作用する強化学習。", "協調・競合がある。"),
   c("openai-five", "OpenAI Five", "deep-rl", "Dota 2で知られるマルチエージェント強化学習の成功例。", "ゲームAI。"),
   c("alphastar", "AlphaStar", "deep-rl", "StarCraft IIで成果を出した深層強化学習システム。", "ゲームAI。"),
   c("sim2real", "sim2real", "deep-rl", "シミュレーションで学習したモデルを実環境へ移す技術。", "ロボット制御で頻出。"),
@@ -839,6 +930,11 @@ export const relations: ConceptRelation[] = [
   r("compression-pruning", "model-compression", "is_a"),
   r("edge-ai", "model-compression", "used_for"),
   r("data-drift", "mlops", "part_of"),
+
+  // Phase 1 見本カード用に追加したエッジ
+  r("dropout", "regularization", "is_a"),
+  r("dropout", "batchnorm", "contrasts_with"),
+  r("fukushima-kunihiko", "neocognitron", "proposed"),
 ];
 
 export const demoLabels: Record<string, string> = {

@@ -17,9 +17,12 @@ const relationLabel: Record<RelationType, string> = {
   part_of: "構成",
   evolves_to: "発展",
   solves: "解決",
+  suffers_from: "課題",
   used_for: "用途",
   contrasts_with: "対比",
+  requires: "前提",
   pipeline_next: "手順",
+  proposed: "提案",
 };
 
 const relationColor: Record<RelationType, string> = {
@@ -27,9 +30,12 @@ const relationColor: Record<RelationType, string> = {
   part_of: "#29d3c2",
   evolves_to: "#b98bff",
   solves: "#ffb84d",
+  suffers_from: "#ff6a6a",
   used_for: "#59d98a",
   contrasts_with: "#ff7ea8",
+  requires: "#f2d94e",
   pipeline_next: "#aeb8c6",
+  proposed: "#7ee0ff",
 };
 
 function categoryLabel(category: ConceptCategory) {
