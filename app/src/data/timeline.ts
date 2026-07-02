@@ -3,12 +3,12 @@ import type { EraId } from "./concepts";
 /**
  * 技術史タイムライン(縦軸)。RESTRUCTURE_PLAN.md §4.1 / 付録B を参照。
  *
- * Phase 1 時点では ID・title・branch の骨格のみを定義する。
- * expectation / wall / breakthrough / nextWall の本文執筆と
- * wallConceptIds / breakthroughConceptIds への実カード紐付けは Phase 2 で行う。
- *
  * era-01〜era-08 は一本道。era-09以降は era-08 を分岐点として
  * branch(image/sequence/language/generative/rl/speech)に分かれる。
+ *
+ * 年号・人名は複数の一般的な資料で確認できる確実なもののみ記載し、
+ * 論争の余地がある/資料により差がある細部は「〜年代」「〜頃」のように
+ * 幅を持たせて記載している(捏造禁止の原則)。
  */
 
 export type EraBranch = "image" | "sequence" | "language" | "generative" | "rl" | "speech";
@@ -32,153 +32,285 @@ export type Era = {
   branch?: EraBranch;
 };
 
-const TODO_BODY = "(Phase 2で執筆)";
-
 export const eras: Era[] = [
   {
     id: "era-01",
     title: "黎明(1943〜1956) — 形式ニューロンから「人工知能」の命名まで",
-    expectation: TODO_BODY,
-    wall: TODO_BODY,
+    expectation:
+      "「機械は考えることができるか」という問いに数学的な形式で迫ろうとした時代。" +
+      "1943年にマカロック&ピッツが神経細胞の働きを数理モデル化(形式ニューロン)し、" +
+      "1950年にはチューリングがチューリングテストを提案。1956年のダートマス会議で" +
+      "「人工知能(Artificial Intelligence)」という言葉が初めて使われた。",
+    wall:
+      "具体的な計算手法や実装はまだ乏しく、期待が先行していた時期。" +
+      "「知能とは何か」を扱う共通の理論的枠組みも存在しなかった。",
     wallConceptIds: [],
-    breakthrough: TODO_BODY,
+    breakthrough:
+      "ダートマス会議を契機に、探索と推論を武器にした第1次AIブームが始まる。",
     breakthroughConceptIds: [],
-    nextWall: TODO_BODY,
+    nextWall:
+      "探索・推論はルールの明確な問題(トイ・プロブレム)には強いが、" +
+      "現実の複雑な問題には歯が立たないことがすぐに露呈していく。",
   },
   {
     id: "era-02",
     title: "第1次AIブーム — 探索・推論の時代",
-    expectation: TODO_BODY,
-    wall: TODO_BODY,
+    expectation:
+      "迷路やパズルのようにルールが明確な問題なら、探索木を作りヒューリスティックを" +
+      "使って解けるはずだという期待のもと、ハノイの塔のような定番問題や、" +
+      "STRIPS・SHRDLUのような自動計画・対話システムが研究された。",
+    wall:
+      "現実の問題は組合せが爆発し、探索空間が現実的な時間で扱いきれない" +
+      "(トイ・プロブレム)。ある行動が引き起こす影響のうち考慮すべき範囲を" +
+      "機械が判断できない「フレーム問題」も明らかになった。",
     wallConceptIds: [],
-    breakthrough: TODO_BODY,
+    breakthrough:
+      "探索・推論だけでは知識が必要な現実の問題に対応できないという反省から、" +
+      "次のブームでは専門知識をルールとして機械に教え込む方向へ関心が移る。",
     breakthroughConceptIds: [],
-    nextWall: TODO_BODY,
+    nextWall:
+      "「知識さえ与えれば良い」という発想も、後にエキスパートシステム自身の" +
+      "限界という新しい壁にぶつかる(era-04)。",
   },
   {
     id: "era-03",
     title: "(era-02と並走)パーセプトロンへの期待と最初の停滞",
-    expectation: TODO_BODY,
-    wall: TODO_BODY,
-    wallConceptIds: [],
-    breakthrough: TODO_BODY,
+    expectation:
+      "1950年代後半、ローゼンブラットが提案した単純パーセプトロンは、" +
+      "データから重みを学習して分類を行う最初期のニューラルネットワークとして注目された。",
+    wall:
+      "1969年、ミンスキーらは単純パーセプトロンが線形分離可能な問題しか解けないこと" +
+      "(XOR問題に代表される限界)を指摘し、ニューラルネットワーク研究は長期にわたり停滞した。",
+    wallConceptIds: ["perceptron"],
+    breakthrough:
+      "隠れ層を持つ多層パーセプトロンと、それを学習させる誤差逆伝播法が" +
+      "再評価されるまで(era-05)、この停滞は続いた。",
     breakthroughConceptIds: [],
-    nextWall: TODO_BODY,
+    nextWall:
+      "多層化すれば非線形の問題も扱えるはずだが、多層のネットワークをどう学習させるか" +
+      "という具体的な手法がまだ確立していなかった。",
   },
   {
     id: "era-04",
     title: "第2次AIブーム — 知識を書き込めば賢くなるはずだった",
-    expectation: TODO_BODY,
-    wall: TODO_BODY,
+    expectation:
+      "専門家の知識をルールとして書き込めば専門家のように振る舞う" +
+      "「エキスパートシステム」が作れるという期待が広がり、医療診断のMYCIN、" +
+      "化学分析のDENDRALなどが登場。知識表現の手法として意味ネットワークや" +
+      "オントロジーも発展した。",
+    wall:
+      "知識を人手で書き出し続ける作業(知識獲得のボトルネック)が膨大になり、" +
+      "現実の状況を書き切れない。記号だけを操作するシステムは記号と実世界の意味を" +
+      "結びつけられない、という本質的な限界(シンボルグラウンディング問題)も指摘された。",
     wallConceptIds: [],
-    breakthrough: TODO_BODY,
+    breakthrough:
+      "知識を人手で書く代わりに、データから規則性を自動的に学ばせる" +
+      "「機械学習」という発想へ関心が移っていく。",
     breakthroughConceptIds: [],
-    nextWall: TODO_BODY,
+    nextWall:
+      "機械学習を実現する具体的な学習アルゴリズムは、この時点ではまだ実用段階になかった。",
   },
   {
     id: "era-05",
     title: "冬の間に蒔かれた種(1980年代〜1990年代)",
-    expectation: TODO_BODY,
-    wall: TODO_BODY,
-    wallConceptIds: [],
-    breakthrough: TODO_BODY,
+    expectation:
+      "第2次AIブームが冬に向かう一方、後の第3次ブームを支える基礎技術がこの時期に生まれた。" +
+      "1986年頃、誤差逆伝播法が多層ニューラルネットワークの学習に使えることが示され、" +
+      "1980年に福島邦彦が視覚野の構造を模したネオコグニトロンを提案、" +
+      "1998年頃にLeCunらがLeNetで手書き数字認識に応用、1997年にはHochreiterと" +
+      "Schmidhuberが長期依存を扱えるLSTMを提案した。",
+    wall:
+      "誤差逆伝播では勾配を出力層から入力層へ層ごとに掛け算しながら伝えるため、" +
+      "層が深いほど勾配が指数的に小さくなり、入力に近い層がほとんど学習できない" +
+      "(勾配消失問題)。当時は計算資源とデータ量も不足しており、深いネットワークを" +
+      "実用化する条件が揃っていなかった。",
+    wallConceptIds: ["vanishing-gradient"],
+    breakthrough:
+      "勾配消失を緩和する活性化関数や大量データ・GPUという計算資源が揃うまで、" +
+      "深層学習は「有望だが実用に遠い」技術のままだった(条件が揃うのはera-07)。",
     breakthroughConceptIds: [],
-    nextWall: TODO_BODY,
+    nextWall: "計算資源とデータの不足がまだ解消されておらず、深いネットワークを訓練しきれない。",
   },
   {
     id: "era-06",
     title: "統計的機械学習の時代(1990年代〜2000年代)",
-    expectation: TODO_BODY,
-    wall: TODO_BODY,
-    wallConceptIds: [],
-    breakthrough: TODO_BODY,
+    expectation:
+      "ニューラルネットワークが停滞する一方、数学的に扱いやすい統計的機械学習が主流になった。" +
+      "SVMはマージン最大化という明快な原理とカーネル法により非線形問題も扱え、" +
+      "決定木とその集合体であるランダムフォレスト(バギング)やブースティングは、" +
+      "解釈しやすく実務でも使いやすい手法として広まった。",
+    wall:
+      "これらの手法の性能は、人が設計する「特徴量」の質に大きく依存する。" +
+      "画像や音声のような生データからどの特徴量を取り出すかという" +
+      "特徴量エンジニアリングが、性能向上のボトルネックになっていった。",
+    wallConceptIds: ["feature"],
+    breakthrough:
+      "特徴量そのものをデータから自動的に学習できないか、という発想が、" +
+      "深層学習の再評価につながっていく。",
     breakthroughConceptIds: [],
-    nextWall: TODO_BODY,
+    nextWall:
+      "特徴量を自動学習するには、深いネットワークを実際に訓練できるだけの" +
+      "データ・計算資源・学習の工夫が必要だった。",
   },
   {
     id: "era-07",
     title: "ブレイクスルーの3条件が揃う — ビッグデータ・GPU・アルゴリズム",
-    expectation: TODO_BODY,
-    wall: TODO_BODY,
+    expectation:
+      "2000年代後半、深層学習を実用化する3つの条件が揃い始める。" +
+      "1) Web普及によるビッグデータと、ILSVRC(画像認識コンペ)のような大規模データセット、" +
+      "2) 並列計算に向くGPUの汎用計算への転用、" +
+      "3) 層ごとの事前学習に使われたオートエンコーダや、勾配消失を緩和するReLU、" +
+      "過学習を防ぐDropoutといったアルゴリズム上の工夫。",
+    wall:
+      "3条件は揃いつつあったが、これらを組み合わせて浅い手法を本当に上回れるかを" +
+      "大規模な公開ベンチマークで証明した例はまだなかった。",
     wallConceptIds: [],
-    breakthrough: TODO_BODY,
-    breakthroughConceptIds: [],
-    nextWall: TODO_BODY,
+    breakthrough:
+      "2012年のILSVRCで深層学習を使ったモデルが従来手法を大差で上回り、" +
+      "条件が揃ったことが実証される(era-08)。",
+    breakthroughConceptIds: ["ilsvrc", "gpu-tpu", "relu", "dropout", "autoencoder"],
+    nextWall: "この結果を受け、以後は「深層学習をどう発展させるか」が研究の中心課題になっていく。",
   },
   {
     id: "era-08",
     title: "2012年 AlexNetがILSVRCを制し、第3次AIブーム開幕",
-    expectation: TODO_BODY,
-    wall: TODO_BODY,
+    expectation:
+      "トロント大学のヒントンの研究室が開発したAlexNetが2012年のILSVRCで、" +
+      "2位に大差をつけて優勝。GPUによる並列計算、ReLU、Dropoutを組み合わせた" +
+      "深層CNNが、人手で設計した特徴量に基づく従来手法を明確に上回ることを示した。",
+    wall:
+      "AlexNetの成功は「深層学習は使える」ことを示したが、どこまで層を深くできるか、" +
+      "画像以外の系列データや言語にどう応用するかはまだ手探りの状態だった。",
     wallConceptIds: [],
-    breakthrough: TODO_BODY,
-    breakthroughConceptIds: [],
-    nextWall: TODO_BODY,
+    breakthrough:
+      "以後、CNNはより深く効率的なアーキテクチャへ、RNN系列モデルはAttentionへ、" +
+      "生成モデルは多様な手法へと、複数の方向に分化しながら急速に発展していく" +
+      "(era-09以降の各枝)。",
+    breakthroughConceptIds: ["alexnet"],
+    nextWall: "各方向で新しい壁にぶつかりながら発展していくため、以降は分野ごとの枝に物語が分岐する。",
   },
   {
     id: "era-09",
     title: "【画像の枝】CNNの系譜と物体検出・セグメンテーションへの拡張",
-    expectation: TODO_BODY,
-    wall: TODO_BODY,
-    wallConceptIds: [],
-    breakthrough: TODO_BODY,
-    breakthroughConceptIds: [],
-    nextWall: TODO_BODY,
+    expectation:
+      "AlexNetの成功を受け、より深く高精度なCNNが競って提案された。" +
+      "VGGは3×3の畳み込みを積み重ねる単純な設計で深さを追求し、GoogLeNetは" +
+      "複数サイズの畳み込みを並列に使うInceptionモジュールで効率を高めた。",
+    wall:
+      "ネットワークを深くするほど勾配消失が再び深刻化し、単純に層を増やすだけでは" +
+      "精度が頭打ち、あるいはむしろ悪化する現象が見られた。",
+    wallConceptIds: ["vanishing-gradient"],
+    breakthrough:
+      "2015年、ResNetがスキップ結合(残差接続)を導入し、層を飛び越えて情報を" +
+      "伝えることで100層を超える超深層化を実現した。以後この骨格を土台に、" +
+      "物体検出(R-CNN系列→YOLO・SSD)やセグメンテーション(FCN・U-Net)へと応用が広がった。",
+    breakthroughConceptIds: ["vgg", "googlenet", "resnet", "skip-connection", "rcnn", "yolo", "ssd", "fcn-unet"],
+    nextWall: "画像分野の骨格はほぼ確立した一方、系列データ(文章・音声)では別の壁が残っていた。",
     branch: "image",
   },
   {
     id: "era-10",
     title: "【系列の枝】RNNからAttention・Transformerへ",
-    expectation: TODO_BODY,
-    wall: TODO_BODY,
+    expectation:
+      "文章や音声のような順序のあるデータには、前の情報を隠れ状態として引き継ぐRNNが" +
+      "使われてきた。LSTM・GRUのゲート機構により長期依存もある程度扱えるようになり、" +
+      "Encoder-DecoderによるSeq2Seqが機械翻訳などに応用された。",
+    wall:
+      "Seq2Seqは入力系列全体を固定長のベクトルに圧縮するため、長い文章では情報が" +
+      "失われる。またRNNは1つ前の状態を待ってから次を計算する逐次処理のため、" +
+      "GPUでの並列化がしにくく学習が遅い。",
     wallConceptIds: [],
-    breakthrough: TODO_BODY,
-    breakthroughConceptIds: [],
-    nextWall: TODO_BODY,
+    breakthrough:
+      "Attentionが、出力の各時点で入力系列のどこに注目すべきかを直接計算することで" +
+      "ボトルネックを解消。2017年のTransformerは、RNNを使わずSelf-Attentionだけで" +
+      "系列全体の関係を並列に扱う構造を提案し、以後の言語モデルの土台になった。",
+    breakthroughConceptIds: ["attention", "seq2seq", "self-attention", "transformer"],
+    nextWall:
+      "Transformerという強力な土台を得たことで、次はこれをどれだけ大規模化・" +
+      "事前学習できるかという競争(言語の枝, era-11)に移っていく。",
     branch: "sequence",
   },
   {
     id: "era-11",
     title: "【言語の枝】word2vecからLLM・生成AIブームへ",
-    expectation: TODO_BODY,
-    wall: TODO_BODY,
-    wallConceptIds: [],
-    breakthrough: TODO_BODY,
-    breakthroughConceptIds: [],
-    nextWall: TODO_BODY,
+    expectation:
+      "word2vecが単語を意味的なベクトルとして表す分散表現を確立し、以後BERT・GPTのような" +
+      "大規模事前学習モデルが登場。Transformerを大規模化し大量のテキストで事前学習すれば" +
+      "性能が予測可能に向上する(スケーリング則)ことも分かってきた。",
+    wall:
+      "モデルを大きくするだけでは、人間の指示に沿った有用な応答を返すとは限らない。" +
+      "事前学習だけのモデルは、事実と異なる内容や指示と無関係な内容を" +
+      "もっともらしく生成してしまう。",
+    wallConceptIds: ["hallucination"],
+    breakthrough:
+      "人間のフィードバックを報酬として強化学習で調整するRLHFや、指示追従を高める" +
+      "インストラクションチューニングにより、ChatGPTに代表される対話的な生成AIが" +
+      "実用段階に達した。",
+    breakthroughConceptIds: ["word2vec", "bert", "gpt", "llm", "scaling-law", "rlhf"],
+    nextWall:
+      "生成AIの実力が上がるほど、事実確認(ハルシネーション対策)や著作権・悪用防止といった、" +
+      "技術だけでは閉じない社会実装上の課題が前面に出てくる(パイプライン軸へ接続)。",
     branch: "language",
   },
   {
     id: "era-12",
     title: "【生成の枝】オートエンコーダからVAE・GAN・拡散モデルへ",
-    expectation: TODO_BODY,
-    wall: TODO_BODY,
+    expectation:
+      "オートエンコーダで学んだ「データを圧縮して再構成する」しくみを応用し、" +
+      "新しいデータそのものを生成できないかという発想から、VAE(確率的な潜在変数から生成)と" +
+      "GAN(生成器と識別器の競争)が提案された。",
+    wall:
+      "GANは生成器と識別器の学習バランスが崩れやすく、学習が不安定になったり" +
+      "モード崩壊(生成結果の多様性が失われる)を起こしやすいという課題を抱えていた。",
     wallConceptIds: [],
-    breakthrough: TODO_BODY,
-    breakthroughConceptIds: [],
-    nextWall: TODO_BODY,
+    breakthrough:
+      "拡散モデルは、ノイズを少しずつ加える過程とその逆にノイズを少しずつ除去する過程を" +
+      "学習することで、GANより安定した学習で高品質な生成を実現し、画像生成の主流になった。",
+    breakthroughConceptIds: ["vae", "gan", "diffusion"],
+    nextWall:
+      "画像だけでなく、複数のモダリティ(画像・テキスト・音声)を横断して理解・生成する" +
+      "マルチモーダルモデルへと関心が移っていく。",
     branch: "generative",
   },
   {
     id: "era-13",
     title: "【強化学習の枝】Q学習からAlphaGo・AlphaZeroへ",
-    expectation: TODO_BODY,
-    wall: TODO_BODY,
+    expectation:
+      "エージェントが試行錯誤を通じて報酬を最大化する行動を学ぶ強化学習は、" +
+      "Q学習のような価値関数ベースの手法から始まった。しかし状態や行動の組み合わせが" +
+      "多い問題では、Q値を表で持つことが現実的でなくなる。",
+    wall:
+      "囲碁のように状態空間が天文学的な数になるゲームでは、従来の探索やQ学習だけでは" +
+      "人間のトッププレイヤーに太刀打ちできないと考えられていた。",
     wallConceptIds: [],
-    breakthrough: TODO_BODY,
-    breakthroughConceptIds: [],
-    nextWall: TODO_BODY,
+    breakthrough:
+      "DQNがQ関数をニューラルネットワークで近似することで高次元の状態を扱えるようにし、" +
+      "AlphaGoは深層強化学習とモンテカルロ木探索を組み合わせて2016年に人間のトップ棋士を" +
+      "破った。AlphaZeroは人間の棋譜を使わず自己対局のみで学習し、囲碁以外のゲームにも" +
+      "通用する汎用的な強化学習の枠組みを示した。",
+    breakthroughConceptIds: ["q-learning", "dqn", "mcts", "alphago", "alphazero"],
+    nextWall:
+      "ゲームという明確なルールと報酬がある環境での成功を、ルールが曖昧な現実の" +
+      "ロボット制御や業務自動化にどう広げるかが次の課題になっている。",
     branch: "rl",
   },
   {
     id: "era-14",
     title: "【音声の枝】隠れマルコフモデルから大規模音声モデルへ",
-    expectation: TODO_BODY,
-    wall: TODO_BODY,
+    expectation:
+      "音声認識は長らく、音声を音素の並びとみなし、隠れマルコフモデル(HMM)で" +
+      "音の遷移を確率的にモデル化する方式が主流だった。音声はA-D変換・FFT・MFCCといった" +
+      "信号処理で特徴量に変換されてからHMMに渡されていた。",
+    wall:
+      "HMMは音素どうしの遷移確率を単純化して扱うため、より長い文脈や話者・環境による" +
+      "音の変化を柔軟に表現するには限界があった。",
     wallConceptIds: [],
-    breakthrough: TODO_BODY,
-    breakthroughConceptIds: [],
-    nextWall: TODO_BODY,
+    breakthrough:
+      "CTCにより、入力(音声特徴量の系列)と出力(文字列)の長さが異なっていても、" +
+      "その対応位置を明示的に教えずにニューラルネットワークで直接学習できるようになった。" +
+      "WaveNetのような深層生成モデルは、波形そのものを直接モデル化して自然な音声合成を可能にした。",
+    breakthroughConceptIds: ["hmm", "ctc", "wavenet"],
+    nextWall: "音声も含め、より少ないラベル付きデータで学習できる大規模音声モデル・自己教師あり学習への関心が続いている。",
     branch: "speech",
   },
 ];
