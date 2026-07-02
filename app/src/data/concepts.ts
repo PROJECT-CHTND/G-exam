@@ -785,6 +785,28 @@ const conceptAnchors: Record<string, ConceptAnchor> = {
   adaboost: { syllabus: ["7"], timeline: "era-06" },
   "gradient-boosting": { syllabus: ["7"], timeline: "era-06" },
   knn: { syllabus: ["7"], pipeline: "stage-4" },
+
+  // --- unsupervised ---
+  clustering: { syllabus: ["8"], pipeline: "stage-4" },
+  "cluster-analysis": { syllabus: ["8"], pipeline: "stage-4" },
+  kmeans: { syllabus: ["8"], timeline: "era-06", status: "complete" },
+  ward: { syllabus: ["8"], timeline: "era-06" },
+  "hierarchical-clustering": { syllabus: ["8"], timeline: "era-06" },
+  dendrogram: { syllabus: ["8"], timeline: "era-06" },
+  "dimensionality-reduction": { syllabus: ["8"], timeline: "era-06" },
+  pca: { syllabus: ["8"], timeline: "era-06", status: "complete" },
+  svd: { syllabus: ["8"], timeline: "era-06" },
+  mds: { syllabus: ["8"], timeline: "era-06" },
+  tsne: { syllabus: ["8"], timeline: "era-06" },
+  umap: { syllabus: ["8"], timeline: "era-06" },
+  dbscan: { syllabus: ["8"], timeline: "era-06" },
+  recommendation: { syllabus: ["5"], pipeline: "stage-4" },
+  "collaborative-filtering": { syllabus: ["8"], pipeline: "stage-4" },
+  "content-based-filtering": { syllabus: ["8"], pipeline: "stage-4" },
+  "cold-start": { syllabus: ["8"], pipeline: "stage-4" },
+  "topic-model": { syllabus: ["8"], pipeline: "stage-4" },
+  lda: { syllabus: ["8"], pipeline: "stage-4" },
+  silhouette: { syllabus: ["8"], pipeline: "stage-5" },
 };
 
 for (const concept of concepts) {
