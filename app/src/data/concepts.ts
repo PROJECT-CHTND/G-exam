@@ -1019,6 +1019,20 @@ const conceptAnchors: Record<string, ConceptAnchor> = {
   clip: { syllabus: ["32"], timeline: "era-12" },
   multimodal: { syllabus: ["32"], timeline: "era-12" },
   hallucination: { syllabus: ["27"], timeline: "era-11" },
+
+  // --- xai-compression ---
+  xai: { syllabus: ["33"], pipeline: "stage-7" },
+  cam: { syllabus: ["33"], pipeline: "stage-7" },
+  "grad-cam": { syllabus: ["33"], pipeline: "stage-7" },
+  lime: { syllabus: ["33"], pipeline: "stage-7" },
+  shap: { syllabus: ["33"], pipeline: "stage-7" },
+  "model-compression": { syllabus: ["34"], pipeline: "stage-6" },
+  distillation: { syllabus: ["34"], pipeline: "stage-6" },
+  quantization: { syllabus: ["34"], pipeline: "stage-6" },
+  "compression-pruning": { syllabus: ["34"], pipeline: "stage-6" },
+  "edge-ai": { syllabus: ["34"], pipeline: "stage-6" },
+  mlops: { syllabus: ["35"], pipeline: "stage-7" },
+  "data-drift": { syllabus: ["35"], pipeline: "stage-7" },
 };
 
 for (const concept of concepts) {
