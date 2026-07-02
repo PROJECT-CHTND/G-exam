@@ -98,6 +98,12 @@ export type Concept = {
    * 論争が今も続いている問題であることを示す(例: フレーム問題、トイ・プロブレム)。
    * true の場合、validate の「未解決問題」警告は対象外とし、UIでは
    * 「本質的に未解決」バッジとして明示する(それ自体が頻出論点のため)。
+   *
+   * 【使い分けの原則(Phase 3ミニバッチ再レビューで確定)】
+   * unresolved は「本質的に未解決」(フレーム問題型: 議論・部分的緩和が続くのみで、
+   * 決定的な solves エッジを張れる関係にない)専用。「対策カード未整備」(データ未整備型:
+   * 教科書的な対策は存在するが、そのカードがまだこのデータセットにない)には使わない。
+   * 後者は無理にフラグで隠さず、validate の WARNING に残す(不足の可視化こそが正しい状態)。
    */
   unresolved?: boolean;
 };
@@ -239,13 +245,24 @@ const coreLearningNotes: Record<string, Pick<Concept, "bornToSolve" | "beforeAnd
     bornToSolve: "画像の種類、迷惑メール判定、陽性/陰性などカテゴリを予測するために使う。",
     beforeAndGap: "回帰は連続値を予測する。分類は離散的なクラスを予測する。",
   },
+  // レビュー反映: overfitting/underfittingはkind:"problem"のため、bornToSolve=cause(なぜ起きるか)、
+  // beforeAndGap=consequence(放置すると何が困るか)の読み替えで記述する(concept形式の「何のために
+  // 押さえる概念か」から書き換え)。
   overfitting: {
-    bornToSolve: "モデルが訓練データだけを覚えていないかを判断し、汎化性能を守るために押さえる概念。",
-    beforeAndGap: "未学習は訓練データにも合わない。過学習は訓練データには合うが未知データに弱い。",
+    bornToSolve:
+      "モデルの表現力が高すぎる、または訓練データが少なすぎるために、訓練データ固有のノイズや" +
+      "偶然のパターンまで学習してしまうことで発生する。",
+    beforeAndGap:
+      "放置すると、訓練データ上では高い性能に見えても未知データでは性能が大きく落ち、この見かけの" +
+      "性能と実運用性能のギャップに気づかないまま本番投入してしまう失敗につながる。",
   },
   underfitting: {
-    bornToSolve: "モデルが単純すぎる、学習不足、特徴量不足などで性能が出ない状態を見分けるために使う。",
-    beforeAndGap: "過学習は訓練性能だけ高い。未学習は訓練性能もテスト性能も低い。",
+    bornToSolve:
+      "モデルの表現力が低すぎる、または学習が不十分(エポック不足・特徴量不足)であるために、" +
+      "訓練データの傾向さえ十分に捉えられないことで発生する。",
+    beforeAndGap:
+      "放置すると訓練データに対してさえ性能が低いままなので、当然未知データへの性能も低い。" +
+      "過学習と異なり訓練誤差自体が高いままなので、評価指標を見れば比較的早く発見しやすい。",
   },
   generalization: {
     bornToSolve: "試験や実務で本当に欲しい、未知データに対する性能を考えるための中心概念。",
@@ -1339,7 +1356,11 @@ export const concepts: Concept[] = [
     syllabus: ["4"],
     timeline: "era-06",
     summary: "大量のデータから、統計的な手法を用いて有用な規則性やパターンを発見する技術の総称。",
-    bornToSolve: "企業や研究機関に蓄積される大量データから、人間が目視では気づけない規則性(購買傾向、異常なパターンなど)を機械的に発見するために発展した。",
+    bornToSolve:
+      "エキスパートシステムのように専門家の知識をルールとして人手で書き出すアプローチが知識獲得の" +
+      "ボトルネックに直面したことを受け、企業や研究機関に蓄積される大量データそのものから、人間が" +
+      "目視では気づけない規則性(購買傾向、異常なパターンなど)を統計的に自動発見しようとする知識発見" +
+      "(KDD: Knowledge Discovery in Databases)の流れの中で発展した。",
     beforeAndGap: "統計的機械学習(SVM、決定木、アンサンブル学習など)が実務で使われるようになった1990年代〜2000年代、これらの手法を大量データの分析に応用する文脈として「データマイニング」という呼び方が広まった。",
     examHint: "統計的機械学習の実務応用という文脈で、era-06の技術と併せて問われる。",
     recall: "データマイニングと統計的機械学習の関係を説明せよ。",
@@ -2174,6 +2195,13 @@ export const relations: ConceptRelation[] = [
   // is_aエッジは既存(バッチ3で登録済み)のため再登録しない。
   r("open-dataset", "pretraining", "used_for"),
   r("annotation", "self-supervised", "contrasts_with"),
+
+  // レビュー反映(2度目のミニバッチ): era-04の壁とera-06を繋ぐ solves 連鎖
+  r("data-mining", "knowledge-acquisition-bottleneck", "solves"),
+  // レビュー反映: underfitting(バイアス)/overfitting(バリアンス)の教科書的な対策エッジ
+  r("boosting", "underfitting", "solves"),
+  r("bagging", "overfitting", "solves"),
+  r("boosting", "overfitting", "suffers_from"),
 ];
 
 export const demoLabels: Record<string, string> = {
