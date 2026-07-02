@@ -42,6 +42,11 @@ cnn-rnn/attention/transformer/genai)は、削除禁止方針により `stories.t
 - **トリガー**: 第3〜6章(機械学習基礎/教師あり・なし学習/深層学習基礎・要素技術/CNN・系列-NLP等)
   の章ストーリーを新規執筆するタイミングで、対応するステップの内容をその章ストーリーへ吸収する。
   吸収済みステップから順に `section` フィールドを付与し、吸収完了後に本行のステータスを更新する。
+  **この執筆時に、項目27・28のタスクカード(sentiment-analysis / machine-translation /
+  information-retrieval / text-summarization / speech-recognition / speech-synthesis /
+  speaker-identification)の物語組み込みも合わせて行うこと**(タスクカードバッチレビューで確定。
+  現時点でこれらのカードが章ストーリー未組み込みなのは恒久免除ではなく、この吸収作業までの
+  繰り延べであることを明記する)。
 - 現状: 8ステップ中0ステップ吸収済み(未着手)。
 
 ---
@@ -80,7 +85,7 @@ cnn-rnn/attention/transformer/genai)は、削除禁止方針により `stories.t
 
 ## 第2章 人工知能をめぐる動向
 
-### 項目3: 探索・推論 ✅ **(Phase 3バッチ2で完了)**
+### 項目3: 探索・推論 ✅ **(Phase 3バッチ2で完了。掃討バッチAで組合せ爆発も解消)**
 - [x] αβ法
 - [x] Mini-Max法
 - [x] SHRDLU
@@ -91,9 +96,8 @@ cnn-rnn/attention/transformer/genai)は、削除禁止方針により `stories.t
 - [x] 深さ優先探索
 - [x] ブルートフォース
 - [x] モンテカルロ法(新規`monte-carlo-method`カードを作成し、既存`mcts`から`is_a`エッジ+syllabus`3`を追加で接続)
-- [ ] **組合せ爆発**(Phase 3バッチ5レビューで発見した棚卸し漏れ。`brute-force`/`toy-problem`の本文中で
-  言及されているのみで、専用のproblemカードが存在しない。audit-report.md §2時点では未検出だったため、
-  本ミニバッチでの新規作成は行わず、既存draft昇格バッチ or 個別の小バッチで対応する)
+- [x] 組合せ爆発(掃討バッチAで新設`combinatorial-explosion`。kind: problem, timeline: era-02。
+  `brute-force → suffers_from`, `alpha-beta-pruning → solves` で系譜の鎖の受け皿にもなった)
 
 ### 項目4: 知識表現とエキスパートシステム ✅ **(Phase 3バッチ3で完了、レビュー反映バッチでeraアンカー再判定)**
 - [x] Cycプロジェクト
@@ -112,12 +116,14 @@ cnn-rnn/attention/transformer/genai)は、削除禁止方針により `stories.t
 - [x] ワトソン(era-06にアンカー。統計的手法の到達点として再判定でcomplete化)
 - [x] (追加)エキスパートシステム — 明示キーワードではないが項目4の中心概念のため併せて作成
 
-### 項目5: 機械学習(概要) 🟡
+### 項目5: 機械学習(概要) ✅ **(掃討バッチAで完了)**
 - [x] 次元の呪い(`curse-dimensionality`)
 - [x] レコメンデーションエンジン(`recommendation`)
-- [ ] スパムフィルター
-- [ ] ビッグデータ(概要文脈での明示カード)
-- [ ] 統計的自然言語処理(v1.3追加の可能性・要確認)
+- [x] スパムフィルター(畳み込み → `classification-task`。examHintに「スパムフィルター(迷惑メール/正規メールの
+  2クラス分類)は代表的な出題例。」を追記)
+- [x] ビッグデータ(掃討バッチAで新設`big-data`。timeline: era-06)
+- [x] 統計的自然言語処理(v1.3追加を確認。畳み込み → `statistical-machine-translation`。examHintに
+  「統計的機械翻訳は『統計的自然言語処理』という分野全体...の代表例の一つとしても位置づけられる。」を追記)
 
 ### 項目6: ディープラーニング(発展の歴史) ✅(個別カードは済、物語化はPhase 2で対応済み)
 - [x] ImageNet / ILSVRC(`ilsvrc`)
@@ -134,34 +140,38 @@ cnn-rnn/attention/transformer/genai)は、削除禁止方針により `stories.t
 ### 項目7: 教師あり学習 ✅ / 項目8: 教師なし学習 ✅ / 項目10: モデルの選択・評価 ✅
 未収録キーワードなし(audit-report.md 時点)。
 
-### 項目9: 強化学習 🟡
-- [ ] UCB方策
+### 項目9: 強化学習 ✅ **(掃討バッチAで完了)**
+- [x] UCB方策(掃討バッチAで新設`ucb`。timeline: era-13。ε-greedyとcontrasts_with)
 
 ---
 
 ## 第4章 ディープラーニングの概要
 
-### 項目11: ニューラルネットワークとDL ✅ / 項目12: 活性化関数 ✅ / 項目14: 正則化 ✅
-- [ ] CPUとGPU/TPUの明示的な対比カード(項目11・軽微)
-- [ ] L0正則化(項目14・軽微)
+### 項目11: ニューラルネットワークとDL ✅ / 項目12: 活性化関数 ✅ / 項目14: 正則化 ✅ **(掃討バッチAで完了)**
+- [x] CPUとGPU/TPUの明示的な対比カード(既存`gpu-tpu`をdraft→completeに昇格し、examHintに
+  「少数コアで逐次処理が得意なCPUとの対比(多数コアによる並列処理)」を追記。coreLearningNotesに
+  2質問を追加、`backprop`/`ml-dev-environment`とのエッジを追加)
+- [x] L0正則化(畳み込み → `regularization`。examHintに「L0正則化(非ゼロ係数の個数そのものに
+  ペナルティ)は組合せ最適化になり計算困難なため、緩和したL1で代用する」を追記)
 
-### 項目13: 誤差関数 🟡
-- [ ] Contrastive Loss
-- [ ] Triplet Loss
-- [ ] KLダイバージェンス
+### 項目13: 誤差関数 ✅ **(掃討バッチAで完了)**
+- [x] Contrastive Loss / Triplet Loss(掃討バッチAでグループ化新設`metric-learning-loss`。
+  距離学習の損失関数として1枚に集約)
+- [x] KLダイバージェンス(掃討バッチAで新設`kl-divergence`。VAEとused_forで接続)
 
-### 項目15: 誤差逆伝播法 🟡
-- [ ] 信用割当問題(credit assignment problem)
+### 項目15: 誤差逆伝播法 ✅ **(掃討バッチAで完了)**
+- [x] 信用割当問題(credit assignment problem)(掃討バッチAで新設`credit-assignment-problem`。
+  kind: problem, timeline: era-05。`backprop → solves`で解決系譜を明示)
 
-### 項目16: 最適化手法 🟡
-- [ ] AdaBound
-- [ ] AdaDelta
-- [ ] AMSBound
-- [ ] グリッドサーチ
-- [ ] ランダムサーチ
-- [ ] 二重降下現象(double descent)
-- [ ] ノーフリーランチの定理
-- [ ] オンライン学習
+### 項目16: 最適化手法 ✅ **(掃討バッチAで完了)**
+- [x] AdaBound・AdaDelta・AMSBound(掃討バッチAでグループ化新設`adaptive-optimizer-variants`。
+  「適応的学習率法の派生」として1枚に集約、Adam/RMSPropとcontrasts_with)
+- [x] グリッドサーチ・ランダムサーチ(掃討バッチAでグループ化新設`hyperparameter-search`)
+- [x] 二重降下現象(double descent)(掃討バッチAで新設`double-descent`。バイアス-バリアンス
+  トレードオフとcontrasts_with)
+- [x] ノーフリーランチの定理(掃討バッチAで新設`no-free-lunch-theorem`。kind: problem,
+  unresolved: true — 数学的に証明された恒久的制約であり技術で解決できるものではないため)
+- [x] オンライン学習(掃討バッチAで新設`online-learning`。強化学習・交差検証と接続)
 
 ---
 

@@ -96,10 +96,21 @@ export type Concept = {
    * (物語的帰属)を示す。ある era の後日談・到達点・実例として語るのが自然な概念は、
    * 年代が多少ずれていてもその era に置いてよい(例: セマンティックWebは2001年提唱だが、
    * era-04のオントロジーの延長として era-04 に置く)。
-   * 一方、複数の era にまたがって繰り返し語られる概念(例: Question-Answeringのように
-   * 1960年代の知識表現から現在のLLMまで一貫して現れるタスク)は、無理に1つの era を
-   * 選ばずアンカー未設定(draft)のままにしてよい。捏造禁止の原則は「存在しない事実を書かない」
-   * ことであり、「物語上の所属先を決められる概念に慎重にアンカーを張ること」を妨げない。
+   * 一方、複数の era にまたがって繰り返し語られる概念のうち、タスクでもプロジェクトでもない
+   * もの(例: 特定の技術に紐づかない議論・思考実験)は、無理に1つの era を選ばずアンカー未設定
+   * (draft)のままにしてよい。捏造禁止の原則は「存在しない事実を書かない」ことであり、
+   * 「物語上の所属先を決められる概念に慎重にアンカーを張ること」を妨げない。
+   *
+   * 【タスクハブカードのera到達点アンカー規則(Phase 3タスクカードバッチレビューで確定)】
+   * 「入力→出力」で定義される課題(例: 機械翻訳、質問応答、音声認識)のハブカードは、
+   * 複数eraにまたがっていても、現在の主流手法が属する枝のeraに「到達点」としてアンカーして
+   * よい。条件: 本文(bornToSolve/beforeAndGapのいずれか)に、その課題がどのeraで何によって
+   * 解かれてきたかという手法の変遷を1行以上含めること(定義のコピーで終わらせない)。
+   * 例: 機械翻訳(ルールベース era-02 → 統計的 era-06 → ニューラル era-11)は、現在の主流である
+   * ニューラル機械翻訳の文脈(era-11)に到達点としてアンカーする。
+   * この規則は「複数eraにまたがる概念はdraft」という一般則の下位規則であり、タスク性を持つ
+   * ハブカードに限って優先適用する(前段落の一般則は、タスク性を持たない議論・思考実験などに
+   * 適用する)。
    */
   timeline?: EraId;
   /** 社会実装パイプラインへのアンカー。 */
@@ -253,6 +264,15 @@ const coreLearningNotes: Record<string, Pick<Concept, "bornToSolve" | "beforeAnd
   "supervised-learning": {
     bornToSolve: "過去の正解付きデータを使って、未知データのラベルや数値を予測するために使う。",
     beforeAndGap: "教師なし学習は正解ラベルなしで構造を見つける。強化学習は正解ラベルではなく報酬から行動を学ぶ。",
+  },
+  "gpu-tpu": {
+    bornToSolve:
+      "ニューラルネットワークの学習は大量の行列演算(積和演算)の繰り返しであり、これを高速に処理するために" +
+      "並列計算に特化したハードウェアが使われる。",
+    beforeAndGap:
+      "CPUは少数のコアで複雑な逐次処理を高速にこなすのが得意だが、コア数が少なく大量の単純な演算の並列実行には" +
+      "向かない。GPUは元々グラフィックス処理向けの大量の並列コアを持ち、行列演算に転用された。TPUはさらに" +
+      "ニューラルネットワークの行列演算に特化して設計された専用ハードウェアである。",
   },
   "unsupervised-learning": {
     bornToSolve: "正解がないデータから、まとまり・軸・潜在トピック・推薦の手がかりを見つけるために使う。",
@@ -478,11 +498,11 @@ export const concepts: Concept[] = [
   c("curse-dimensionality", "次元の呪い", "ml-foundation", "特徴量の次元が増えすぎるとデータが疎になり学習が難しくなる問題。", "PCAなどの次元削減と関連づける。"),
 
   c("regression-task", "回帰問題", "supervised", "連続値を予測する教師あり学習のタスク。", "出力が価格・重量・温度など数値なら回帰。", "regression"),
-  c("classification-task", "分類問題", "supervised", "カテゴリを予測する教師あり学習のタスク。", "出力が犬/猫、陽性/陰性などクラスなら分類。", "classify"),
+  c("classification-task", "分類問題", "supervised", "カテゴリを予測する教師あり学習のタスク。", "出力が犬/猫、陽性/陰性などクラスなら分類。スパムフィルター(迷惑メール/正規メールの2クラス分類)は代表的な出題例。", "classify"),
   c("linear-regression", "線形回帰", "supervised", "説明変数と目的変数の線形関係を仮定して連続値を予測する手法。", "直線・平面で数値を予測。最小二乗法とセット。", "regression"),
   c("multiple-regression", "重回帰分析", "supervised", "複数の説明変数で目的変数を予測する線形回帰。", "説明変数が複数ある回帰。"),
   c("least-squares", "最小二乗法", "supervised", "予測誤差の二乗和が最小になるようにパラメータを求める方法。", "線形回帰の代表的な推定方法。"),
-  c("regularization", "正則化", "supervised", "損失にペナルティを加えてモデルの複雑さを抑える方法。", "過学習対策。L1/L2、ラッソ/リッジと対応。", "overfit"),
+  c("regularization", "正則化", "supervised", "損失にペナルティを加えてモデルの複雑さを抑える方法。", "過学習対策。L1/L2、ラッソ/リッジと対応。L0正則化(非ゼロ係数の個数そのものにペナルティ)は組合せ最適化になり計算困難なため、緩和したL1で代用するという文脈で問われる。", "overfit"),
   c("lasso", "ラッソ回帰(L1)", "supervised", "L1正則化を加え、一部の係数を0にしやすい回帰。", "特徴選択の効果がある。"),
   c("ridge", "リッジ回帰(L2)", "supervised", "L2正則化を加え、係数を小さく抑える回帰。", "係数をなめらかに縮小する。"),
   c("ar", "自己回帰モデル(AR)", "supervised", "過去の値から現在・未来の値を予測する時系列モデル。", "時系列専用。過去の観測値を使う。"),
@@ -581,7 +601,7 @@ export const concepts: Concept[] = [
   c("local-minimum", "局所最適・大域最適・鞍点・プラトー", "dl-foundation", "最適化中に出会う損失地形上の特徴。", "深層学習では鞍点やプラトーも学習停滞の原因。"),
   c("learning-rate", "学習率", "dl-foundation", "勾配方向へどれだけ大きく更新するかを決める値。", "大きすぎると発散、小さすぎると遅い。", "regression"),
   c("epoch-batch", "エポック・バッチ・ミニバッチ", "dl-foundation", "データを何周・どの単位で学習するかを表す用語。", "ミニバッチ学習は深層学習の標準。"),
-  c("gpu-tpu", "GPU/TPU", "dl-foundation", "深層学習の並列計算を高速化するハードウェア。", "行列演算の高速化。"),
+  c("gpu-tpu", "GPU/TPU", "dl-foundation", "深層学習の並列計算を高速化するハードウェア。", "少数コアで逐次処理が得意なCPUとの対比(多数コアによる並列処理)が問われる。行列演算の高速化。"),
 
   c("activation", "活性化関数", "dl-tech", "ニューロン出力に非線形性を与える関数。", "中間層はReLU系、出力層は用途で選ぶ。", "nn"),
   c("step-function", "ステップ関数", "dl-tech", "しきい値で0/1を出す古典的な活性化関数。", "パーセプトロンで使われる。"),
@@ -978,7 +998,10 @@ export const concepts: Concept[] = [
       "文法規則を人手で書き下すルールベース機械翻訳では、あらゆる例外や言い回しを網羅しきれない。" +
       "大量の対訳コーパスから翻訳パターンを統計的に学習することで、この網羅の限界を緩和するために使われた。",
     beforeAndGap: "ルールベース機械翻訳は言語学者が文法規則を人手で記述する。統計的機械翻訳は対訳データから確率モデルを学習する点が異なるが、いずれもニューラル機械翻訳以前の主流だった。",
-    examHint: "機械翻訳の歴史はルールベース→統計的→ニューラルという3世代の流れで問われることが多い。",
+    examHint:
+      "機械翻訳の歴史はルールベース→統計的→ニューラルという3世代の流れで問われることが多い。" +
+      "統計的機械翻訳は「統計的自然言語処理」という分野全体(構文解析・品詞タグ付け等も含む統計的手法の総称)の" +
+      "代表例の一つとしても位置づけられる。",
     recall: "機械翻訳の3つの世代(ルールベース・統計的・ニューラル)を挙げ、統計的機械翻訳がルールベースの何を解決したかを説明せよ。",
     status: "complete",
   },
@@ -1295,15 +1318,19 @@ export const concepts: Concept[] = [
     category: "ai-history",
     kind: "concept",
     syllabus: ["4", "27"],
+    // タスクハブカードのera到達点アンカー規則(Phase 3タスクカードバッチレビューで再判定):
+    // 1960年代の知識表現(era-04)から統計的手法(era-06、ワトソン)、現在のLLM(era-11)まで
+    // 変遷してきたタスクであり、beforeAndGapにこの変遷を明記した上で、現在の主流手法である
+    // LLMが属するera-11に到達点としてアンカーする(machine-translation等と同一規則)。
+    // todai-robotは個別の「プロジェクト」でありタスクのハブではないため、この規則の対象外
+    // (draft継続が正しい)。
+    timeline: "era-11",
     summary: "自然言語で入力された質問に対して、適切な答えを返すタスク・システムの総称。",
     bornToSolve: "エキスパートシステムや意味ネットワークで蓄積した知識を、人間が自然な質問文で引き出せるようにするために発展した。",
     beforeAndGap: "初期は限定領域のルールベースで応答するに留まったが、後にワトソンのような大規模な統計的手法や、現在ではLLMが同じ課題に取り組んでいる。",
     examHint: "ワトソンや東ロボくんは、このQuestion-Answeringタスクの大規模な実践例として位置づけられる。",
     recall: "Question-Answeringというタスクが、時代によってどのような技術で実現されてきたかを説明せよ。",
-    // era アンカー再判定(物語的帰属、レビュー反映): 1960年代の知識表現(era-04)から統計的手法(era-06、ワトソン)、
-    // 現在のLLM(era-11)まで、複数の era にまたがって繰り返し語られるタスクであり、
-    // どれか1つの era の「後日談」に矮小化すると他の文脈を損なう。この場合は無理にアンカーせず
-    // draftのまま残すのが正しい(新設した era アンカー意味規則のとおり)。
+    status: "complete",
   },
   {
     id: "watson",
@@ -1974,7 +2001,9 @@ export const concepts: Concept[] = [
     timeline: "era-11",
     summary: "長い文書から、重要な情報を保ったまま短い文章を自動的に生成する、または重要な文を抜き出すタスク。",
     bornToSolve: "大量の文書を人手で読んで要点をまとめる負担を減らすために発展した。",
-    beforeAndGap: "文書中の重要な文をそのまま抜き出す抽出型と、Seq2Seq/Transformerで新しい文を生成する生成型に大別される。",
+    beforeAndGap:
+      "当初は文書中の重要な文をそのまま抜き出す抽出型が中心だったが、Seq2Seq、さらにTransformer/LLMの" +
+      "登場により、文書全体の意味を踏まえて新しい文を書き起こす生成型が主流になった。",
     examHint: "抽出型要約と生成型要約の違いが問われる。",
     recall: "文書要約における抽出型と生成型の違いを説明せよ。",
     status: "complete",
@@ -2020,6 +2049,163 @@ export const concepts: Concept[] = [
     beforeAndGap: "「何を話したか」を認識する音声認識に対し、話者識別は声紋にあたるMFCC等の音響特徴量から「誰が話したか」を判別する点が異なる。",
     examHint: "音声認識(発話内容の認識)との対比(識別対象が話者本人である点)が問われる。",
     recall: "話者識別が音声認識とどのように異なるタスクかを説明せよ。",
+    status: "complete",
+  },
+
+  // Phase 3 掃討バッチA: 第2〜4章(項目3・5・9・11・13・14・15・16)の未消化キーワード
+  {
+    id: "combinatorial-explosion",
+    term: "組合せ爆発",
+    category: "ai-history",
+    kind: "problem",
+    syllabus: ["3"],
+    timeline: "era-02",
+    summary: "探索すべき組み合わせの数が問題の規模に対して指数的に増大し、全探索が現実的な時間で終わらなくなる問題。",
+    bornToSolve: "ブルートフォース(力任せ)の全探索は、チェスや将棋のように手の分岐が多い問題では手数が増えるごとに探索空間が指数的に膨れ上がり、現実的な時間で解けなくなる。",
+    beforeAndGap: "第2次AIブームの壁の一つとして、探索・推論による第1次AIブームの手法の限界を示す代表例に挙げられる。αβ法のような枝刈りで探索空間を削減する対策が取られたが、問題の規模が大きくなると本質的な解消は難しい。",
+    examHint: "第2次AIブームへの移行の背景(探索・推論の限界)として、トイ・プロブレムとセットで問われる。",
+    recall: "組合せ爆発とは何かを説明し、αβ法がこの問題にどう対処するかを述べよ。",
+    status: "complete",
+  },
+  {
+    id: "ucb",
+    term: "UCB方策",
+    category: "reinforcement",
+    kind: "concept",
+    syllabus: ["9"],
+    timeline: "era-13",
+    summary: "各腕の推定報酬に不確実性の大きさに応じたボーナスを加算し、その合計が最大の腕を選ぶバンディット問題の方策。",
+    bornToSolve: "ε-greedyのランダムな探索では、まだあまり試していない(不確実性の高い)腕を優先的に試すという工夫がないため、より効率的に探索と活用のバランスを取るために考案された。",
+    beforeAndGap: "ε-greedyは一定確率でランダムに探索するのに対し、UCBは「試行回数が少なく不確実性が高い腕」を優先的に選ぶ点が異なる。",
+    examHint: "ε-greedyとの対比(ランダム探索か、不確実性に基づく探索か)が問われる。",
+    recall: "UCB方策がε-greedyとどのように異なる探索方法かを説明せよ。",
+    status: "complete",
+  },
+  {
+    id: "big-data",
+    term: "ビッグデータ",
+    category: "ml-foundation",
+    kind: "concept",
+    syllabus: ["5"],
+    timeline: "era-06",
+    summary: "従来のデータベース処理では扱いきれないほど量が多く、種類も多様で、生成速度も速いデータ群。機械学習・データマイニングが実用段階に進んだ背景の一つ。",
+    bornToSolve: "Web・センサー・ログなどから生成されるデータの量・種類・速度が従来の手法の処理能力を超えるようになり、これを逆に活用して統計的機械学習やデータマイニングを実用化する土台となった。",
+    beforeAndGap: "少量のデータでは統計的機械学習は十分な性能を発揮しにくい。ビッグデータの蓄積とコンピュータの処理能力向上が組み合わさったことで、データ駆動の手法が主流になった。",
+    examHint: "統計的機械学習が主流になった背景(データ量・計算資源の両方の増大)として問われる。",
+    recall: "ビッグデータの蓄積が、統計的機械学習の実用化にどう寄与したかを説明せよ。",
+    status: "complete",
+  },
+  {
+    id: "metric-learning-loss",
+    term: "距離学習の損失関数(Contrastive Loss / Triplet Loss)",
+    category: "dl-tech",
+    kind: "concept",
+    syllabus: ["13"],
+    pipeline: "stage-4",
+    summary: "似ているデータ同士の距離を近づけ、異なるデータ同士の距離を遠ざけるように学習する損失関数。Contrastive Lossは2つのデータの組、Triplet Lossは基準・正例・負例の3つ組を使う。",
+    bornToSolve: "交差エントロピー等の分類用の損失関数は、あらかじめ決まったクラスの中から選ぶ問題には強いが、「似ている/似ていない」という relative な関係そのものを学習したい場合(顔認証など)には向かない。",
+    beforeAndGap: "分類問題ではクラスラベルとの誤差を損失とするのに対し、距離学習ではデータ同士の距離(近さ・遠さ)を損失とする点が異なる。自己教師あり学習の代表的な学習信号としても使われる。",
+    examHint: "Contrastive Lossが2つ組、Triplet Lossが3つ組(基準・正例・負例)を使う点の違いが問われる。",
+    recall: "Contrastive LossとTriplet Lossの違いを、それぞれ何個のデータの組を使うかに触れて説明せよ。",
+    status: "complete",
+  },
+  {
+    id: "kl-divergence",
+    term: "KLダイバージェンス",
+    category: "dl-tech",
+    kind: "concept",
+    syllabus: ["13"],
+    pipeline: "stage-4",
+    summary: "2つの確率分布がどれだけ異なるかを測る指標。値が0のとき2つの分布は一致する。",
+    bornToSolve: "VAEのように「学習した分布を、扱いやすい分布(正規分布など)に近づけたい」場合に、2つの分布のズレを数値化して損失に組み込む必要から使われる。",
+    beforeAndGap: "MSEや交差エントロピーが個々のデータ点の誤差を測るのに対し、KLダイバージェンスは分布同士のズレを測る点が異なる。",
+    examHint: "VAEの損失関数(再構成誤差+KLダイバージェンス)の一部として問われる。",
+    recall: "KLダイバージェンスがVAEの損失関数の中でどのような役割を果たすかを説明せよ。",
+    status: "complete",
+  },
+  {
+    id: "credit-assignment-problem",
+    term: "信用割当問題",
+    category: "dl-foundation",
+    kind: "problem",
+    syllabus: ["15"],
+    timeline: "era-05",
+    summary: "多層のネットワークにおいて、最終的な出力の誤差に対して、途中の各層・各重みがそれぞれどれだけ「責任」を持つのかを特定するのが難しいという問題。",
+    bornToSolve: "多層ネットワークでは出力層から離れた層の重みが誤差にどう寄与しているかが直接には分からず、どの重みをどれだけ修正すべきかを決められないという壁があった。",
+    beforeAndGap: "誤差逆伝播法が連鎖律を使って出力層の誤差を後ろ向きに伝播させることで、各層の重みの勾配(責任の割合)を効率的に計算できるようにし、この問題を解決した。強化学習でも、一連の行動のどれが報酬に貢献したかを特定する「時間的信用割当」として同種の問題が現れる。",
+    examHint: "誤差逆伝播法がこの問題をどう解決したか(連鎖律による勾配計算)が問われる。",
+    recall: "信用割当問題とは何かを説明し、誤差逆伝播法がこの問題をどのように解決するかを述べよ。",
+    status: "complete",
+  },
+  {
+    id: "adaptive-optimizer-variants",
+    term: "適応的学習率法の派生(AdaDelta / AdaBound / AMSBound)",
+    category: "dl-tech",
+    kind: "concept",
+    syllabus: ["16"],
+    pipeline: "stage-4",
+    summary: "AdaGrad・RMSProp・Adamと同じく、パラメータごとに学習率を自動調整する最適化手法の派生系。AdaDeltaは学習率の初期値設定が不要な設計、AdaBound/AMSBoundはAdam系の学習率を一定範囲に収めて収束の不安定さを緩和する設計。",
+    bornToSolve: "AdaGradは学習率が単調に減衰し学習が止まりやすく、Adamは学習後半で学習率が不安定になり汎化性能がSGDに劣る場合があるという課題があり、それぞれを緩和するために考案された。",
+    beforeAndGap: "AdaDeltaはAdaGradの学習率減衰しすぎる問題を、AdaBound/AMSBoundはAdam・AMSGradの学習率の不安定さを、それぞれ改善する狙いで提案された点で、RMSProp/Adamと問題意識を共有する。",
+    examHint: "Adam・RMSPropと同じ「学習率の自動調整」というグループに属する派生手法として、名称の識別が問われる。",
+    recall: "AdaBound・AMSBoundが、Adamのどのような課題を改善するために考案されたかを説明せよ。",
+    status: "complete",
+  },
+  {
+    id: "hyperparameter-search",
+    term: "ハイパーパラメータ探索(グリッドサーチ / ランダムサーチ)",
+    category: "dl-tech",
+    kind: "concept",
+    syllabus: ["16"],
+    pipeline: "stage-4",
+    summary: "学習率やネットワークの層数のように、学習前に人間が設定する必要があるハイパーパラメータの値を、交差検証等で性能を比較しながら探索する方法。グリッドサーチは候補値の全組み合わせを、ランダムサーチはランダムに選んだ組み合わせを試す。",
+    bornToSolve: "最適なハイパーパラメータの値は問題ごとに異なり理論的に一意に決まらないため、複数の候補を実際に試して比較する必要がある。",
+    beforeAndGap: "グリッドサーチは全組み合わせを網羅的に試すため確実だが次元が増えると組み合わせ数が爆発的に増える。ランダムサーチはランダムに探索することで、次元が高い場合でも少ない試行回数で良い値を見つけやすい。",
+    examHint: "グリッドサーチ(網羅的)とランダムサーチ(無作為)の違いと、交差検証による評価と組み合わせて使われる点が問われる。",
+    recall: "グリッドサーチとランダムサーチの違いを、探索の網羅性の観点から説明せよ。",
+    status: "complete",
+  },
+  {
+    id: "double-descent",
+    term: "二重降下現象",
+    category: "ml-foundation",
+    kind: "concept",
+    syllabus: ["16"],
+    pipeline: "stage-4",
+    summary: "モデルの複雑さ(パラメータ数)を増やしていくと、テスト誤差が一度悪化した後、さらに複雑にすると再び改善するという現象。古典的なバイアス-バリアンストレードオフでは説明できない挙動として近年注目されている。",
+    bornToSolve: "深層学習ではパラメータ数が訓練データ数を大きく上回る過剰パラメータ化されたモデルでも、実際には汎化性能が高いことが多く観測され、この現象を説明するために提唱された。",
+    beforeAndGap: "古典的なバイアス-バリアンストレードオフは「複雑にしすぎると過学習して性能が悪化する」という単調な関係を前提とするが、二重降下現象はその先でテスト誤差が再び改善するという非単調な挙動を示す点が異なる。",
+    examHint: "古典的なバイアス-バリアンストレードオフ(U字カーブ)との対比(その先に第2の改善が現れる)が問われる。",
+    recall: "二重降下現象が、古典的なバイアス-バリアンストレードオフの説明とどのように異なるかを説明せよ。",
+    status: "complete",
+  },
+  {
+    id: "no-free-lunch-theorem",
+    term: "ノーフリーランチの定理",
+    category: "ml-foundation",
+    kind: "problem",
+    unresolved: true,
+    syllabus: ["16"],
+    timeline: "era-06",
+    summary: "あらゆる問題に対して平均的に見て万能に最良の性能を発揮する単一の学習・最適化アルゴリズムは存在しないことを示す定理。",
+    bornToSolve: "特定のデータセットやコンペティションで良い成績を収めたアルゴリズムを「万能に優れた手法」と過信することを戒め、問題ごとにアルゴリズムを比較・選定する必要性の理論的根拠として示された。",
+    beforeAndGap: "この定理は数学的に証明された恒久的な制約であり、特定の技術で「解決」できるものではない。そのため機械学習では、複数の手法を実際に試して比較検証する(グリッドサーチ・交差検証等)ことが標準的な実践になっている。",
+    examHint: "「万能に優れたアルゴリズムは存在しない」という定理の主張そのものが問われる。特定の手法を過信しない姿勢とセットで出題される。",
+    recall: "ノーフリーランチの定理が何を主張しているかを説明せよ。",
+    status: "complete",
+  },
+  {
+    id: "online-learning",
+    term: "オンライン学習",
+    category: "ml-foundation",
+    kind: "concept",
+    syllabus: ["16"],
+    pipeline: "stage-4",
+    summary: "データをまとめて一括で学習するのではなく、データが1件(または少量ずつ)到着するたびに逐次モデルを更新していく学習方式。",
+    bornToSolve: "ストリーミングデータのように全データを一度に保持できない、またはデータの傾向が時間とともに変化する状況で、モデルを継続的に更新するために使われる。",
+    beforeAndGap: "通常の(バッチ)学習は、あらかじめ用意した訓練データ全体に対して繰り返し学習してからモデルを固定するのに対し、オンライン学習はデータが到着するたびに継続的にモデルを更新し続ける点が異なる。強化学習のエージェントは、経験を逐次収集しながら学習するという意味でオンライン学習的である。",
+    examHint: "バッチ学習(訓練データ全体をまとめて学習)との対比が問われる。",
+    recall: "オンライン学習がバッチ学習とどのように異なるかを説明せよ。",
     status: "complete",
   },
 ];
@@ -2170,7 +2356,7 @@ export const conceptAnchors: Record<string, ConceptAnchor> = {
   "local-minimum": { syllabus: ["16"], pipeline: "stage-4" },
   "learning-rate": { syllabus: ["16"], pipeline: "stage-4" },
   "epoch-batch": { syllabus: ["16"], pipeline: "stage-4" },
-  "gpu-tpu": { syllabus: ["11"], timeline: "era-07" },
+  "gpu-tpu": { syllabus: ["11"], timeline: "era-07", status: "complete" },
 
   // --- dl-tech ---
   activation: { syllabus: ["12"], pipeline: "stage-4", status: "complete" },
@@ -2722,6 +2908,35 @@ export const relations: ConceptRelation[] = [
   r("speech-synthesis", "speech-recognition", "contrasts_with"),
   r("wavenet", "speech-synthesis", "used_for"),
   r("mfcc", "speaker-identification", "used_for"),
+
+  // レビュー反映: question-answeringをera-11到達点でcomplete化するための2本目のエッジ
+  r("gpt", "question-answering", "used_for"),
+
+  // Phase 3 掃討バッチA: 第2〜4章
+  r("brute-force", "combinatorial-explosion", "suffers_from"),
+  r("alpha-beta-pruning", "combinatorial-explosion", "solves"),
+  r("gpu-tpu", "backprop", "used_for"),
+  r("gpu-tpu", "ml-dev-environment", "used_for"),
+  r("ucb", "epsilon-greedy", "contrasts_with"),
+  r("ucb", "bandit", "used_for"),
+  r("big-data", "data-mining", "used_for"),
+  r("big-data", "open-dataset", "contrasts_with"),
+  r("metric-learning-loss", "loss-function", "is_a"),
+  r("metric-learning-loss", "self-supervised", "used_for"),
+  r("kl-divergence", "loss-function", "is_a"),
+  r("kl-divergence", "vae", "used_for"),
+  r("backprop", "credit-assignment-problem", "solves"),
+  r("reinforcement-learning", "credit-assignment-problem", "suffers_from"),
+  r("adaptive-optimizer-variants", "adam", "contrasts_with"),
+  r("adaptive-optimizer-variants", "rmsprop", "contrasts_with"),
+  r("hyperparameter-search", "cross-validation", "used_for"),
+  r("hyperparameter-search", "generalization", "used_for"),
+  r("double-descent", "overfitting", "contrasts_with"),
+  r("double-descent", "bias-variance", "contrasts_with"),
+  r("ml", "no-free-lunch-theorem", "suffers_from"),
+  r("classical-ai", "no-free-lunch-theorem", "suffers_from"),
+  r("online-learning", "reinforcement-learning", "used_for"),
+  r("online-learning", "cross-validation", "contrasts_with"),
 ];
 
 export const demoLabels: Record<string, string> = {
