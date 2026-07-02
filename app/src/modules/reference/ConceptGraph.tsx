@@ -1,5 +1,4 @@
 import { useMemo, useState } from "react";
-import { motion } from "framer-motion";
 import {
   categoryMeta,
   conceptById,
@@ -187,12 +186,10 @@ export default function ConceptGraph() {
             const active = node.id === selectedId;
             const sameCategory = node.category === category;
             return (
-              <motion.g
+              <g
                 key={node.id}
-                animate={{ x: p.x, y: p.y }}
-                transition={{ type: "spring", stiffness: 120, damping: 18 }}
                 onClick={() => setSelectedId(node.id)}
-                style={{ cursor: "pointer" }}
+                style={{ cursor: "pointer", transform: `translate(${p.x}px, ${p.y}px)`, transition: "transform 0.35s ease" }}
               >
                 <title>{`${node.term}(${categoryLabel(node.category)})— クリックして中心に表示`}</title>
                 <circle
@@ -216,7 +213,7 @@ export default function ConceptGraph() {
                     {categoryLabel(node.category)}
                   </text>
                 )}
-              </motion.g>
+              </g>
             );
           })}
         </svg>
