@@ -1,4 +1,5 @@
 export type ConceptCategory =
+  | "ai-history"
   | "ml-foundation"
   | "supervised"
   | "unsupervised"
@@ -11,9 +12,9 @@ export type ConceptCategory =
   | "deep-rl"
   | "generative-ai"
   | "xai-compression";
-// 注記(Phase 1): "ai-history" / "ai-project" の新設2カテゴリは
-// RESTRUCTURE_PLAN.md §3.3 で定義済みだが、実カードの投入は Phase 3 で行う。
-// 型への追加はカードが実際に増える Phase 3 のタイミングで行う(先行して型だけ増やさない)。
+// 注記(Phase 3 バッチ1): "ai-history" は本バッチでシラバス項目2の実カードを投入したため型に追加した。
+// "ai-project"(社会実装工程用語)はまだ実カードがないため、投入するバッチ(項目36等)まで型に追加しない
+// (RESTRUCTURE_PLAN.md §3.3。先行して型だけ増やさない方針を継続)。
 
 /**
  * 関係の型。方向規約(from → to の意味)は RESTRUCTURE_PLAN.md §3.2 に準拠する。
@@ -93,6 +94,12 @@ export type ConceptCategoryMeta = {
 };
 
 export const categoryMeta: ConceptCategoryMeta[] = [
+  {
+    id: "ai-history",
+    label: "人工知能の概要・歴史",
+    shortLabel: "AI史",
+    description: "AIブームの変遷、探索・推論、知識表現、ブームの壁となった議論(フレーム問題等)。",
+  },
   {
     id: "ml-foundation",
     label: "機械学習の基礎・学習方式",
@@ -721,6 +728,217 @@ export const concepts: Concept[] = [
   c("edge-ai", "エッジAI", "xai-compression", "クラウドではなく端末側でAIを実行する技術。", "軽量化・低遅延・プライバシーと関連。"),
   c("mlops", "MLOps", "xai-compression", "機械学習モデルを継続的に開発・運用する仕組み。", "監視・再学習・デプロイ。"),
   c("data-drift", "データドリフト", "xai-compression", "運用時の入力データ分布が学習時から変わること。", "モデル監視で検知する。"),
+
+  // --- Phase 3 バッチ1: シラバス項目2「人工知能分野で議論される問題」(ai-history 新設) ---
+  {
+    id: "dartmouth-conference",
+    term: "ダートマス会議",
+    category: "ai-history",
+    kind: "concept",
+    syllabus: ["2"],
+    timeline: "era-01",
+    summary: "1956年、ジョン・マッカーシーらの呼びかけで開催された会議。「人工知能」という言葉が初めて使われた。",
+    bornToSolve: "知能を持つ機械の研究を、心理学や神経科学から独立した学問分野として立ち上げるために開催された。",
+    beforeAndGap:
+      "それ以前、「考える機械」の研究は個別の数学者・技術者の関心にとどまっていた。" +
+      "この会議を境に「人工知能」という統一名称のもとで研究者が集まる分野になった。",
+    examHint: "「人工知能」という名称の初出の場として問われる。年は1956年、提唱者はジョン・マッカーシー。",
+    recall: "ダートマス会議が開かれた年と、そこで初めて使われた言葉を答えよ。",
+    status: "complete",
+  },
+  {
+    id: "turing-test",
+    term: "チューリングテスト",
+    category: "ai-history",
+    kind: "concept",
+    syllabus: ["2"],
+    timeline: "era-01",
+    summary: "機械が人間と区別つかない受け答えができるかで知能を判定しようとする思考実験。",
+    bornToSolve: "「機械は考えることができるか」という問いに、内部の仕組みを問わず外から観察できる基準で答えるために提案された。",
+    beforeAndGap:
+      "それ以前、知能の有無を客観的に判定する基準はなかった。" +
+      "チューリングは「人間と会話して区別がつかなければ知能があるとみなす」という操作的な基準を示した。",
+    examHint: "1950年にチューリングが提案。中国語の部屋(サール)はこのテストへの批判として対比で問われる。",
+    recall: "チューリングテストがどのような基準で機械の知能を判定しようとしたかを説明し、これに対する代表的な批判を1つ挙げよ。",
+    status: "complete",
+  },
+  {
+    id: "chinese-room",
+    term: "中国語の部屋",
+    category: "ai-history",
+    kind: "concept",
+    syllabus: ["2"],
+    timeline: "era-04",
+    summary: "サールが提示した思考実験。記号操作だけで受け答えできても、意味を「理解」しているとは言えないと主張する。",
+    bornToSolve: "チューリングテストのように外から見た振る舞いだけで機械が「理解」していると言えるのか、という疑問に反論するために考案された。",
+    beforeAndGap:
+      "チューリングテストは外部から見た会話の振る舞いを知能の基準にする。" +
+      "中国語の部屋は、規則に従って記号を変換しているだけでは意味の理解には至らないと指摘し、強いAIの主張に疑問を投げかけた。",
+    examHint: "チューリングテストへの批判として、強いAI/弱いAIの区別とセットで問われる。",
+    recall: "中国語の部屋の思考実験の設定を説明し、それが何を批判するために考案されたかを述べよ。",
+    status: "complete",
+  },
+  {
+    id: "strong-weak-ai",
+    term: "強いAIと弱いAI",
+    category: "ai-history",
+    kind: "concept",
+    syllabus: ["2"],
+    timeline: "era-04",
+    summary: "強いAI: 人間と同じように思考・意識を持つ機械が実現可能とする立場。弱いAI: 知的に振る舞うだけで十分とする立場。",
+    bornToSolve: "「知的に振る舞う機械」と「本当に思考している機械」を混同しないよう、AIをめぐる立場を整理するために区別された。",
+    beforeAndGap: "中国語の部屋は、記号操作だけで「思考している」とは言えないとして、強いAIの立場を批判する論拠に使われる。",
+    examHint: "サールが中国語の部屋で批判したのは「強いAI」の立場である点が問われる。",
+    recall: "強いAIと弱いAIの違いを説明し、どちらの立場に対する批判として中国語の部屋が考案されたかを述べよ。",
+    status: "complete",
+  },
+  {
+    id: "singularity",
+    term: "シンギュラリティ",
+    category: "ai-history",
+    kind: "concept",
+    syllabus: ["2"],
+    summary: "AIが人間の知能を超え、技術的な変化が急激かつ予測困難になるとされる仮説上の転換点。",
+    bornToSolve: "AIの進歩が将来の社会に与えうる影響を議論するための概念として提唱された。",
+    beforeAndGap:
+      "それまでのAI研究の議論は個別技術が実現できるかどうかが中心だった。" +
+      "シンギュラリティは、AI全体の進歩の先にある社会的な転換点そのものを論点にする。",
+    examHint: "レイ・カーツワイルが提唱したことで知られる。技術的特異点とも訳される。",
+    recall: "シンギュラリティという概念が何を論点にしているかを、個別技術の実現可能性の議論と対比して説明せよ。",
+    // 特定の era に絞れる技術的breakthroughではなく、時代を横断する議論のため timeline アンカーを
+    // 無理に付与しない(捏造禁止の原則)。2質問は書けるが背骨アンカー要件によりdraftのまま残す。
+  },
+  {
+    id: "toy-problem",
+    term: "トイ・プロブレム",
+    category: "ai-history",
+    kind: "problem",
+    syllabus: ["2"],
+    timeline: "era-02",
+    summary: "迷路やパズルのようにルールが明確で扱いやすい、単純化された「おもちゃの問題」。",
+    bornToSolve:
+      "探索や推論のアルゴリズムを検証するには、状態空間が明確で扱いやすい問題設定が必要だった。" +
+      "ハノイの塔や迷路、簡単なパズルはその目的に適した題材として使われた。",
+    beforeAndGap:
+      "トイ・プロブレムで有効に見えた手法も、現実の問題は変数や制約がはるかに多く組合せが爆発するため、そのままでは通用しない。" +
+      "第1次AIブームが「使えるAI」に届かなかった主な理由の一つ。",
+    examHint: "「おもちゃの問題は解けても現実の問題は解けない」という第1次AIブームの限界の象徴として頻出。",
+    recall: "トイ・プロブレムとは何かを説明し、これが第1次AIブームの限界とどう関わったかを述べよ。",
+    status: "complete",
+  },
+  {
+    id: "frame-problem",
+    term: "フレーム問題",
+    category: "ai-history",
+    kind: "problem",
+    syllabus: ["2"],
+    timeline: "era-02",
+    summary: "ある行動を起こしたとき、その影響が及ぶ範囲・及ばない範囲を機械が有限の時間で判断できないという問題。",
+    bornToSolve:
+      "現実世界で行動を計画するには、その行動が引き起こす無数の帰結のうち考慮すべきものとしなくてよいものを区別する必要がある。" +
+      "人間は暗黙に不要な情報を切り捨てられるが、論理だけで厳密に定式化しようとすると、考慮すべき事柄が原理的に際限なく広がってしまう。",
+    beforeAndGap:
+      "この問題を放置すると、現実世界のわずかな行動計画ですら、関係のありうる事実を洗い出すだけで計算が終わらなくなる。" +
+      "第2次AIブームでロボットや知的エージェントの実現を難しくした本質的な壁とされる。",
+    examHint: "「ロボットが爆弾を運ぶ際に何を考慮すべきか」という思考実験(マッカーシー&ヘイズ)とセットで問われることが多い。",
+    recall: "フレーム問題とはどのような問題かを、行動計画の例を使って説明せよ。",
+    status: "complete",
+  },
+  {
+    id: "symbol-grounding-problem",
+    term: "シンボルグラウンディング問題",
+    category: "ai-history",
+    kind: "problem",
+    syllabus: ["2"],
+    timeline: "era-04",
+    summary: "記号(シンボル)そのものの意味が、実世界の感覚や経験と結びついていないという問題。",
+    bornToSolve:
+      "エキスパートシステムのような記号処理システムは、「りんご」という記号を別の記号と関連づけて操作できても、" +
+      "実際の赤さや味といった実世界の意味とは結びついていない。この記号と意味の結びつきの欠如を指す。",
+    beforeAndGap:
+      "この問題を放置すると、記号操作システムは形式的にはもっともらしい推論をしても、その記号が指す実世界の意味を" +
+      "「理解」しているとは言えない状態が続く。第2次AIブームの知識表現アプローチの本質的限界として指摘された。",
+    examHint: "身体性(embodiment)、ロボットによる実世界との相互作用が、この問題への一つのアプローチとして挙げられる。",
+    recall: "シンボルグラウンディング問題とは何かを説明し、これへの対応として提案された考え方を1つ挙げよ。",
+    status: "complete",
+  },
+  {
+    id: "embodiment",
+    term: "身体性",
+    category: "ai-history",
+    kind: "concept",
+    syllabus: ["2"],
+    timeline: "era-04",
+    summary: "知能は脳内の記号処理だけでなく、身体を通じた実世界との相互作用があってこそ成立するという考え方。",
+    bornToSolve: "記号だけを操作する古典的なAIがシンボルグラウンディング問題に直面したことを受け、知能の基盤を身体と環境との相互作用に求める立場として提唱された。",
+    beforeAndGap:
+      "記号操作中心のアプローチは、実世界の感覚と切り離された記号だけで知能を再現しようとした。" +
+      "身体性を重視する立場は、ロボットのように実世界とセンサー・アクチュエータを通じて関わることで、記号に実世界の意味を根付かせようとする。",
+    examHint: "シンボルグラウンディング問題への応答の一つとして、行動主義ロボティクス(ブルックス)とセットで問われる。",
+    recall: "身体性の考え方が、シンボルグラウンディング問題に対してどのようなアプローチを取るかを説明せよ。",
+    status: "complete",
+  },
+  {
+    id: "knowledge-acquisition-bottleneck",
+    term: "知識獲得のボトルネック",
+    category: "ai-history",
+    kind: "problem",
+    syllabus: ["2"],
+    timeline: "era-04",
+    summary: "エキスパートシステムに必要な専門知識を、専門家からルールとして聞き出し記述する作業が膨大になるという問題。",
+    bornToSolve:
+      "エキスパートシステムは専門家の知識をif-thenルールとして人手で書き下す必要がある。" +
+      "専門家自身が暗黙知を言語化するのが難しいうえ、扱う領域が広がるほどルールの数が爆発的に増える。",
+    beforeAndGap:
+      "この問題を放置すると、エキスパートシステムは限られた狭い領域でしか実用にならず、知識の追加・保守のコストが際限なく膨らむ。" +
+      "第2次AIブームが冬に向かった主要因の一つ。",
+    examHint: "この壁を越えるために、知識を人手で書く代わりにデータから自動的に学習する機械学習へ関心が移った、という歴史の流れで問われる。",
+    recall: "知識獲得のボトルネックとは何かを説明し、この壁を越えるためにAI研究がどの方向へ向かったかを述べよ。",
+    status: "complete",
+  },
+  {
+    id: "statistical-machine-translation",
+    term: "統計的機械翻訳",
+    category: "sequence-nlp-speech",
+    kind: "concept",
+    syllabus: ["2", "27"],
+    timeline: "era-06",
+    summary: "大量の対訳データから、単語や語順の対応関係を統計的モデルとして学習し翻訳する方式。",
+    bornToSolve:
+      "文法規則を人手で書き下すルールベース機械翻訳では、あらゆる例外や言い回しを網羅しきれない。" +
+      "大量の対訳コーパスから翻訳パターンを統計的に学習することで、この網羅の限界を緩和するために使われた。",
+    beforeAndGap: "ルールベース機械翻訳は言語学者が文法規則を人手で記述する。統計的機械翻訳は対訳データから確率モデルを学習する点が異なるが、いずれもニューラル機械翻訳以前の主流だった。",
+    examHint: "機械翻訳の歴史はルールベース→統計的→ニューラルという3世代の流れで問われることが多い。",
+    recall: "機械翻訳の3つの世代(ルールベース・統計的・ニューラル)を挙げ、統計的機械翻訳がルールベースの何を解決したかを説明せよ。",
+    status: "complete",
+  },
+  {
+    id: "rule-based-machine-translation",
+    term: "ルールベース機械翻訳",
+    category: "sequence-nlp-speech",
+    kind: "concept",
+    syllabus: ["2", "27"],
+    timeline: "era-02",
+    summary: "文法規則と辞書を人手で記述し、その規則に従って原文を目的言語に変換する初期の機械翻訳方式。",
+    bornToSolve: "第1次AIブーム期、言語間の変換を実現するために、言語学の文法規則を機械可読なルールとして書き下す方式が試みられた。",
+    beforeAndGap: "統計的機械翻訳やニューラル機械翻訳が登場する以前の主流だった。規則でカバーしきれない例外や多義性の処理に弱く、後年データ駆動の手法に置き換えられていった。",
+    examHint: "統計的機械翻訳・ニューラル機械翻訳との3世代比較で、規則を人手で書く点が最大の特徴として問われる。",
+    recall: "ルールベース機械翻訳の仕組みと限界を説明せよ。",
+    status: "complete",
+  },
+  {
+    id: "loebner-prize",
+    term: "ローブナーコンテスト",
+    category: "ai-history",
+    kind: "concept",
+    syllabus: ["2"],
+    summary: "チューリングテストに基づき、人間と会話して見分けがつきにくい対話プログラムを毎年競うコンテスト。",
+    bornToSolve: "チューリングテストという思考実験を、実際に毎年開催される具体的なコンテストとして実装するために創設された。",
+    beforeAndGap: "チューリングテストはあくまで思考実験だった。ローブナーコンテストはこれを実際の審査員による対話形式で毎年実施する、具体的な実装の一つ。",
+    examHint: "チューリングテストの実装例として名前が挙がる。",
+    recall: "ローブナーコンテストがチューリングテストとどのような関係にあるかを説明せよ。",
+    // singularity と同様、単独のeraに絞れないためtimelineアンカーを付与せずdraftのまま残す。
+  },
 ];
 
 type ConceptAnchor = Partial<Pick<Concept, "kind" | "syllabus" | "timeline" | "pipeline" | "status" | "recall">>;
@@ -1256,6 +1474,14 @@ export const relations: ConceptRelation[] = [
   r("dropout", "regularization", "is_a"),
   r("dropout", "batchnorm", "contrasts_with"),
   r("fukushima-kunihiko", "neocognitron", "proposed"),
+
+  // Phase 3 バッチ1: シラバス項目2(ai-history)
+  r("chinese-room", "turing-test", "contrasts_with"),
+  r("chinese-room", "strong-weak-ai", "contrasts_with"),
+  r("loebner-prize", "turing-test", "used_for"),
+  r("embodiment", "symbol-grounding-problem", "solves"),
+  r("ml", "knowledge-acquisition-bottleneck", "solves"),
+  r("statistical-machine-translation", "rule-based-machine-translation", "evolves_to"),
 ];
 
 export const demoLabels: Record<string, string> = {

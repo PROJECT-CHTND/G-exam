@@ -47,7 +47,7 @@ export const eras: Era[] = [
     wallConceptIds: [],
     breakthrough:
       "ダートマス会議を契機に、探索と推論を武器にした第1次AIブームが始まる。",
-    breakthroughConceptIds: [],
+    breakthroughConceptIds: ["dartmouth-conference", "turing-test"],
     nextWall:
       "探索・推論はルールの明確な問題(トイ・プロブレム)には強いが、" +
       "現実の複雑な問題には歯が立たないことがすぐに露呈していく。",
@@ -63,7 +63,7 @@ export const eras: Era[] = [
       "現実の問題は組合せが爆発し、探索空間が現実的な時間で扱いきれない" +
       "(トイ・プロブレム)。ある行動が引き起こす影響のうち考慮すべき範囲を" +
       "機械が判断できない「フレーム問題」も明らかになった。",
-    wallConceptIds: [],
+    wallConceptIds: ["toy-problem", "frame-problem"],
     breakthrough:
       "探索・推論だけでは知識が必要な現実の問題に対応できないという反省から、" +
       "次のブームでは専門知識をルールとして機械に教え込む方向へ関心が移る。",
@@ -102,7 +102,7 @@ export const eras: Era[] = [
       "知識を人手で書き出し続ける作業(知識獲得のボトルネック)が膨大になり、" +
       "現実の状況を書き切れない。記号だけを操作するシステムは記号と実世界の意味を" +
       "結びつけられない、という本質的な限界(シンボルグラウンディング問題)も指摘された。",
-    wallConceptIds: [],
+    wallConceptIds: ["knowledge-acquisition-bottleneck", "symbol-grounding-problem"],
     breakthrough:
       "知識を人手で書く代わりに、データから規則性を自動的に学ばせる" +
       "「機械学習」という発想へ関心が移っていく。",
