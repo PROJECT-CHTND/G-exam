@@ -1470,6 +1470,9 @@ export const concepts: Concept[] = [
     kind: "concept",
     syllabus: ["36"],
     pipeline: "stage-2",
+    // pipeline×timeline の二重アンカー: 統計的機械翻訳・word2vecの学習データという文脈が
+    // era-06(統計的機械学習)の物語に直結するため、pipeline(stage-2)に加えてtimelineも付与する。
+    timeline: "era-06",
     summary: "自然言語処理や機械翻訳のために、大量のテキストを集めて構造化したデータの集合。",
     bornToSolve: "統計的な言語処理やニューラル言語モデルの学習には大量のテキスト事例が必要なため、その学習データとして整備される。",
     beforeAndGap: "文法規則を人手で書き下すルールベースの手法と異なり、コーパスは大量の実例そのものを与え、そこから統計的・学習的にパターンを捉えさせる点が異なる。",
@@ -1513,10 +1516,24 @@ export const concepts: Concept[] = [
     syllabus: ["36"],
     pipeline: "stage-3",
     summary: "本来モデルが学習時に知り得ないはずの情報が訓練データに混入し、評価時の性能を実際より高く見せてしまう問題。",
-    bornToSolve: "同一ロットや同一撮影セッションの画像が訓練セットとテストセットの両方に混入する、あるいは将来の情報が特徴量に紛れ込むなど、データ分割や前処理の不備によって発生する。",
-    beforeAndGap: "見かけ上の評価指標(正解率など)が実際の運用性能より過大に高く出てしまい、本番環境に投入して初めて性能が出ないことに気づく、という失敗につながる。",
-    examHint: "外観検査AIのデータ加工工程の典型的な失敗例として、訓練・テストデータの分割方法とセットで問われる。",
-    recall: "データリーケージとは何か、具体例を挙げて説明せよ。",
+    bornToSolve:
+      "主に3つの経路で発生する。①ターゲットリーケージ: 予測時点では本来入手できないはずの情報" +
+      "(未来の結果や正解ラベルに由来する値)が特徴量に紛れ込む。これはデータの分割方法をいくら" +
+      "工夫しても防げない、特徴量設計そのものの誤り。②分割前の前処理: 標準化や欠損値補完などの" +
+      "前処理を、訓練・検証・テストに分割する前に全データへ一括で行ってしまい、テスト側の統計量" +
+      "(平均・分散など)が訓練側の前処理に漏れ込む。③交差検証内の漏れ: 交差検証を使っていても、" +
+      "fold ごとに前処理をやり直さないと、fold間で情報が漏れる。同一ロット・同一撮影セッションの" +
+      "画像が訓練とテストの両方に混入する(グループ単位の漏洩)のも、広義にはこの3経路と並ぶ典型例。",
+    beforeAndGap:
+      "見かけ上の評価指標(正解率など)が実際の運用性能より過大に高く出てしまい、本番環境に投入して" +
+      "初めて性能が出ないことに気づく、という失敗につながる。②③は分割・前処理の手順を正しい順序に" +
+      "直せば防げるが、①のターゲットリーケージは分割方法の工夫だけでは防げず、特徴量そのものを" +
+      "見直す必要がある点に注意。",
+    examHint:
+      "「訓練・テストデータの分割方法」の話に付随して出題されるが、①ターゲットリーケージは" +
+      "分割の工夫では防げない点、③交差検証を使っていてもfold内で前処理をやり直さないと漏れる点が" +
+      "ひっかけとして問われる。",
+    recall: "データリーケージが起こる3つの経路を挙げ、それぞれ「データ分割の工夫だけで防げるか」を説明せよ。",
     status: "complete",
   },
 ];
@@ -2112,10 +2129,13 @@ export const relations: ConceptRelation[] = [
   // Phase 3 バッチ5: シラバス項目36(データの収集・加工・分析・学習)
   r("corpus", "statistical-machine-translation", "used_for"),
   r("corpus", "word2vec", "used_for"),
+  r("statistical-machine-translation", "corpus", "requires"),
   r("open-dataset", "transfer-learning", "used_for"),
   r("annotation", "supervised-learning", "used_for"),
   r("train-valid-test", "data-leakage", "solves"),
-  r("cross-validation", "data-leakage", "suffers_from"),
+  // レビュー反映: cross-validation は「単一分割による評価のばらつき」を解決するものであり、
+  // データリーケージ対策ではない。孤立解消はholdoutとの対比(contrasts_with)で行う。
+  r("cross-validation", "holdout", "contrasts_with"),
 ];
 
 export const demoLabels: Record<string, string> = {
