@@ -565,6 +565,189 @@ const coreLearningNotes: Record<string, Pick<Concept, "bornToSolve" | "beforeAnd
     bornToSolve: "当てはまりの良さだけでモデルを選ぶと複雑なモデルほど有利になり過学習しやすいモデルを選んでしまう。当てはまりの良さと複雑さの両方を1つの基準にまとめて比較するために使う。",
     beforeAndGap: "決定係数R²は当てはまりの良さだけを見るため説明変数を増やすほど見かけ上は良くなるが、AIC/BICはそこにモデルの複雑さへのペナルティを加える点が異なる。",
   },
+  // Phase 3 draft昇格キャンペーン第2バッチ(supervisedカテゴリ)で追加。
+  // 較正レビューの鎖基準(①前任の問題→②解決→③残る弱点→④(あれば)後継)を適用。
+  "multiple-regression": {
+    bornToSolve:
+      "単回帰分析は説明変数が1つのため、現実の現象(価格・需要等)を説明するには要因が" +
+      "足りないことが多い。複数の説明変数を同時に使って目的変数を予測するために使う。",
+    beforeAndGap:
+      "単回帰分析は説明変数1つの特殊ケースであり、重回帰分析はそれを複数変数に拡張したものだが、" +
+      "説明変数間の相関が強い(多重共線性)と各係数の解釈が不安定になる弱点が残る。この弱点を" +
+      "抑えるために正則化(Lasso/Ridge)を組み合わせることが多い。",
+  },
+  "least-squares": {
+    bornToSolve:
+      "回帰直線・平面のパラメータ(傾き・切片)をどのような基準で決めるべきかが明確でないと、" +
+      "無数の直線の中から1つを客観的に選べない。予測値と実際の値のズレ(残差)の二乗和を" +
+      "最小にするという明確な基準でパラメータを一意に求めるために使う。",
+    beforeAndGap:
+      "基準を明示せずに直線を引くと人によって結果が変わるが、最小二乗法は残差平方和の最小化という" +
+      "数学的に一意に解ける基準を与える。二乗して合計するため外れ値の影響を強く受けやすい弱点は、" +
+      "回帰評価指標のMSE/RMSEが外れ値に敏感な理由と同じ数式的な性質に由来する。",
+  },
+  lasso: {
+    bornToSolve:
+      "線形回帰は説明変数が多い、または多重共線性がある場合に過学習しやすく、不要な説明変数を" +
+      "選別する手段がない。L1正則化で一部の係数をちょうど0にすることで、自動的に特徴選択を" +
+      "行いながら過学習を抑えるために使う。",
+    beforeAndGap:
+      "通常の線形回帰(最小二乗法)は係数の大きさにペナルティを課さないため不要な変数の係数も" +
+      "残ってしまうが、Lassoは絶対値のペナルティ(L1)により係数を0にできる。ただし相関の強い" +
+      "変数群からは1つだけを選びがちで、選ばれなかった変数の情報を捨ててしまう弱点がある" +
+      "(係数を0にせず縮小するRidgeとの対比点)。",
+  },
+  ridge: {
+    bornToSolve:
+      "説明変数間の相関が強い(多重共線性がある)と、最小二乗法で求めた係数が不安定になり、" +
+      "小さなデータの変化で係数が大きく変動してしまう。係数の大きさにペナルティを課して係数を" +
+      "滑らかに縮小し、この不安定さを抑えるために使う。",
+    beforeAndGap:
+      "通常の線形回帰は係数の大きさを制約しないため多重共線性下で係数が不安定になりやすいが、" +
+      "Ridgeは係数の二乗和(L2)にペナルティを課すことで係数を全体的に縮小し安定させる。ただし" +
+      "Lassoのように係数を厳密に0にはしないため、特徴選択の効果は持たない。",
+  },
+  ar: {
+    bornToSolve:
+      "時系列データ(株価・気温など)は将来の値が過去の値と関係することが多いが、通常の" +
+      "(横断的な)線形回帰は異なる変量どうしの関係を前提とし、同じ変量の時間的な依存関係を" +
+      "直接は扱わない。ある時点の値を、それより前の時点の自分自身の値を説明変数として回帰する" +
+      "ことで、時間的な依存関係を扱うために使う。",
+    beforeAndGap:
+      "通常の線形回帰は異なる変量どうしの関係を扱うのに対し、自己回帰モデルは同じ変量の過去の値を" +
+      "説明変数として使う線形回帰の一種であり、時系列特有の依存構造を捉えられる。ただし1つの系列しか" +
+      "扱えないため、複数の時系列が互いに影響し合う場合には次元を広げたVARが必要になる。",
+  },
+  var: {
+    bornToSolve:
+      "自己回帰モデル(AR)は1つの時系列を自分の過去の値だけから予測するが、複数の時系列が" +
+      "互いに影響し合う(例: 複数の経済指標)場合には単変量のARでは扱えない。複数の時系列を" +
+      "互いの過去の値から同時に予測するために使う。",
+    beforeAndGap:
+      "ARは単一系列の自己回帰だが、VARはこれを複数系列に拡張し、各系列を自分自身と他系列すべての" +
+      "過去の値から予測する。ただし非定常な(トレンドを持つ)複数系列を互いに回帰すると、直接の" +
+      "因果がなくても見かけの相関(疑似相関)が強く出やすいという弱点があり、分析時にはこの点に" +
+      "特に注意が必要になる。",
+  },
+  sigmoid: {
+    bornToSolve:
+      "線形回帰の出力はそのままでは実数全体に広がり、確率として解釈できない。出力を0〜1の範囲に" +
+      "押し込めることで、二値分類の確率として解釈できるようにするために使う。",
+    beforeAndGap:
+      "線形和のままでは0〜1に収まらないが、シグモイド関数を通すことで確率として扱える。ただし" +
+      "入力が大きい/小さい領域では勾配がほぼ0になり学習が進みにくい(勾配消失)弱点があり、中間層では" +
+      "ReLUなど勾配消失を緩和する活性化関数に置き換わっていった。",
+  },
+  softmax: {
+    bornToSolve:
+      "シグモイドは1つのクラスに属するかどうか(2値)しか表せず、3クラス以上から1つを選ぶ" +
+      "多クラス分類には使えない。各クラスのスコアを指数関数で正規化し、合計が1になる確率分布として" +
+      "出力することで多クラス分類に対応するために使う。",
+    beforeAndGap:
+      "シグモイドは各クラスを独立に0〜1で判定するのに対し、ソフトマックスは全クラスのスコアを" +
+      "同時に正規化するため、各クラスの確率が他クラスの値に依存する(合計1に固定される)という" +
+      "性質を持つ。",
+  },
+  multiclass: {
+    bornToSolve:
+      "通常の分類(二値分類)は2クラスのいずれかを判定する枠組みであり、3クラス以上を判定する" +
+      "問題にはそのままでは使えない。複数のクラスから1つ(または複数)を選ぶ分類問題を扱うために使う。",
+    beforeAndGap:
+      "二値分類はシグモイドで0/1を判定できるが、多クラス分類ではソフトマックスで各クラスの確率を" +
+      "同時に計算する(二値分類を複数回組み合わせるOne-vs-Restのような方法もある)。",
+  },
+  margin: {
+    bornToSolve:
+      "境界(分離平面)は無数に存在し得るが、どれが最も汎化するかという基準がなければ境界を1つに" +
+      "決められない。境界と最も近いデータ点との距離(マージン)を最大化することで、未知データに対しても" +
+      "安定して分類できる境界を選ぶために使う。",
+    beforeAndGap:
+      "単に訓練データを分離できるだけの境界は無数にあり、どれを選ぶかで未知データへの汎化性能が" +
+      "変わる。マージン最大化はその中で最も余裕のある境界を選ぶことで汎化性能を高める設計原理であり、" +
+      "この考え方がSVMの理論的な土台になっている。",
+  },
+  pruning: {
+    bornToSolve:
+      "決定木は分岐を深くするほど訓練データに完全に適合できてしまい、過学習しやすい。木の不要な枝" +
+      "(分岐)を刈り込むことで、モデルを単純化し過学習を抑えるために使う。",
+    beforeAndGap:
+      "枝を刈らない決定木は訓練データにほぼ100%適合するまで分岐を続け過学習しやすいが、プルーニングは" +
+      "事後(または事前)に不要な枝を取り除くことでこれを防ぐ。ただし刈りすぎると今度は未学習(枝が" +
+      "足りず表現力不足)になる弱点があり、刈る深さの調整が必要になる。",
+  },
+  ensemble: {
+    bornToSolve:
+      "単一のモデルでは、そのモデル特有の誤り(バイアスやばらつき)から逃れられない。複数のモデルを" +
+      "組み合わせることで、個々のモデルの誤りを打ち消し合い、単独のモデルより高く安定した性能を" +
+      "得るために使う。",
+    beforeAndGap:
+      "単独のモデルは学習データやアルゴリズムの偶然に結果が左右されやすいが、アンサンブル学習は" +
+      "複数モデルの多数決・平均を取ることでその偶然性を打ち消す。ただしどう複数モデルを作るか" +
+      "(並列に独立させるか、逐次的に誤りを補正するか)で、バギング(並列・分散低減)とブースティング" +
+      "(逐次・バイアス低減)という異なるアプローチに分かれる。",
+  },
+  bagging: {
+    bornToSolve:
+      "単独の決定木などは訓練データの少しの違いで結果が大きく変わりやすく(高分散)、過学習しやすい。" +
+      "ブートストラップサンプリングで複数の訓練セットを作り、それぞれで学習したモデルの多数決・平均を" +
+      "取ることで分散を減らし過学習を抑えるために使う。",
+    beforeAndGap:
+      "単独モデルはデータの偶然の偏りに敏感だが、バギングは複数の(重複を許した)標本から独立に" +
+      "学習したモデルを平均するため、個々のモデルの分散が打ち消し合う。ブースティングのように前の" +
+      "モデルの誤りを逐次補正するわけではなく、あくまで並列・独立に学習する点が異なる。",
+  },
+  bootstrap: {
+    bornToSolve:
+      "元のデータセットは1つしかなく、そこから複数の異なる訓練データセットを作る方法がなければ、" +
+      "複数モデルを独立に学習させることができない。元データから重複を許して同じサイズの標本を" +
+      "繰り返し抽出することで、多様な訓練データセットを作るために使う。",
+    beforeAndGap:
+      "元データをそのまま複数回使うと同じデータセットの繰り返しにしかならないが、ブートストラップ" +
+      "サンプリングは重複を許した復元抽出によって元データを近似する擬似的な別データセットを何個も" +
+      "作れる。この手法はバギングの土台であり、ランダムフォレストでも各決定木の学習データを作るために" +
+      "使われる。",
+  },
+  boosting: {
+    bornToSolve:
+      "弱学習器を複数用意しても、単純に平均・多数決するだけでは同じような間違いを繰り返しやすく、" +
+      "間違えやすいデータへの精度が伸びない(未学習が残りやすい)。前の弱学習器の誤りを次の弱学習器が" +
+      "重点的に補正するように逐次追加していくことで、この弱点を解消し表現力を高めるために使う。",
+    beforeAndGap:
+      "バギングは複数モデルを並列・独立に学習して分散を減らすのに対し、ブースティングは前のモデルの" +
+      "誤りを見て次のモデルを逐次的に学習するためバイアス(未学習)を減らす方向に働く。ただし誤りを" +
+      "補正し続けるほど訓練データに過剰適合しやすく、過学習に転じやすい弱点がある。",
+  },
+  adaboost: {
+    bornToSolve:
+      "弱学習器を複数用意しても、単純に平均・多数決するだけでは同じような間違いを繰り返しやすい。" +
+      "誤分類されたデータの重みを増やしながら弱学習器を逐次追加していくことで、それまで間違えていた" +
+      "データに重点的に対応できる強学習器を作るために使う。",
+    beforeAndGap:
+      "個々の弱学習器は精度が低いままだが、AdaBoostは前の弱学習器が誤分類したデータの重みを増やして" +
+      "次の弱学習器に学習させることで、徐々に難しいデータへの精度を高める。勾配ブースティングのように" +
+      "損失関数の勾配を直接使うわけではなく、データの重み付けを通じて誤りを補正する点が異なる。",
+  },
+  "gradient-boosting": {
+    bornToSolve:
+      "AdaBoostのようにデータの重みを更新する方法は直感的だが、任意の損失関数に対して汎用的に" +
+      "適用しにくい。損失関数の勾配(残差)方向に弱学習器を追加していくことで、任意の微分可能な" +
+      "損失関数に対応しながら誤りを逐次補正するために使う。",
+    beforeAndGap:
+      "AdaBoostは誤分類データの重み付けで補正するのに対し、勾配ブースティングは損失関数の勾配" +
+      "(現在の予測と正解のズレ)を次の弱学習器の目標値として使う。この一般化により回帰・分類問わず" +
+      "様々な損失関数に対応でき、XGBoost等の発展形につながった。",
+  },
+  knn: {
+    bornToSolve:
+      "線形回帰やロジスティック回帰のような手法は、決定境界の形をあらかじめ関数の形(直線・シグモイド等)" +
+      "で仮定してしまうため、境界が複雑に入り組んだデータにはうまく適合しない。未知データに近い訓練" +
+      "データをk個探し、その多数決(分類)や平均(回帰)によって直接予測することで、境界の形を" +
+      "あらかじめ仮定せずに予測するために使う。",
+    beforeAndGap:
+      "線形回帰やロジスティック回帰は訓練時にパラメータを学習し、推論時はそのパラメータだけを使うが、" +
+      "k近傍法は訓練データそのものを保持し、推論時に毎回距離計算を行う(モデルを学習しない、遅延学習)" +
+      "ため、データ量が増えると推論が遅くなる弱点がある。",
+  },
 };
 
 function c(
@@ -2601,31 +2784,39 @@ export const conceptAnchors: Record<string, ConceptAnchor> = {
   "regression-task": { syllabus: ["7"], pipeline: "stage-4", status: "complete" },
   "classification-task": { syllabus: ["7"], pipeline: "stage-4", status: "complete" },
   "linear-regression": { syllabus: ["7"], pipeline: "stage-4", status: "complete" },
-  "multiple-regression": { syllabus: ["7"], pipeline: "stage-4" },
-  "least-squares": { syllabus: ["7"], pipeline: "stage-4" },
+  // 昇格キャンペーン第2バッチ(supervised)で complete化。
+  "multiple-regression": { syllabus: ["7"], pipeline: "stage-4", status: "complete" },
+  "least-squares": { syllabus: ["7"], pipeline: "stage-4", status: "complete" },
   regularization: { syllabus: ["14"], pipeline: "stage-4", status: "complete" },
-  lasso: { syllabus: ["14"], pipeline: "stage-4" },
-  ridge: { syllabus: ["14"], pipeline: "stage-4" },
-  ar: { syllabus: ["7"], pipeline: "stage-4" },
-  var: { syllabus: ["7"], pipeline: "stage-4" },
-  "spurious-correlation": { syllabus: ["37"], pipeline: "stage-4" },
+  lasso: { syllabus: ["14"], pipeline: "stage-4", status: "complete" },
+  ridge: { syllabus: ["14"], pipeline: "stage-4", status: "complete" },
+  ar: { syllabus: ["7"], pipeline: "stage-4", status: "complete" },
+  var: { syllabus: ["7"], pipeline: "stage-4", status: "complete" },
+  // draft残置(意図的): suffers_from の受け皿はVARのみで、solvesの受け皿(差分定常化などの
+  // 対策カード)は本KBの試験スコープ外のため未整備。catastrophic-forgettingと同型の
+  // 「対策カード未整備」ケースであり、昇格させず正直にWARNING残置とする。kindは
+  // suffers_from to側規約(kind:problem)に合わせて problem 化。
+  "spurious-correlation": { syllabus: ["37"], pipeline: "stage-4", kind: "problem" },
   "logistic-regression": { syllabus: ["7"], pipeline: "stage-4", status: "complete" },
-  sigmoid: { syllabus: ["7", "12"], pipeline: "stage-4" },
-  softmax: { syllabus: ["12"], pipeline: "stage-4" },
-  multiclass: { syllabus: ["7"], pipeline: "stage-4" },
+  sigmoid: { syllabus: ["7", "12"], pipeline: "stage-4", status: "complete" },
+  softmax: { syllabus: ["12"], pipeline: "stage-4", status: "complete" },
+  multiclass: { syllabus: ["7"], pipeline: "stage-4", status: "complete" },
   svm: { syllabus: ["7"], timeline: "era-06", status: "complete" },
-  margin: { syllabus: ["7"], timeline: "era-06" },
+  margin: { syllabus: ["7"], timeline: "era-06", status: "complete" },
+  // draft残置(意図的): part_of→svm以外に、curse-dimensionalityへのsolvesは「次元の呪い」の
+  // 統計的側面(データ疎化)までは解消しないため過大主張になり見送った。新設カード無しでは
+  // 真になる2本目のエッジが張れないため、正直にdraft継続とする。
   kernel: { syllabus: ["7"], timeline: "era-06" },
   "decision-tree": { syllabus: ["7"], timeline: "era-06", status: "complete" },
-  pruning: { syllabus: ["7"], timeline: "era-06" },
+  pruning: { syllabus: ["7"], timeline: "era-06", status: "complete" },
   "random-forest": { syllabus: ["7"], timeline: "era-06", status: "complete" },
-  ensemble: { syllabus: ["7"], timeline: "era-06" },
-  bagging: { syllabus: ["7"], timeline: "era-06" },
-  bootstrap: { syllabus: ["7"], timeline: "era-06" },
-  boosting: { syllabus: ["7"], timeline: "era-06" },
-  adaboost: { syllabus: ["7"], timeline: "era-06" },
-  "gradient-boosting": { syllabus: ["7"], timeline: "era-06" },
-  knn: { syllabus: ["7"], pipeline: "stage-4" },
+  ensemble: { syllabus: ["7"], timeline: "era-06", status: "complete" },
+  bagging: { syllabus: ["7"], timeline: "era-06", status: "complete" },
+  bootstrap: { syllabus: ["7"], timeline: "era-06", status: "complete" },
+  boosting: { syllabus: ["7"], timeline: "era-06", status: "complete" },
+  adaboost: { syllabus: ["7"], timeline: "era-06", status: "complete" },
+  "gradient-boosting": { syllabus: ["7"], timeline: "era-06", status: "complete" },
+  knn: { syllabus: ["7"], pipeline: "stage-4", status: "complete" },
 
   // --- unsupervised ---
   clustering: { syllabus: ["8"], pipeline: "stage-4" },
@@ -2897,14 +3088,23 @@ export const relations: ConceptRelation[] = [
   r("linear-regression", "regression-task", "is_a"),
   r("multiple-regression", "linear-regression", "is_a"),
   r("least-squares", "linear-regression", "part_of"),
+  // 昇格キャンペーン第2バッチ(supervised)で追加: 重回帰分析の係数はOLS(最小二乗法)で
+  // 求めるのが定番であり、least-squaresに2本目のエッジを与える(音読: 重回帰分析は最小二乗法を前提とする)。
+  r("multiple-regression", "least-squares", "requires"),
   r("lasso", "linear-regression", "is_a"),
   r("ridge", "linear-regression", "is_a"),
+  // Lasso(L1)とRidge(L2)は係数を0にするか縮小するかで対比される定番のペア。
+  r("lasso", "ridge", "contrasts_with"),
   r("regularization", "overfitting", "solves"),
   r("logistic-regression", "classification-task", "is_a"),
   r("sigmoid", "logistic-regression", "part_of"),
   r("softmax", "multiclass", "part_of"),
+  // 多クラス分類は分類問題の一種(音読: 多クラス分類は分類問題の一種である)。
+  r("multiclass", "classification-task", "is_a"),
   r("svm", "classification-task", "is_a"),
   r("margin", "svm", "part_of"),
+  // マージン最大化はSVMの汎化性能の理論的な根拠(VC次元/構造的リスク最小化の考え方)。
+  r("margin", "generalization", "used_for"),
   r("kernel", "svm", "part_of"),
   r("decision-tree", "classification-task", "is_a"),
   r("decision-tree", "overfitting", "suffers_from"),
@@ -2913,10 +3113,22 @@ export const relations: ConceptRelation[] = [
   r("random-forest", "decision-tree", "part_of"),
   r("bagging", "ensemble", "is_a"),
   r("bootstrap", "bagging", "part_of"),
+  // ブートストラップサンプリングはランダムフォレストの各決定木の学習データ作成にも使われる。
+  r("bootstrap", "random-forest", "used_for"),
   r("boosting", "ensemble", "is_a"),
   r("adaboost", "boosting", "is_a"),
   r("gradient-boosting", "boosting", "is_a"),
+  // AdaBoost(重み付け)と勾配ブースティング(勾配で補正)は定番の対比ペア。
+  r("adaboost", "gradient-boosting", "contrasts_with"),
   r("knn", "classification-task", "is_a"),
+  // k-NNは多数決(分類)だけでなく平均(回帰)でも使われる(kNN回帰)。
+  r("knn", "regression-task", "is_a"),
+  // AR(単一系列の自己回帰)は自分自身の過去の値を説明変数とする線形回帰の一種。
+  r("ar", "linear-regression", "is_a"),
+  // VARはARの多変量拡張(音読: VARはARの一種である)。
+  r("var", "ar", "is_a"),
+  // VARは非定常な複数系列を回帰する際に疑似相関が生じやすい(既存examHintの記述を機械可読化)。
+  r("var", "spurious-correlation", "suffers_from"),
   r("clustering", "unsupervised-learning", "is_a"),
   r("kmeans", "clustering", "is_a"),
   r("ward", "hierarchical-clustering", "is_a"),
