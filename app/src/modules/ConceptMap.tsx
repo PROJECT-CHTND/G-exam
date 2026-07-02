@@ -34,7 +34,7 @@ const ORBIT: { key: Key; label: string; angle: number }[] = [
 
 export default function ConceptMap() {
   const [sel, setSel] = useState<Key>("ai");
-  const cx = 210, cy = 190;
+  const cx = 225, cy = 190;
 
   const ring = (key: Key, r: number, fill: string, label: string, sub: string, ly: number) => (
     <g onClick={() => setSel(key)} style={{ cursor: "pointer" }}>
@@ -53,7 +53,10 @@ export default function ConceptMap() {
   return (
     <div className="grid two">
       <div className="stage">
-        <svg viewBox="0 0 420 380">
+        <svg viewBox="0 0 480 380">
+          {ring("ai", 150, "#141b26", "人工知能 AI", "", cy - 118)}
+          {ring("ml", 108, "#182231", "機械学習 ML", "", cy - 78)}
+          {ring("dl", 62, "#1d2942", "深層学習 DL", "CNN/Transformer", cy - 6)}
           {ORBIT.map((o, i) => {
             const rad = (o.angle * Math.PI) / 180;
             const ox = cx + Math.cos(rad) * 195;
@@ -66,9 +69,6 @@ export default function ConceptMap() {
               </g>
             );
           })}
-          {ring("ai", 150, "#141b26", "人工知能 AI", "", cy - 118)}
-          {ring("ml", 108, "#182231", "機械学習 ML", "", cy - 78)}
-          {ring("dl", 62, "#1d2942", "深層学習 DL", "CNN/Transformer", cy - 6)}
         </svg>
         <p className="caption">丸をクリックすると、その階層で押さえる代表用語が右に出ます。「AI ⊃ 機械学習 ⊃ 深層学習」という包含関係が土台です。</p>
       </div>

@@ -17,12 +17,16 @@ import WordEmbedding from "./modules/demos/WordEmbedding";
 import ImageTaskGranularity from "./modules/demos/ImageTaskGranularity";
 import BanditDemo from "./modules/demos/BanditDemo";
 import ReferenceHub from "./modules/reference/ReferenceHub";
+import OverviewMap from "./modules/learn/OverviewMap";
+import ComparisonDeck from "./modules/learn/ComparisonDeck";
+import StoryFlow from "./modules/learn/StoryFlow";
+import RecallCheck from "./modules/learn/RecallCheck";
 
 type Page = {
   id: string;
   index: string;
   label: string;
-  group: "図解で学ぶ" | "用語マップ＆解説" | "まとめ";
+  group: "学ぶ" | "動かす" | "まとめ";
   title: string;
   desc: string;
   content: ReactNode;
@@ -33,16 +37,57 @@ const PAGES: Page[] = [
     id: "map",
     index: "00",
     label: "全体像",
-    group: "図解で学ぶ",
-    title: "AIの地図",
+    group: "学ぶ",
+    title: "全体マップ",
     desc: "機械学習・深層学習・応用の関係を、包含関係として最初に固定します。",
-    content: <ConceptMap />,
+    content: (
+      <div className="learn-stack">
+        <ConceptMap />
+        <OverviewMap />
+      </div>
+    ),
+  },
+  {
+    id: "terms",
+    index: "05",
+    label: "用語カード",
+    group: "学ぶ",
+    title: "用語カード",
+    desc: "用語をテンプレで整理します。",
+    content: <ReferenceHub />,
+  },
+  {
+    id: "compare",
+    index: "06",
+    label: "比較",
+    group: "学ぶ",
+    title: "比較で覚える",
+    desc: "似た用語を対比して覚えます。",
+    content: <ComparisonDeck />,
+  },
+  {
+    id: "story",
+    index: "07",
+    label: "ストーリー",
+    group: "学ぶ",
+    title: "流れで覚える",
+    desc: "なぜ次の技術が出てきたかを追います。",
+    content: <StoryFlow />,
+  },
+  {
+    id: "recall",
+    index: "08",
+    label: "白紙再現",
+    group: "学ぶ",
+    title: "白紙再現チェック",
+    desc: "何も見ずに説明できるか確認します。",
+    content: <RecallCheck />,
   },
   {
     id: "classify",
     index: "01",
     label: "分類",
-    group: "図解で学ぶ",
+    group: "動かす",
     title: "分類 — アヤメを見分ける (Iris実データ)",
     desc: "正解ラベル付きの実データ150件から、k近傍法が特徴空間をどう色分けするかを見ます。クリックで未知の花を分類できます。",
     content: <IrisClassifier />,
@@ -51,7 +96,7 @@ const PAGES: Page[] = [
     id: "regression",
     index: "02",
     label: "回帰",
-    group: "図解で学ぶ",
+    group: "動かす",
     title: "回帰 — ペンギンの体重を予測 (Palmer Penguins実データ)",
     desc: "勾配降下法を1ステップずつ動かし、直線がデータに近づき損失が下がる様子を実データで確認します。",
     content: <GradientDescent />,
@@ -60,7 +105,7 @@ const PAGES: Page[] = [
     id: "cluster",
     index: "03",
     label: "クラスタリング",
-    group: "図解で学ぶ",
+    group: "動かす",
     title: "クラスタリング — ラベルなしでまとめる (Iris実データ)",
     desc: "正解を使わずに、k-meansがデータの構造だけで品種をほぼ再現できることを見ます。",
     content: <KMeansIris />,
@@ -69,113 +114,104 @@ const PAGES: Page[] = [
     id: "pca",
     index: "04",
     label: "PCA",
-    group: "図解で学ぶ",
+    group: "動かす",
     title: "PCA — 4次元のアヤメを2次元に圧縮する",
     desc: "Irisの4特徴量を主成分へ射影し、どの程度の情報を2軸で保てるかを寄与率として見ます。",
     content: <PCAIris />,
   },
   {
     id: "bandit",
-    index: "05",
+    index: "09",
     label: "強化学習",
-    group: "図解で学ぶ",
+    group: "動かす",
     title: "強化学習 — 探索と活用を多腕バンディットで見る",
     desc: "ε-greedyで未知の選択肢を試すか、今の最善を選ぶかを切り替え、報酬の集まり方を確認します。",
     content: <BanditDemo />,
   },
   {
     id: "overfit",
-    index: "06",
+    index: "10",
     label: "過学習",
-    group: "図解で学ぶ",
+    group: "動かす",
     title: "過学習 — 複雑さのジレンマ",
     desc: "多項式の次数を上げると訓練誤差は下がり続けますが、テスト誤差はある点から増加します。この乖離を実際に計算して可視化します。",
     content: <Overfitting />,
   },
   {
     id: "metrics",
-    index: "07",
+    index: "11",
     label: "評価",
-    group: "図解で学ぶ",
+    group: "動かす",
     title: "分類の評価 — しきい値・混同行列・ROC",
     desc: "実データで学習したロジスティック回帰のスコアを使い、しきい値を動かすと指標がどう連動するかを見ます。",
     content: <ThresholdROC />,
   },
   {
     id: "nn",
-    index: "08",
+    index: "12",
     label: "NN",
-    group: "図解で学ぶ",
+    group: "動かす",
     title: "ニューラルネットワーク — 順伝播と逆伝播",
     desc: "学習ループ(順伝播→損失→逆伝播→更新)を1手ずつ追い、活性化関数の役割も確認します。",
     content: <NeuralNet />,
   },
   {
     id: "cnn",
-    index: "09",
+    index: "13",
     label: "CNN",
-    group: "図解で学ぶ",
+    group: "動かす",
     title: "CNN — 手書き数字を畳み込む (MNIST実データ)",
     desc: "実物のMNIST数字にフィルタをスライドさせ、畳み込みが特徴マップを作る過程をそのまま計算します。",
     content: <CNNMnist />,
   },
   {
     id: "image-tasks",
-    index: "10",
+    index: "14",
     label: "画像タスク",
-    group: "図解で学ぶ",
+    group: "動かす",
     title: "画像タスク粒度 — 分類・検出・セグメンテーション・姿勢推定",
     desc: "同じ画像に対して、タスクが返す答えの粒度がどう変わるかを重ね表示します。",
     content: <ImageTaskGranularity />,
   },
   {
     id: "attention",
-    index: "11",
+    index: "15",
     label: "Attention",
-    group: "図解で学ぶ",
+    group: "動かす",
     title: "Transformer — Attentionで関係を見る",
     desc: "単語ベクトルの内積とsoftmaxから、どの単語がどの単語に注目するかを計算します。",
     content: <Attention />,
   },
   {
     id: "lstm-gates",
-    index: "12",
+    index: "16",
     label: "LSTM",
-    group: "図解で学ぶ",
+    group: "動かす",
     title: "LSTM — ゲートで記憶を制御する",
     desc: "忘却・入力・出力ゲートがセル状態をどう変えるかを、系列を1ステップずつ選びながら確認します。",
     content: <LSTMGates />,
   },
   {
     id: "word2vec",
-    index: "13",
+    index: "17",
     label: "word2vec",
-    group: "図解で学ぶ",
+    group: "動かす",
     title: "word2vec — 分散表現のベクトル演算",
     desc: "単語の意味や関係がベクトル空間の方向として表れる様子を、2D埋め込みで体験します。",
     content: <WordEmbedding />,
   },
   {
     id: "genai",
-    index: "14",
+    index: "18",
     label: "生成AI",
-    group: "図解で学ぶ",
+    group: "動かす",
     title: "生成AI — RAGの検索と拡散モデル",
     desc: "質問と文書の類似度を実際に計算して検索するRAGと、ノイズから形が現れる拡散モデルを分けて見ます。",
     content: <GenAI />,
   },
   {
-    id: "reference",
-    index: "15",
-    label: "用語マップ",
-    group: "用語マップ＆解説",
-    title: "公式シラバス大項目4〜6の用語関係マップ",
-    desc: "機械学習から深層学習の応用まで、用語を区分・関係・対応デモでつなげて確認します。",
-    content: <ReferenceHub />,
-  },
-  {
     id: "exam",
-    index: "16",
+    index: "19",
     label: "試験の視点",
     group: "まとめ",
     title: "試験の視点 — どの関係を問われているか",
@@ -195,7 +231,7 @@ const PAGES: Page[] = [
   },
 ];
 
-const NAV_GROUPS = ["図解で学ぶ", "用語マップ＆解説", "まとめ"] as const;
+const NAV_GROUPS = ["学ぶ", "動かす", "まとめ"] as const;
 
 function PartLabel({ children }: { children: string }) {
   return <div className="part-label">{children}</div>;
