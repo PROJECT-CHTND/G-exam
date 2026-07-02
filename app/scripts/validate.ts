@@ -5,7 +5,7 @@
  * チェック項目は docs/RESTRUCTURE_PLAN.md 付録D に準拠する。
  * エラー(exit 1)と警告(exit 0のまま)を分けて出力する。
  */
-import { concepts, relations, demoLabels, type Concept } from "../src/data/concepts";
+import { concepts, relations, demoLabels, conceptAnchors, type Concept } from "../src/data/concepts";
 import { syllabus, syllabusItemById } from "../src/data/syllabus";
 import { eras } from "../src/data/timeline";
 import { stages } from "../src/data/pipeline";
@@ -97,6 +97,15 @@ for (const era of eras) {
 for (const stage of stages) {
   for (const id of stage.conceptIds) {
     if (!conceptIds.has(id)) err("参照整合性(pipeline)", `${stage.id}: conceptIds に未知のid "${id}"`);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 3.5. conceptAnchors のキー整合性(タイポで無言落ちする事故の予防)
+// ---------------------------------------------------------------------------
+for (const id of Object.keys(conceptAnchors)) {
+  if (!conceptIds.has(id)) {
+    err("参照整合性(conceptAnchors)", `conceptAnchors["${id}"] に対応する concept が存在しない(id のタイポ、または対象カード未作成の可能性)`);
   }
 }
 

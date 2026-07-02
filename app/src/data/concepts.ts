@@ -742,7 +742,7 @@ type ConceptAnchor = Partial<Pick<Concept, "kind" | "syllabus" | "timeline" | "p
  *   一致を根拠に付与。キーワードに直接一致しないが章の主題と明確に対応するカードは、
  *   その章のIDを付与している(完全一致のみに絞ると大半が未分類になってしまうため)。
  */
-const conceptAnchors: Record<string, ConceptAnchor> = {
+export const conceptAnchors: Record<string, ConceptAnchor> = {
   // --- ml-foundation ---
   ml: { syllabus: ["1", "5"], timeline: "era-06", status: "complete" },
   "supervised-learning": { syllabus: ["7"], pipeline: "stage-4", status: "complete" },
