@@ -197,19 +197,20 @@ cnn-rnn/attention/transformer/genai)は、削除禁止方針により `stories.t
 - [ ] PSPNet(個別カード・軽微)
 - [ ] Wide ResNet(個別カード・軽微)
 
-### 項目27: 自然言語処理 🟡
+### 項目27: 自然言語処理 ✅ **(Phase 3バッチ8でタスク系5件完了。要素技術カードのBERT/word2vec等は既存draftのまま=別バッチ)**
 - [x] 統計的機械翻訳(項目2バッチで作成、`syllabus: ["2","27"]`で二重紐付け済み)
-- [ ] 感情分析
-- [ ] 機械翻訳(タスクとしての明示カード。ルールベース/統計的/ニューラルの3世代比較は項目2で着手済み)
-- [ ] 質問応答
-- [ ] 情報検索
-- [ ] 文書要約
-- [ ] 統計的自然言語処理(v1.3追加要確認、項目5と重複の可能性)
+- [x] 感情分析(新設`sentiment-analysis`。`syllabus: ["27","28"]`で二重紐付け)
+- [x] 機械翻訳(新設`machine-translation`。statistical/rule-based-machine-translationからis_a接続)
+- [x] 質問応答(既存`question-answering`に`syllabus: ["4","27"]`を追記して二重紐付け。新規カード化はせず)
+- [x] 情報検索(新設`information-retrieval`)
+- [x] 文書要約(新設`text-summarization`)
+- [ ] 統計的自然言語処理(v1.3追加要確認。実体は項目5のキーワードであることを確認済み。項目27側の記載は誤転記のため次回整理時に削除予定)
 
-### 項目28: 音声処理 🟡
-- [ ] 音声認識(タスク単位のカード)
-- [ ] 音声合成(タスク単位のカード)
-- [ ] 話者識別(タスク単位のカード)
+### 項目28: 音声処理 ✅ **(Phase 3バッチ8で完了)**
+- [x] 音声認識(新設`speech-recognition`)
+- [x] 音声合成(新設`speech-synthesis`)
+- [x] 話者識別(新設`speaker-identification`)
+- [x] 感情分析(項目27の`sentiment-analysis`と共有、二重紐付け済み)
 
 ### 項目29: 深層強化学習 ✅
 - [ ] Agent57
@@ -244,22 +245,37 @@ cnn-rnn/attention/transformer/genai)は、削除禁止方針により `stories.t
 ## 第7章 AIの社会実装に向けて
 
 ### 項目35: AIプロジェクトの進め方 ✅ **(Phase 3バッチ7で完了)**
-- [x] AIのビジネス活用(`ai-business-application`。BPRの視点も本文に含める)
-- [x] CRISP-DM(`crisp-dm`)
-- [x] CRISP-ML(`crisp-ml`。crisp-dmからのevolves_to)
-- [x] PoC(`poc`)
-- [x] アジャイル(`agile`)
-- [x] ウォーターフォール(`waterfall`。アジャイルとcontrasts_with)
-- [x] ステークホルダーのニーズ(`stakeholder-needs`)
-- [x] データサイエンティスト(`data-scientist`)
-- [x] 産学連携・他企業や他業種との連携(`open-innovation`のカード内で具体例として言及。個別カード化はせず1枚に集約)
-- [x] BPR(`ai-business-application`のカード内で言及。個別カード化はせず1枚に集約)
-- [x] Docker・Web API・クラウド(`deployment-infra`のカード内に集約。エッジAIとcontrasts_with)
-- [x] Python・Jupyter Notebook(`ml-dev-environment`のカード内に集約)
-- [x] オープン・イノベーション(`open-innovation`)
-- [x] MLOps(既存`mlops`。crisp-mlのpart_ofエッジを追加しエッジ2本化)
-- [ ] AIプロジェクトの進め方(項目タイトル自体は個別カード化せず、crisp-dm/poc/waterfall/agile等の
-  カード群で表現。既存の運用ルール(1キーワード=1カードとは限らない)どおり)
+
+キーワード消し込み対応表(syllabus.ts記載の公式キーワード19件、レビュー指摘により正式提示):
+
+| # | キーワード(syllabus.ts) | 対応 | 備考・該当文 |
+|---|---|---|---|
+| 1 | AIのビジネス活用 | 新設 `ai-business-application` | 直接一致 |
+| 2 | AIプロジェクトの進め方 | 畳み込み(個別カード化なし) | crisp-dm/poc/waterfall/agile等のカード群で表現(項目タイトル自体) |
+| 3 | BPR | 畳み込み → `ai-business-application` | 「既存業務を単純に自動化するだけでなく、業務プロセス自体を見直す機会(BPR: ビジネスプロセス・リエンジニアリング)として捉える視点も含む。」(summary) |
+| 4 | CRISP-DM | 新設 `crisp-dm` | 直接一致 |
+| 5 | CRISP-ML | 新設 `crisp-ml` | 直接一致(CRISP-ML(Q)) |
+| 6 | Docker | 畳み込み → `deployment-infra` | 「Dockerで実行環境を丸ごと配布し、Web APIとして推論機能を公開し、クラウド上でサーバーを管理する。」(summary) |
+| 7 | Jupyter Notebook | 畳み込み → `ml-dev-environment` | 「プログラミング言語Pythonと、コードと実行結果を対話的に確認しながら分析を進められるJupyter Notebookという実行環境。」(summary) |
+| 8 | MLOps | 既存 `mlops` | 今回`crisp-ml`とのused_forエッジを追加(2本目)。カード本文自体は今回未着手(既存draftのまま) |
+| 9 | PoC | 新設 `poc` | 直接一致 |
+| 10 | Python | 畳み込み → `ml-dev-environment` | #7と同文(summary) |
+| 11 | Web API | 畳み込み → `deployment-infra` | #6と同文(summary) |
+| 12 | アジャイル | 新設 `agile` | 直接一致 |
+| 13 | ウォーターフォール | 新設 `waterfall` | 直接一致 |
+| 14 | オープン・イノベーション | 新設 `open-innovation` | 直接一致 |
+| 15 | クラウド | 畳み込み → `deployment-infra` | #6と同文(summary) |
+| 16 | 産学連携 | 畳み込み → `open-innovation` | 「自社だけでなく大学や他企業・他業種と連携し、外部の技術・知見を取り込みながらイノベーションを進める考え方。産学連携や他企業・他業種との連携が代表例。」(summary)、「大学の研究知見(産学連携)や他業種の知見・データを取り込むことで、単独では実現しにくい取り組みを可能にするために広がった。」(bornToSolve) |
+| 17 | ステークホルダーのニーズ | 新設 `stakeholder-needs` | 直接一致 |
+| 18 | データサイエンティスト | 新設 `data-scientist` | 直接一致 |
+| 19 | 他企業や他業種との連携 | 畳み込み → `open-innovation` | #16と同文(データ拡張の技法グループ化と同様、1カードに複数キーワードを集約) |
+
+非公式項目(参考):
+- **KPI(設計)**: syllabus.ts の項目35キーワード配列(19件、上表)に**存在しないことを確認**。
+  stage-1本文中の既存の言及(「検出率・誤報率などのKPIを設計する」)のみで対応し、個別カード化・
+  backlogの正式項目化はしない。
+
+上記19件すべて対応済み(新設10枚・既存1枚へのエッジ追加1件・畳み込み8件)。
 
 ### 項目36: データの収集・加工・分析・学習 ✅
 - [x] アノテーション(`annotation`, pipeline: stage-3)

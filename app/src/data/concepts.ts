@@ -36,6 +36,11 @@ export type ConceptCategory =
  * 【エッジ追加の恒久ルール(Phase 3ミニバッチ再レビューで確定)】
  * エッジは追加前に必ず from→to を規約どおりの日本語一文として読み下し、文として偽になる組は張らない。
  * 迷ったら張らず、候補として報告する(自信を持って断定できる関係のみ登録する)。
+ *
+ * 【part_ofの誤用に関する追加ルール(Phase 3項目35バッチレビューで確定)】
+ * 「重なる・関連する」を part_of と読み違えない。part_of が成立するのは、fromが無ければtoが
+ * 定義として成立しない(構造的な包含関係にある)場合のみ。単に関心・フェーズが重なるだけの
+ * 関係(例: MLOpsとCRISP-ML(Q)の運用フェーズ)は used_for 等の別の型を検討する。
  */
 export type RelationType =
   | "is_a"
@@ -1289,7 +1294,7 @@ export const concepts: Concept[] = [
     term: "Question-Answering",
     category: "ai-history",
     kind: "concept",
-    syllabus: ["4"],
+    syllabus: ["4", "27"],
     summary: "自然言語で入力された質問に対して、適切な答えを返すタスク・システムの総称。",
     bornToSolve: "エキスパートシステムや意味ネットワークで蓄積した知識を、人間が自然な質問文で引き出せるようにするために発展した。",
     beforeAndGap: "初期は限定領域のルールベースで応答するに留まったが、後にワトソンのような大規模な統計的手法や、現在ではLLMが同じ課題に取り組んでいる。",
@@ -1887,9 +1892,13 @@ export const concepts: Concept[] = [
     pipeline: "stage-4",
     summary: "機械学習モデルの試作・学習に広く使われるプログラミング言語Pythonと、コードと実行結果を対話的に確認しながら分析を進められるJupyter Notebookという実行環境。",
     bornToSolve: "モデルの試行錯誤には、ライブラリが豊富で書きやすい言語と、途中経過を都度確認しながら進められる対話的な実行環境が必要とされ、この組み合わせが標準的な開発環境として広まった。",
-    beforeAndGap: "スクリプトを一括実行する従来の開発スタイルでは、データの中身や中間結果を都度確認しにくい。Jupyter Notebookはセル単位で実行しながら可視化・確認できる点が異なる。",
-    examHint: "機械学習の試作・学習フェーズで使われる代表的な言語・実行環境として名称が問われる。",
-    recall: "Jupyter Notebookが従来のスクリプト一括実行と比べてどのような利点を持つかを説明せよ。",
+    beforeAndGap:
+      "スクリプトを一括実行する従来の開発スタイルでは、データの中身や中間結果を都度確認しにくい。" +
+      "Jupyter Notebookはセル単位で実行しながら可視化・確認できる点が異なる。PoCのような小規模な" +
+      "検証はノートブック上で試行錯誤しながら行い、本番運用に進む段階でDocker・Web API・クラウド" +
+      "といった実装基盤に載せ替えるのが一般的な流れとなる。",
+    examHint: "機械学習の試作・学習フェーズで使われる代表的な言語・実行環境として名称が問われる。PoC段階の検証環境と本番の実装基盤の違いも問われる。",
+    recall: "Jupyter Notebookが従来のスクリプト一括実行と比べてどのような利点を持つか、また本番運用に進む際にどのような基盤へ移行するかを説明せよ。",
     status: "complete",
   },
   {
@@ -1907,6 +1916,110 @@ export const concepts: Concept[] = [
       "他システムから利用可能になる。エッジ側で推論する構成(エッジAI)と対比される。",
     examHint: "エッジ推論(エッジAI)とクラウド/API経由の推論との対比が問われる。",
     recall: "学習済みモデルをクラウド上でWeb APIとして公開する構成が、エッジAIと比べてどのような違いがあるかを説明せよ。",
+    status: "complete",
+  },
+
+  // Phase 3 バッチ8: タスクカード(項目27・28。軽量テンプレ: 定義1〜2文+代表手法へのエッジ+recall1本)
+  {
+    id: "sentiment-analysis",
+    term: "感情分析",
+    category: "sequence-nlp-speech",
+    kind: "concept",
+    syllabus: ["27", "28"],
+    // era-11(言語の枝: word2vec〜LLM)の到達点として、分類問題の代表例に位置づける(物語的帰属)
+    timeline: "era-11",
+    summary: "文章や音声から、書き手・話し手の感情や評価(肯定的/否定的等)を推定するタスク。",
+    bornToSolve: "レビューやSNS上の大量のテキストから、人手では追いきれない感情の傾向を自動的に把握するために発展した。",
+    beforeAndGap: "肯定・否定の判定は分類問題の一種として扱われ、近年はBERT等の事前学習モデルを用いる手法が主流になっている。",
+    examHint: "分類問題(ポジティブ/ネガティブ)として定式化される点が問われる。",
+    recall: "感情分析がどのような分類問題として定式化されるかを説明せよ。",
+    status: "complete",
+  },
+  {
+    id: "machine-translation",
+    term: "機械翻訳",
+    category: "sequence-nlp-speech",
+    kind: "concept",
+    syllabus: ["27"],
+    // ルールベース(era-02)・統計的(era-06)双方にまたがるタスクだが、現在の主流であるニューラル機械翻訳の
+    // 文脈(era-11: word2vec〜LLM)を到達点として物語的に帰属させる
+    timeline: "era-11",
+    summary: "ある言語の文章を別の言語の文章に自動的に変換するタスク。",
+    bornToSolve: "言語の壁を越えて情報をやり取りするために、翻訳作業を自動化する目的で発展してきた。",
+    beforeAndGap: "ルールベース→統計的機械翻訳→ニューラル機械翻訳の順に、主流の手法が移り変わってきた。",
+    examHint: "ルールベース・統計的・ニューラルという3世代の手法の違いが問われる。",
+    recall: "機械翻訳の主流の手法が、ルールベースからどのように移り変わってきたかを説明せよ。",
+    status: "complete",
+  },
+  {
+    id: "information-retrieval",
+    term: "情報検索",
+    category: "sequence-nlp-speech",
+    kind: "concept",
+    syllabus: ["27"],
+    timeline: "era-11",
+    summary: "大量の文書の中から、入力されたクエリに関連する文書を探し出すタスク。",
+    bornToSolve: "Web上などに蓄積される膨大な文書から必要な情報を人手で探すのは非現実的なため、関連度に基づいて自動的に絞り込むために発展した。",
+    beforeAndGap: "キーワード一致による検索から、word2vecやBERTのような分散表現を用いて意味的な近さで検索する手法へと発展している。",
+    examHint: "キーワード一致による検索と、分散表現を用いた意味的な検索の違いが問われる。",
+    recall: "情報検索において、キーワード一致による方法と分散表現を用いる方法の違いを説明せよ。",
+    status: "complete",
+  },
+  {
+    id: "text-summarization",
+    term: "文書要約",
+    category: "sequence-nlp-speech",
+    kind: "concept",
+    syllabus: ["27"],
+    timeline: "era-11",
+    summary: "長い文書から、重要な情報を保ったまま短い文章を自動的に生成する、または重要な文を抜き出すタスク。",
+    bornToSolve: "大量の文書を人手で読んで要点をまとめる負担を減らすために発展した。",
+    beforeAndGap: "文書中の重要な文をそのまま抜き出す抽出型と、Seq2Seq/Transformerで新しい文を生成する生成型に大別される。",
+    examHint: "抽出型要約と生成型要約の違いが問われる。",
+    recall: "文書要約における抽出型と生成型の違いを説明せよ。",
+    status: "complete",
+  },
+  {
+    id: "speech-recognition",
+    term: "音声認識",
+    category: "sequence-nlp-speech",
+    kind: "concept",
+    syllabus: ["28"],
+    // era-14(音声の枝: HMM〜大規模音声モデル)の到達点として物語的に帰属させる
+    timeline: "era-14",
+    summary: "音声信号を入力として、対応する文字列(テキスト)に変換するタスク。",
+    bornToSolve: "音声というアナログな信号を、機械が扱いやすいテキストへ自動的に変換するために発展した。",
+    beforeAndGap: "古典的には隠れマルコフモデル(HMM)で音素の遷移を確率的にモデル化していたが、現在はCTC等によりニューラルネットワークで直接学習する手法が主流になっている。",
+    examHint: "HMMからCTC・ニューラルネットワークへの移り変わりが問われる。",
+    recall: "音声認識の主流の手法が、隠れマルコフモデルからどのように変化してきたかを説明せよ。",
+    status: "complete",
+  },
+  {
+    id: "speech-synthesis",
+    term: "音声合成",
+    category: "sequence-nlp-speech",
+    kind: "concept",
+    syllabus: ["28"],
+    timeline: "era-14",
+    summary: "テキストを入力として、対応する音声波形を自動的に生成するタスク。",
+    bornToSolve: "文章を読み上げる作業を自動化し、人手によるナレーション収録なしで音声を生成するために発展した。",
+    beforeAndGap: "音声を短い断片の連結で作る手法から、WaveNetのように波形そのものを深層生成モデルで直接モデル化する手法へと発展した。",
+    examHint: "音声を入力してテキストに変換する音声認識とは逆方向のタスクである点が問われる。",
+    recall: "音声合成が音声認識と比べて何を入力とし何を出力とするタスクかを説明せよ。",
+    status: "complete",
+  },
+  {
+    id: "speaker-identification",
+    term: "話者識別",
+    category: "sequence-nlp-speech",
+    kind: "concept",
+    syllabus: ["28"],
+    timeline: "era-14",
+    summary: "音声の内容(何を話したか)ではなく、声の特徴から話者(誰が話したか)を特定するタスク。",
+    bornToSolve: "コールセンターの本人確認やセキュリティ用途など、発話内容ではなく話者本人を特定したい場面のために発展した。",
+    beforeAndGap: "「何を話したか」を認識する音声認識に対し、話者識別は声紋にあたるMFCC等の音響特徴量から「誰が話したか」を判別する点が異なる。",
+    examHint: "音声認識(発話内容の認識)との対比(識別対象が話者本人である点)が問われる。",
+    recall: "話者識別が音声認識とどのように異なるタスクかを説明せよ。",
     status: "complete",
   },
 ];
@@ -2571,7 +2684,10 @@ export const relations: ConceptRelation[] = [
 
   // Phase 3 バッチ7: シラバス項目35(AIプロジェクトの進め方)
   r("crisp-ml", "crisp-dm", "evolves_to"),
-  r("mlops", "crisp-ml", "part_of"),
+  // レビュー再修正: MLOpsは実践体系、CRISP-ML(Q)は一プロセスモデルであり包含関係にない
+  // (最終フェーズと関心が重なるだけ)。part_ofは偽のため、運用実践がプロセスモデルの
+  // 当該フェーズで採用されるという読みが真になるused_forに差し替え。
+  r("mlops", "crisp-ml", "used_for"),
   r("crisp-dm", "stakeholder-needs", "requires"),
   r("poc", "ai-business-application", "part_of"),
   r("poc", "open-innovation", "used_for"),
@@ -2584,10 +2700,28 @@ export const relations: ConceptRelation[] = [
   r("open-innovation", "ai-business-application", "used_for"),
   r("ai-level-classification", "ai-business-application", "used_for"),
   r("simple-control-program", "classical-ai", "contrasts_with"),
-  r("ml-dev-environment", "transfer-learning", "used_for"),
+  // レビュー反映: transfer-learningへのused_forは真だが情報量が薄いため、開発/実装の
+  // 対比が一直線に繋がるpocへの接続に差し替え
+  r("ml-dev-environment", "poc", "used_for"),
   r("ml-dev-environment", "deployment-infra", "contrasts_with"),
   r("deployment-infra", "edge-ai", "contrasts_with"),
   r("deployment-infra", "mlops", "used_for"),
+
+  // Phase 3 バッチ8: タスクカード(項目27・28)。既存カードへの接続を優先
+  r("sentiment-analysis", "classification-task", "is_a"),
+  r("bert", "sentiment-analysis", "used_for"),
+  r("statistical-machine-translation", "machine-translation", "is_a"),
+  r("rule-based-machine-translation", "machine-translation", "is_a"),
+  r("word2vec", "information-retrieval", "used_for"),
+  r("bert", "information-retrieval", "used_for"),
+  r("seq2seq", "text-summarization", "used_for"),
+  r("transformer", "text-summarization", "used_for"),
+  r("hmm", "speech-recognition", "used_for"),
+  r("ctc", "speech-recognition", "used_for"),
+  r("speaker-identification", "speech-recognition", "contrasts_with"),
+  r("speech-synthesis", "speech-recognition", "contrasts_with"),
+  r("wavenet", "speech-synthesis", "used_for"),
+  r("mfcc", "speaker-identification", "used_for"),
 ];
 
 export const demoLabels: Record<string, string> = {
