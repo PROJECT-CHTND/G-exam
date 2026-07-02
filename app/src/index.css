@@ -1194,3 +1194,122 @@ select {
     grid-template-columns: 1fr;
   }
 }
+
+/* ---- timeline / pipeline spine ---- */
+.timeline-spine {
+  display: grid;
+  gap: 16px;
+}
+.era-trunk {
+  display: grid;
+  gap: 12px;
+  margin-top: 12px;
+}
+.era-branch-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+.era-branch-tab {
+  border: 1px solid var(--border);
+  background: var(--panel-2);
+  color: var(--text-soft);
+  border-radius: 999px;
+  padding: 7px 14px;
+  font-size: 12.5px;
+  font-weight: 800;
+}
+.era-branch-tab.active {
+  border-color: var(--accent);
+  color: var(--text);
+  background: rgba(88, 176, 255, 0.14);
+}
+.era-card {
+  border: 1px solid var(--border-soft);
+  background: rgba(33, 41, 54, 0.4);
+  border-radius: 14px;
+  padding: 14px;
+}
+.era-card h4 {
+  margin-bottom: 8px;
+}
+.era-row {
+  color: var(--text-soft);
+  font-size: 14px;
+  margin: 6px 0;
+  line-height: 1.6;
+}
+.era-tag {
+  display: inline-block;
+  margin-right: 8px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 900;
+  background: rgba(88, 176, 255, 0.14);
+  color: var(--accent);
+  vertical-align: middle;
+}
+.era-tag.wall {
+  background: rgba(255, 107, 107, 0.14);
+  color: var(--red);
+}
+.era-tag.breakthrough {
+  background: rgba(89, 217, 138, 0.14);
+  color: var(--green);
+}
+.era-tag.next {
+  background: rgba(255, 184, 77, 0.14);
+  color: var(--amber);
+}
+.era-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 4px 0 10px;
+}
+.era-link {
+  border: 1px solid var(--border);
+  background: var(--panel-2);
+  color: var(--text-soft);
+  border-radius: 999px;
+  padding: 5px 10px;
+  font-size: 12px;
+  font-weight: 700;
+}
+.era-link:hover {
+  border-color: var(--accent);
+  color: var(--text);
+}
+.pipeline-scenario {
+  color: var(--text-soft);
+  font-size: 13.5px;
+  margin: 4px 0 16px;
+}
+.pipeline-flow {
+  display: grid;
+  gap: 12px;
+}
+.pipeline-stage {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  gap: 12px;
+  border: 1px solid var(--border-soft);
+  background: rgba(33, 41, 54, 0.4);
+  border-radius: 14px;
+  padding: 14px;
+}
+.pipeline-stage h4 {
+  margin-bottom: 6px;
+}
+.pipeline-stage p {
+  color: var(--text-soft);
+  font-size: 14.5px;
+}
+.pipeline-stage small {
+  display: block;
+  color: var(--teal);
+  margin-top: 8px;
+  font-size: 13px;
+}
