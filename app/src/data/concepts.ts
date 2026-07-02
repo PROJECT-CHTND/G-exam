@@ -480,6 +480,59 @@ const coreLearningNotes: Record<string, Pick<Concept, "bornToSolve" | "beforeAnd
     bornToSolve: "Q学習の価値関数をニューラルネットワークで近似し、高次元状態を扱うために使う。",
     beforeAndGap: "Q学習は表形式でも扱える。DQNは深層学習でQ値を近似する。",
   },
+  // Phase 3 draft昇格キャンペーン第1バッチ(evaluationカテゴリ)で追加。
+  "train-valid-test": {
+    bornToSolve: "学習・ハイパーパラメータ調整・最終評価を同じデータで行うと性能を過大評価してしまうため、3つの目的ごとにデータを分けて使う。",
+    beforeAndGap: "訓練データだけで評価すると暗記(過学習)を性能向上と誤認する。3分割はその過大評価を防ぐ最も基本的な設計。",
+  },
+  holdout: {
+    bornToSolve: "訓練・検証・テストというデータ分割の考え方を、最も単純な形で実践するために使う。",
+    beforeAndGap: "交差検証は分割・評価を繰り返して平均するのに対し、ホールドアウト法は一度だけ分割するため実装は簡単だが、その1回の分割の偏りに結果が左右されやすい。",
+  },
+  accuracy: {
+    bornToSolve: "分類モデルの性能を、直感的な「全体に対する正解の割合」として示すために使う。",
+    beforeAndGap: "混同行列はTP/FP/FN/TNを個別に見るが、正解率はそれらを1つの割合に集約する。クラスに偏り(不均衡)があると、多数派クラスを答え続けるだけで高い値になる欠点がある。",
+  },
+  f1: {
+    bornToSolve: "適合率と再現率はトレードオフの関係にあり片方だけでは評価が偏るため、両方をバランスよく1つの指標にまとめるために使う。",
+    beforeAndGap: "正解率はクラス不均衡があると見かけ上高くなりがちだが、F値は適合率と再現率の両方が高くないと高い値にならないため、不均衡データでの評価に向く。",
+  },
+  "roc-auc": {
+    bornToSolve: "分類のしきい値を1つに固定せず、しきい値を変化させたときの性能全体を1つの指標で評価するために使う。",
+    beforeAndGap: "適合率・再現率・F値は特定のしきい値での性能を見るのに対し、ROC曲線とAUCはしきい値を動かした全体の挙動を要約する。AUC=0.5はランダム予測と同等。",
+  },
+  "type-errors": {
+    bornToSolve: "仮説検定における2種類の誤り(正しいものを誤って棄却する/誤っているものを誤って採択する)を区別するために使う。分類問題ではFP(偽陽性)とFN(偽陰性)にそれぞれ対応づけられる。",
+    beforeAndGap: "混同行列はTP/FP/FN/TNという4象限そのものを示すのに対し、第一種/第二種の過誤はそのうちFP・FNを統計的仮説検定の枠組みで意味づけたもの。",
+  },
+  mse: {
+    bornToSolve: "回帰モデルの予測誤差を1つの数値にまとめ、モデル間で比較できるようにするために使う。",
+    beforeAndGap: "MAEは誤差の絶対値をそのまま平均するのに対し、MSEは誤差を二乗するため、大きく外れた予測(外れ値)をより重く評価する。",
+  },
+  rmse: {
+    bornToSolve: "MSEは誤差を二乗した値のため元の目的変数と単位が異なり解釈しにくい。この単位のズレを解消し、目的変数と同じ単位で誤差の大きさを示すために使う。",
+    beforeAndGap: "MSEは二乗誤差の単位のままだが、RMSEはその平方根を取ることで元の単位に戻す。ただし二乗して平均する計算過程は共通のため、外れ値への敏感さはMSEと同様に残る。",
+  },
+  mae: {
+    bornToSolve: "MSEは外れ値の影響を強く受けすぎることがあるため、それを避けて誤差の大きさを素直に平均するために使う。",
+    beforeAndGap: "MSEは誤差を二乗するため外れ値を重く評価するのに対し、MAEは誤差の絶対値をそのまま平均するため外れ値の影響を受けにくい。",
+  },
+  r2: {
+    bornToSolve: "MSEやMAEは単位に依存し、それ単体では良し悪しの基準が分かりにくい。目的変数の分散に対する説明力という、単位に依存しない0〜1のスケールで評価するために使う。",
+    beforeAndGap: "MSE・MAEは誤差の絶対的な大きさを示すのに対し、決定係数R²は「目的変数のばらつきの何割を説明できたか」という相対的な指標であり、モデル間の比較がしやすい。",
+  },
+  "error-function": {
+    bornToSolve: "モデルの予測が正解からどれだけズレているかを、学習・評価の両方で扱えるようスカラー値として定義するために使う。",
+    beforeAndGap: "損失関数は主に学習(パラメータ更新)の文脈で使われる用語だが、誤差関数はより一般的にモデル評価の文脈でも使われ、両者はほぼ同じ数式を指すことが多い。",
+  },
+  occam: {
+    bornToSolve: "同じ精度で説明できる複数のモデルがあるとき、どちらを選ぶべきかという基準を与えるために使う(オッカムの剃刀)。",
+    beforeAndGap: "AIC/BICのような情報量規準は当てはまりの良さとモデルの複雑さを数式でトレードオフするが、オッカムの剃刀はその背景にある「不必要に複雑なモデルを避ける」という一般原則にあたる。",
+  },
+  "aic-bic": {
+    bornToSolve: "当てはまりの良さだけでモデルを選ぶと複雑なモデルほど有利になり過学習しやすいモデルを選んでしまう。当てはまりの良さと複雑さの両方を1つの基準にまとめて比較するために使う。",
+    beforeAndGap: "決定係数R²は当てはまりの良さだけを見るため説明変数を増やすほど見かけ上は良くなるが、AIC/BICはそこにモデルの複雑さへのペナルティを加える点が異なる。",
+  },
 };
 
 function c(
@@ -2588,23 +2641,24 @@ export const conceptAnchors: Record<string, ConceptAnchor> = {
   "reward-shaping": { syllabus: ["29"], timeline: "era-13" },
 
   // --- evaluation ---
-  "train-valid-test": { syllabus: ["10"], pipeline: "stage-3" },
-  holdout: { syllabus: ["10"], pipeline: "stage-3" },
+  // Phase 3 draft昇格キャンペーン第1バッチ: 13枚をcomplete化(2質問+エッジ2本+アンカーの前提を充足)。
+  "train-valid-test": { syllabus: ["10"], pipeline: "stage-3", status: "complete" },
+  holdout: { syllabus: ["10"], pipeline: "stage-3", status: "complete" },
   "cross-validation": { syllabus: ["10"], pipeline: "stage-5", status: "complete" },
   "confusion-matrix": { syllabus: ["10"], pipeline: "stage-5", status: "complete" },
-  accuracy: { syllabus: ["10"], pipeline: "stage-5" },
+  accuracy: { syllabus: ["10"], pipeline: "stage-5", status: "complete" },
   precision: { syllabus: ["10"], pipeline: "stage-5", status: "complete" },
   recall: { syllabus: ["10"], pipeline: "stage-5", status: "complete" },
-  f1: { syllabus: ["10"], pipeline: "stage-5" },
-  "roc-auc": { syllabus: ["10"], pipeline: "stage-5" },
-  "type-errors": { syllabus: ["10"], pipeline: "stage-5" },
-  mse: { syllabus: ["10", "13"], pipeline: "stage-4" },
-  rmse: { syllabus: ["10"], pipeline: "stage-5" },
-  mae: { syllabus: ["10"], pipeline: "stage-5" },
-  r2: { syllabus: ["10"], pipeline: "stage-5" },
-  "error-function": { syllabus: ["13"], pipeline: "stage-4" },
-  occam: { syllabus: ["10"], pipeline: "stage-5" },
-  "aic-bic": { syllabus: ["10"], pipeline: "stage-5" },
+  f1: { syllabus: ["10"], pipeline: "stage-5", status: "complete" },
+  "roc-auc": { syllabus: ["10"], pipeline: "stage-5", status: "complete" },
+  "type-errors": { syllabus: ["10"], pipeline: "stage-5", status: "complete" },
+  mse: { syllabus: ["10", "13"], pipeline: "stage-4", status: "complete" },
+  rmse: { syllabus: ["10"], pipeline: "stage-5", status: "complete" },
+  mae: { syllabus: ["10"], pipeline: "stage-5", status: "complete" },
+  r2: { syllabus: ["10"], pipeline: "stage-5", status: "complete" },
+  "error-function": { syllabus: ["13"], pipeline: "stage-4", status: "complete" },
+  occam: { syllabus: ["10"], pipeline: "stage-5", status: "complete" },
+  "aic-bic": { syllabus: ["10"], pipeline: "stage-5", status: "complete" },
 
   // --- dl-foundation ---
   "neural-network": { syllabus: ["11"], pipeline: "stage-4", status: "complete" },
@@ -2871,6 +2925,18 @@ export const relations: ConceptRelation[] = [
   r("rmse", "mse", "is_a"),
   r("mae", "regression-task", "used_for"),
   r("aic-bic", "occam", "used_for"),
+  // Phase 3 draft昇格キャンペーン第1バッチ(evaluationカテゴリ)で追加。
+  r("holdout", "train-valid-test", "is_a"),
+  r("accuracy", "f1", "contrasts_with"),
+  r("roc-auc", "confusion-matrix", "requires"),
+  r("type-errors", "confusion-matrix", "used_for"),
+  r("type-errors", "classification-task", "used_for"),
+  r("rmse", "mae", "contrasts_with"),
+  r("r2", "regression-task", "used_for"),
+  r("aic-bic", "r2", "contrasts_with"),
+  r("mse", "error-function", "is_a"),
+  r("mae", "error-function", "is_a"),
+  r("regularization", "occam", "used_for"),
   r("neural-network", "ml", "is_a"),
   r("perceptron", "neural-network", "is_a"),
   r("mlp", "neural-network", "is_a"),
