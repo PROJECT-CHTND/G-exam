@@ -202,10 +202,9 @@ cnn-rnn/attention/transformer/genai)は、削除禁止方針により `stories.t
 
 ## 第6章 ディープラーニングの応用例
 
-### 項目26: 画像認識 ✅
-- [ ] MnasNet(個別カード・軽微)
-- [ ] PSPNet(個別カード・軽微)
-- [ ] Wide ResNet(個別カード・軽微)
+### 項目26: 画像認識 ✅ **(掃討バッチCで完了)**
+- [x] MnasNet・PSPNet・Wide ResNet(畳み込み → `resnet`。examHintに3モデルの名称と一言説明を追記。
+  個別カード化するほどの独立した出題価値はないと判断し軽量な畳み込みとした)
 
 ### 項目27: 自然言語処理 ✅ **(Phase 3バッチ8でタスク系5件完了。要素技術カードのBERT/word2vec等は既存draftのまま=別バッチ)**
 - [x] 統計的機械翻訳(項目2バッチで作成、`syllabus: ["2","27"]`で二重紐付け済み)
@@ -222,33 +221,39 @@ cnn-rnn/attention/transformer/genai)は、削除禁止方針により `stories.t
 - [x] 話者識別(新設`speaker-identification`)
 - [x] 感情分析(項目27の`sentiment-analysis`と共有、二重紐付け済み)
 
-### 項目29: 深層強化学習 ✅
-- [ ] Agent57
-- [ ] APE-X
-- [ ] 残差強化学習
-- [ ] 状態表現学習
-- [ ] 連続値制御
+### 項目29: 深層強化学習 ✅ **(掃討バッチCで完了)**
+- [x] Agent57・APE-X(掃討バッチCでグループ化新設`distributed-deep-rl`。DQN/Rainbowの分散拡張として
+  requires/evolves_to)
+- [x] 連続値制御(掃討バッチCで新設`continuous-control`。DQN(離散行動)とcontrasts_with)
+- [x] 残差強化学習(畳み込み → `continuous-control`。beforeAndGapに「古典制御とRLを組み合わせる
+  発展形」として言及)
+- [x] 状態表現学習(畳み込み → `feature`(特徴量)。examHintに「強化学習における状態表現学習も
+  特徴量学習の一種」を追記)
 
-### 項目30: データ生成 ✅
-- [ ] NeRF
+### 項目30: データ生成 ✅ **(掃討バッチCで完了)**
+- [x] NeRF(掃討バッチCで新設`nerf`。GAN・拡散モデルとcontrasts_with — 2D画像生成 vs 3Dシーンの
+  暗黙表現)
 
-### 項目31: 転移学習・ファインチューニング 🟡
-- [ ] **破壊的忘却(catastrophic forgetting)** — 未収録が明確な重要語。優先度高
-- [ ] One-shot学習
+### 項目31: 転移学習・ファインチューニング ✅ **(掃討バッチCで完了)**
+- [x] 破壊的忘却(catastrophic forgetting)(掃討バッチCで新設`catastrophic-forgetting`。
+  kind: problem。transfer-learning/fine-tuningからsuffers_from。solvesエッジは未整備のため
+  「未解決問題」WARNINGとして正直に残置 — 対策カード(EWC等)未整備という「後者」ケースであり
+  unresolvedは使わない)
+- [x] One-shot学習(掃討バッチCで新設`one-shot-learning`。few-shotのis_a、zero-shotとcontrasts_with)
 
-### 項目32: マルチモーダル 🟡
-- [ ] DALL-E
-- [ ] Flamingo
-- [ ] Image Captioning
-- [ ] VQA
-- [ ] zero-shot(明示カード)
-- [ ] マルチタスク学習
+### 項目32: マルチモーダル ✅ **(掃討バッチCで完了)**
+- [x] DALL-E・Flamingo(掃討バッチCでグループ化新設`multimodal-generative-models`。CLIP/Transformer
+  を基盤とする)
+- [x] Image Captioning・VQA(掃討バッチCでグループ化新設`vision-language-tasks`)
+- [x] zero-shot(掃討バッチCで新設`zero-shot`。CLIPのused_for先、one-shot-learningとcontrasts_with)
+- [x] マルチタスク学習(掃討バッチCで新設`multi-task-learning`。転移学習とcontrasts_with)
 
-### 項目33: モデルの解釈性 ✅
-- [ ] Permutation Importance
+### 項目33: モデルの解釈性 ✅ **(掃討バッチCで完了)**
+- [x] Permutation Importance(掃討バッチCで新設`permutation-importance`。SHAPとcontrasts_with)
 
-### 項目34: モデルの軽量化 ✅
-- [ ] 宝くじ仮説(Lottery Ticket Hypothesis)
+### 項目34: モデルの軽量化 ✅ **(掃討バッチCで完了)**
+- [x] 宝くじ仮説(Lottery Ticket Hypothesis)(掃討バッチCで新設`lottery-ticket-hypothesis`。
+  プルーニングをrequires)
 
 ---
 
@@ -300,6 +305,21 @@ cnn-rnn/attention/transformer/genai)は、削除禁止方針により `stories.t
 対象外。パイプラインのdraftスタブでのみ言及する方針(RESTRUCTURE_PLAN.md §3.3)。棚卸し・チェックボックス管理の対象外とする。
 
 ---
+
+## 掃討完了後の既知の残存WARNING(draft昇格バッチで対応予定)
+
+掃討バッチA〜C完了時点(validate実行)で、キーワード消し込み(本表の`[x]`)は完了しているが
+`status: complete`のカードが1枚もないために残る「網羅性」WARNINGが4件ある。これは
+**キーワード網羅性の欠落ではなく、既存カードのdraft→complete昇格が未着手なだけ**であり、
+次工程の「既存カードのdraft昇格バッチ」で解消する想定。
+
+- 項目17「全結合層」/ 項目21「スキップ結合」/ 項目25「データ拡張」/ 項目26「画像認識」
+  (項目26は掃討バッチCでMnasNet等をresnetへ畳み込んだが、resnet自体は昇格対象がまだdraftのまま)
+
+また、`catastrophic-forgetting`(掃討バッチC)は`kind: problem`だが`solves`エッジが0本のため
+「未解決問題」WARNINGが1件残る。これは対策カード(EWC等)が未整備なだけの状態であり、
+`unresolved: true`は使わない(本質的に未解決な問題ではなく、対策カードが未整備なだけの
+「後者」ケースという既定の使い分けに従う)。対策カードを新設した際にsolvesエッジを追加して解消する。
 
 ## 運用ルール
 
