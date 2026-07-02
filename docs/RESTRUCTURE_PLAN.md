@@ -267,8 +267,10 @@ export type Era = {
   「章ストーリー」を実質的に兼ねる。条件: ①stage-1〜7が一貫した題材で語られていること(現状:
   外観検査AIで統一、満たしている) ②**項目35バッチのスコープに、stage-1(企画・課題定義)本文の
   厚み再点検(他stageと比べて薄い場合は加筆)を必須タスクとして含めること**(項目35バッチのカード
-  作成・validateと同一コミット、または直後の1コミットで完了させる) ③本項目としてこの例外をここに
-  明記すること(本項目、済み)。
+  作成・validateと同一コミット、または直後の1コミットで完了させる。**Phase 3バッチ7で履行済み**:
+  stage-1にcrisp-dm/crisp-ml/poc/waterfall/agile/stakeholder-needs/data-scientist/open-innovation/
+  ai-business-application/ai-level-classification/simple-control-programの11枚をconceptIdsとして
+  接続し、AI適用可否判断の記述を加筆) ③本項目としてこの例外をここに明記すること(本項目、済み)。
 
 ### 5.2 概念地図と白地図(ConceptGraph の拡張)
 

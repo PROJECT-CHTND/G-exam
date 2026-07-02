@@ -62,6 +62,10 @@ function statusOf(concept: Concept) {
 // Phase 3項目1バッチレビューで判明: ai-effect(kind=problem, complete)がアンカー未設定のまま
 // 出荷されていた。既存のproblemカード(frame-problem等)は元々timeline/pipelineを付与する
 // 運用だったため、このチェックをproblemにも適用して機械検出できるようにする。
+//
+// personを対象外とする理由: personはtimeline/pipelineという「概念の背骨接続」ではなく、
+// proposedエッジ(その人物が何を提案したか)によってグラフに接続される種別だからである
+// (§4節でproposedエッジの有無を別途チェック済み)。
 // ---------------------------------------------------------------------------
 for (const c of concepts) {
   if (statusOf(c) !== "complete") continue;

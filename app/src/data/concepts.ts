@@ -11,10 +11,12 @@ export type ConceptCategory =
   | "sequence-nlp-speech"
   | "deep-rl"
   | "generative-ai"
-  | "xai-compression";
+  | "xai-compression"
+  | "ai-project";
 // 注記(Phase 3 バッチ1): "ai-history" は本バッチでシラバス項目2の実カードを投入したため型に追加した。
-// "ai-project"(社会実装工程用語)はまだ実カードがないため、投入するバッチ(項目36等)まで型に追加しない
-// (RESTRUCTURE_PLAN.md §3.3。先行して型だけ増やさない方針を継続)。
+// 注記(Phase 3 バッチ7): "ai-project"(社会実装工程用語)は項目36では既存カテゴリで足りたため
+// 追加を見送っていたが、項目35(CRISP-DM・PoC・アジャイル等)は既存カテゴリのどれにも当てはまらず、
+// 実カードを投入する本バッチで型に追加した(先行して型だけ増やさない方針は継続)。
 
 /**
  * 関係の型。方向規約(from → to の意味)は RESTRUCTURE_PLAN.md §3.2 に準拠する。
@@ -212,6 +214,12 @@ export const categoryMeta: ConceptCategoryMeta[] = [
     label: "解釈性・軽量化・実装",
     shortLabel: "XAI/軽量化",
     description: "モデルを説明し、軽くし、運用しやすくするための技術。",
+  },
+  {
+    id: "ai-project",
+    label: "AIプロジェクトの進め方",
+    shortLabel: "AI企画・運用",
+    description: "ビジネス課題定義から進め方の型(CRISP-DM等)、体制・外部連携までを含む社会実装の工程。",
   },
 ];
 
@@ -1638,9 +1646,11 @@ export const concepts: Concept[] = [
       "全て書き切っている点が、探索・推論を行うレベル2(古典的な人工知能)との違いになる。",
     examHint: "人工知能のレベル分類のレベル1として、レベル2(古典的な人工知能)との違い(探索・推論を含むかどうか)が問われる。",
     recall: "単純な制御プログラムが、人工知能のレベル分類のレベル2(古典的な人工知能)とどのように異なるかを説明せよ。",
-    // レビューテンプレ(complete前提条件): timeline/pipelineどちらのアンカーも自然に張れない
-    // (AIブームの歴史的な物語には属さず、レベル分類という現代の教育用フレームワーク内の位置づけの
-    // ため)。era anchorの物語的帰属ルールに従い、単一eraに矮小化せずdraft残置とする。
+    // stage-1再判定(項目35バッチ): 「ルールベースの画像処理(レベル1)で足りるか、学習ベースのAI
+    // (レベル3・4)が本当に必要か」というAI適用可否判断の道具としてstage-1本文に自然に登場するため、
+    // pipeline: stage-1 を付与しcomplete化する。
+    pipeline: "stage-1",
+    status: "complete",
   },
   {
     id: "classical-ai",
@@ -1679,9 +1689,12 @@ export const concepts: Concept[] = [
       "機械学習→深層学習)ともおおむね対応する。",
     examHint: "4つのレベルの名称と、それぞれどの技術に対応するかの組み合わせが問われる。",
     recall: "人工知能のレベル分類における4つのレベルを、レベルが上がるにつれて何が変化するかとともに説明せよ。",
-    // レビューテンプレ(complete前提条件): 4レベルがera-01/02/04(レベル2)・era-06(レベル3)・
-    // era-05/07/08(レベル4)と複数eraにまたがるため、todai-robot/question-answering等と同様に
-    // 単一eraへの矮小化を避け、draft残置とする(era anchorの物語的帰属ルール)。
+    // timelineは依然draft相当(4レベルがera-01/02/04・06・05/07/08と複数eraにまたがるため、
+    // 単一eraへの矮小化は避ける)。ただしstage-1再判定(項目35バッチ): 「この課題にどのレベルの
+    // 技術が必要か」を判断する道具としてstage-1本文に自然に登場するため、pipelineアンカーで
+    // complete化する(timeline/pipelineは「少なくとも一方」で足りる規約どおり)。
+    pipeline: "stage-1",
+    status: "complete",
   },
   {
     id: "deep-learning",
@@ -1713,7 +1726,187 @@ export const concepts: Concept[] = [
     kind: "person",
     syllabus: ["1"],
     summary: "著書『人工知能は人間を超えるか』(2015年)で人工知能を「単純な制御プログラム/古典的な人工知能/機械学習/深層学習」の4レベルに整理し、日本における第3次AIブームの理解を広めた研究者。",
-    examHint: "人工知能のレベル分類(4段階)の提唱者として問われる。",
+    examHint: "4段階のレベル分類(単純な制御プログラム/古典的な人工知能/機械学習/深層学習)は松尾豊による整理として出題される。出典は『人工知能は人間を超えるか』(2015年)。",
+    status: "complete",
+  },
+
+  // Phase 3 バッチ7: シラバス項目35(AIプロジェクトの進め方)
+  {
+    id: "crisp-dm",
+    term: "CRISP-DM",
+    category: "ai-project",
+    kind: "concept",
+    syllabus: ["35"],
+    pipeline: "stage-1",
+    summary: "データマイニング・機械学習プロジェクトの標準的な進め方を「業務理解→データ理解→データ準備→モデリング→評価→展開」の6工程で示すプロセスモデル。",
+    bornToSolve: "データ分析プロジェクトが場当たり的に進められ、業務課題との対応や評価基準が曖昧になりがちだったことを受け、業種を問わず使える標準的な進行の型を提供するために策定された。",
+    beforeAndGap: "各工程は一方通行ではなく、評価の結果に応じて業務理解やデータ理解に戻るなど工程間を反復しながら進める点が特徴。CRISP-DMはモデルを展開した時点で工程を終え、運用後の継続的な監視・再学習までは明示的に扱わない。",
+    examHint: "6工程の名称と順序、工程間を反復する点が問われる。",
+    recall: "CRISP-DMの6つの工程を順に挙げ、工程間がどのように反復されるかを説明せよ。",
+    status: "complete",
+  },
+  {
+    id: "crisp-ml",
+    term: "CRISP-ML(Q)",
+    category: "ai-project",
+    kind: "concept",
+    syllabus: ["35"],
+    pipeline: "stage-1",
+    summary: "CRISP-DMを機械学習プロジェクト向けに拡張し、モデルの運用・監視(モニタリング&メンテナンス)まで工程として明示したプロセスモデル。",
+    bornToSolve: "CRISP-DMがモデルを「展開」した時点で工程を終えるのに対し、機械学習モデルは運用後もデータドリフト等により性能が劣化するため、継続的な監視・保守までを標準工程に含める必要から拡張された。",
+    beforeAndGap: "CRISP-DMは展開(デプロイ)がゴールだが、CRISP-ML(Q)は展開後の監視・保守を最終工程として明示し、品質保証(Quality assurance)の観点を各工程に組み込む点が異なる。",
+    examHint: "CRISP-DMとの違い(運用・監視工程を明示する点)が問われる。",
+    recall: "CRISP-ML(Q)がCRISP-DMと比べて何を拡張したかを説明せよ。",
+    status: "complete",
+  },
+  {
+    id: "poc",
+    term: "PoC(概念実証)",
+    category: "ai-project",
+    kind: "concept",
+    syllabus: ["35"],
+    pipeline: "stage-1",
+    summary: "本格導入の前に、小規模なデータ・環境でAIが技術的に実現可能かどうかを検証する段階。",
+    bornToSolve: "AI導入には不確実性が大きく、本格的な開発に着手してから「そもそも実現できない」と判明すると投資が無駄になるため、小規模な検証によって早期にリスクを見極めるために行われる。",
+    beforeAndGap:
+      "PoCを経ずに本開発へ進むと、データの質や量が想定と異なる、期待した精度に達しないといった問題が" +
+      "開発の後半で発覚しやすい。PoCはAIのビジネス活用を検討する取り組みの一部として位置づけられ、" +
+      "産学連携などのオープン・イノベーションの枠組みの中で行われることも多い。",
+    examHint: "「概念実証」という訳語と、本格導入前の小規模な検証段階である点が問われる。",
+    recall: "PoCとは何かを説明し、これを行わずに本開発へ進むとどのような問題が起きやすいかを述べよ。",
+    status: "complete",
+  },
+  {
+    id: "waterfall",
+    term: "ウォーターフォール",
+    category: "ai-project",
+    kind: "concept",
+    syllabus: ["35"],
+    pipeline: "stage-1",
+    summary: "要件定義→設計→実装→テストの各工程を順番に完了させてから次に進む、上流から下流へ一方向に流れる開発の進め方。",
+    bornToSolve: "工程ごとに完了条件を明確にし、進捗管理をしやすくするために整理された、伝統的なシステム開発の進め方。",
+    beforeAndGap:
+      "AIプロジェクトはデータを実際に分析してみるまで精度や実現可能性が分からないことが多く、" +
+      "要件を最初に完全に固めるウォーターフォールは相性が悪い場合がある。小さく試して繰り返す" +
+      "アジャイルが対比される。",
+    examHint: "AIプロジェクトとの相性の悪さ(要件を事前に完全に固めにくい)が、アジャイルとの対比で問われる。",
+    recall: "ウォーターフォール型の進め方が、AIプロジェクトにおいてどのような場面で相性が悪いかを説明せよ。",
+    status: "complete",
+  },
+  {
+    id: "agile",
+    term: "アジャイル",
+    category: "ai-project",
+    kind: "concept",
+    syllabus: ["35"],
+    pipeline: "stage-1",
+    summary: "小さな単位で実装・検証を繰り返しながら、状況の変化に応じて計画を見直していく開発の進め方。",
+    bornToSolve: "要件を最初に完全に固めるウォーターフォールでは、実際にデータを分析してみて初めて分かる制約に対応しにくいため、小さく試して結果を見ながら計画を調整できる進め方が求められた。",
+    beforeAndGap:
+      "ウォーターフォールは工程ごとに完了させてから次に進むのに対し、アジャイルは小さな単位" +
+      "(スプリント等)で実装・検証を繰り返す。PoCのような小規模な実現可能性検証も、" +
+      "アジャイル的な進め方の一例といえる。",
+    examHint: "PoCとの相性の良さ(小さく試して検証を繰り返す点が共通)が問われる。",
+    recall: "アジャイルがウォーターフォールと比べてAIプロジェクトに適しているとされる理由を説明せよ。",
+    status: "complete",
+  },
+  {
+    id: "stakeholder-needs",
+    term: "ステークホルダーのニーズ",
+    category: "ai-project",
+    kind: "concept",
+    syllabus: ["35"],
+    pipeline: "stage-1",
+    summary: "AIプロジェクトの発注者・経営層・現場の利用者など、プロジェクトに関わる関係者(ステークホルダー)が本当に解決したい業務課題・要求。",
+    bornToSolve: "技術的に実現可能なことと、現場が本当に求めている解決策は一致しないことが多く、開発が進んでから「思っていたものと違う」という手戻りが起きやすいため、企画・課題定義の最初の段階でニーズを明確にする必要がある。",
+    beforeAndGap:
+      "技術起点で「AIで何ができるか」から考え始めると、現場で使われない・KPIに結びつかないAIになり" +
+      "やすい。ステークホルダーのニーズという業務起点から出発し、それを技術的な課題定義に翻訳する" +
+      "役割をデータサイエンティストが担う。",
+    examHint: "技術起点ではなく業務課題起点で進めるべき理由として、ステークホルダーのニーズの明確化が問われる。",
+    recall: "ステークホルダーのニーズを企画段階で明確にしないと、どのような問題が起きやすいかを説明せよ。",
+    status: "complete",
+  },
+  {
+    id: "data-scientist",
+    term: "データサイエンティスト",
+    category: "ai-project",
+    kind: "concept",
+    syllabus: ["35"],
+    pipeline: "stage-1",
+    summary: "統計学・機械学習などの技術的知見と業務知識の両方を用いて、ステークホルダーのニーズを技術的な課題定義に翻訳し、データ分析・モデル開発を担う人材・役割。",
+    bornToSolve: "AIプロジェクトでは、技術だけでも業務知識だけでも「解くべき課題」を正しく定義できないため、両方の視点を橋渡しする専門人材が必要とされるようになった。",
+    beforeAndGap:
+      "従来のシステム開発では要件定義から実装までを分業することが多いが、AIプロジェクトでは" +
+      "試行錯誤しながらデータの性質を理解する必要があるため、業務理解・データ理解・モデリングを" +
+      "一貫して担う役割が重視される。",
+    examHint: "技術的知見と業務知識の両方を橋渡しする役割である点が問われる。",
+    recall: "データサイエンティストがAIプロジェクトにおいてどのような役割を担うかを説明せよ。",
+    status: "complete",
+  },
+  {
+    id: "open-innovation",
+    term: "オープン・イノベーション",
+    category: "ai-project",
+    kind: "concept",
+    syllabus: ["35"],
+    pipeline: "stage-1",
+    summary: "自社だけでなく大学や他企業・他業種と連携し、外部の技術・知見を取り込みながらイノベーションを進める考え方。産学連携や他企業・他業種との連携が代表例。",
+    bornToSolve:
+      "AI開発には高度な専門知識やデータが必要になることが多く、自社単独では技術・データ・人材の" +
+      "いずれかが不足しがちなため、大学の研究知見(産学連携)や他業種の知見・データを取り込むことで、" +
+      "単独では実現しにくい取り組みを可能にするために広がった。",
+    beforeAndGap: "自社内の研究開発だけでイノベーションを完結させる従来の考え方(クローズド・イノベーション)に対し、オープン・イノベーションは組織の外部との連携を積極的に活用する点が異なる。",
+    examHint: "産学連携や他企業・他業種との連携が、オープン・イノベーションの具体例として問われる。",
+    recall: "オープン・イノベーションとは何かを、産学連携を例に挙げて説明せよ。",
+    status: "complete",
+  },
+  {
+    id: "ai-business-application",
+    term: "AIのビジネス活用",
+    category: "ai-project",
+    kind: "concept",
+    syllabus: ["35"],
+    pipeline: "stage-1",
+    summary: "AIを業務効率化や新規サービスに活用する取り組み全体。既存業務を単純に自動化するだけでなく、業務プロセス自体を見直す機会(BPR: ビジネスプロセス・リエンジニアリング)として捉える視点も含む。",
+    bornToSolve: "AI技術が実用段階に達したことを受け、個々の技術要素を実際の業務課題・収益に結びつけて活用するための考え方として整理されるようになった。",
+    beforeAndGap:
+      "技術起点で「何ができるか」から始めると業務に定着しにくいため、ステークホルダーのニーズという" +
+      "業務起点の課題から始め、PoCで実現可能性を確認しながら進める。自社だけで解決が難しい課題は、" +
+      "産学連携や他業種との連携によるオープン・イノベーションで補うこともある。",
+    examHint: "既存業務の自動化にとどまらず、業務プロセス自体の見直し(BPR)まで含む点、技術起点でなく業務課題起点で進める点が問われる。",
+    recall: "AIのビジネス活用を検討する際、技術起点ではなく業務課題起点で進めるべき理由を説明せよ。",
+    status: "complete",
+  },
+  {
+    id: "ml-dev-environment",
+    term: "開発環境(Python / Jupyter Notebook)",
+    category: "ai-project",
+    kind: "concept",
+    syllabus: ["35"],
+    pipeline: "stage-4",
+    summary: "機械学習モデルの試作・学習に広く使われるプログラミング言語Pythonと、コードと実行結果を対話的に確認しながら分析を進められるJupyter Notebookという実行環境。",
+    bornToSolve: "モデルの試行錯誤には、ライブラリが豊富で書きやすい言語と、途中経過を都度確認しながら進められる対話的な実行環境が必要とされ、この組み合わせが標準的な開発環境として広まった。",
+    beforeAndGap: "スクリプトを一括実行する従来の開発スタイルでは、データの中身や中間結果を都度確認しにくい。Jupyter Notebookはセル単位で実行しながら可視化・確認できる点が異なる。",
+    examHint: "機械学習の試作・学習フェーズで使われる代表的な言語・実行環境として名称が問われる。",
+    recall: "Jupyter Notebookが従来のスクリプト一括実行と比べてどのような利点を持つかを説明せよ。",
+    status: "complete",
+  },
+  {
+    id: "deployment-infra",
+    term: "実装基盤(Docker / Web API / クラウド)",
+    category: "ai-project",
+    kind: "concept",
+    syllabus: ["35"],
+    pipeline: "stage-6",
+    summary: "学習済みモデルを本番環境に組み込み、外部から呼び出せるようにするための代表的な技術・基盤。Dockerで実行環境を丸ごと配布し、Web APIとして推論機能を公開し、クラウド上でサーバーを管理する。",
+    bornToSolve: "開発時と本番環境でライブラリのバージョン等が異なると動作しないという問題を避け、他システムから容易に呼び出せる形でモデルを提供するために、これらの技術が組み合わせて使われる。",
+    beforeAndGap:
+      "開発環境(Python/Jupyter Notebook)で作られたモデルは、そのままでは他システムから呼び出せない。" +
+      "Dockerでの環境の固定化、Web APIとしての公開、クラウド上での運用という工程を経て、初めて" +
+      "他システムから利用可能になる。エッジ側で推論する構成(エッジAI)と対比される。",
+    examHint: "エッジ推論(エッジAI)とクラウド/API経由の推論との対比が問われる。",
+    recall: "学習済みモデルをクラウド上でWeb APIとして公開する構成が、エッジAIと比べてどのような違いがあるかを説明せよ。",
     status: "complete",
   },
 ];
@@ -2361,8 +2554,10 @@ export const relations: ConceptRelation[] = [
   r("artificial-intelligence", "ai-effect", "suffers_from"),
   r("classical-ai", "artificial-intelligence", "is_a"),
   r("expert-system", "classical-ai", "is_a"),
-  // レビュー精査: 探索木は古典的な人工知能の「一種」ではなく「手法の一つ」のため is_a ではなく part_of
-  r("search-tree", "classical-ai", "part_of"),
+  // レビュー再修正: classical-aiは「区分(レベル)」でシステムではないため、part_ofでも構成要素の
+  // 親にはならない(区分が構成要素を持つのはai-level-classificationのような枠組み側)。
+  // 手法×パラダイムの関係はused_forが正(relu → used_for → alexnetと同型)。
+  r("search-tree", "classical-ai", "used_for"),
   r("simple-control-program", "ai-level-classification", "part_of"),
   r("classical-ai", "ai-level-classification", "part_of"),
   r("ml", "ai-level-classification", "part_of"),
@@ -2373,6 +2568,26 @@ export const relations: ConceptRelation[] = [
 
   // レビュー反映: 松尾豊 person化(ai-level-classification新設により見送り理由が失効)
   r("matsuo-yutaka", "ai-level-classification", "proposed"),
+
+  // Phase 3 バッチ7: シラバス項目35(AIプロジェクトの進め方)
+  r("crisp-ml", "crisp-dm", "evolves_to"),
+  r("mlops", "crisp-ml", "part_of"),
+  r("crisp-dm", "stakeholder-needs", "requires"),
+  r("poc", "ai-business-application", "part_of"),
+  r("poc", "open-innovation", "used_for"),
+  r("waterfall", "agile", "contrasts_with"),
+  r("waterfall", "ai-business-application", "used_for"),
+  r("agile", "poc", "used_for"),
+  r("ai-business-application", "stakeholder-needs", "requires"),
+  r("data-scientist", "stakeholder-needs", "requires"),
+  r("data-scientist", "ai-business-application", "part_of"),
+  r("open-innovation", "ai-business-application", "used_for"),
+  r("ai-level-classification", "ai-business-application", "used_for"),
+  r("simple-control-program", "classical-ai", "contrasts_with"),
+  r("ml-dev-environment", "transfer-learning", "used_for"),
+  r("ml-dev-environment", "deployment-infra", "contrasts_with"),
+  r("deployment-infra", "edge-ai", "contrasts_with"),
+  r("deployment-infra", "mlops", "used_for"),
 ];
 
 export const demoLabels: Record<string, string> = {

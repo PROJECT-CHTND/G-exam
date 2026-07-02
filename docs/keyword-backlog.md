@@ -243,17 +243,23 @@ cnn-rnn/attention/transformer/genai)は、削除禁止方針により `stories.t
 
 ## 第7章 AIの社会実装に向けて
 
-### 項目35: AIプロジェクトの進め方 ⬜
-- [ ] AIのビジネス活用
-- [ ] CRISP-DM
-- [ ] CRISP-ML
-- [ ] PoC
-- [ ] アジャイル
-- [ ] ウォーターフォール
-- [ ] ステークホルダーのニーズ
-- [ ] データサイエンティスト
-- [ ] 産学連携
-- [ ] (既存: `mlops` のみ。ほぼ全キーワードが未収録)
+### 項目35: AIプロジェクトの進め方 ✅ **(Phase 3バッチ7で完了)**
+- [x] AIのビジネス活用(`ai-business-application`。BPRの視点も本文に含める)
+- [x] CRISP-DM(`crisp-dm`)
+- [x] CRISP-ML(`crisp-ml`。crisp-dmからのevolves_to)
+- [x] PoC(`poc`)
+- [x] アジャイル(`agile`)
+- [x] ウォーターフォール(`waterfall`。アジャイルとcontrasts_with)
+- [x] ステークホルダーのニーズ(`stakeholder-needs`)
+- [x] データサイエンティスト(`data-scientist`)
+- [x] 産学連携・他企業や他業種との連携(`open-innovation`のカード内で具体例として言及。個別カード化はせず1枚に集約)
+- [x] BPR(`ai-business-application`のカード内で言及。個別カード化はせず1枚に集約)
+- [x] Docker・Web API・クラウド(`deployment-infra`のカード内に集約。エッジAIとcontrasts_with)
+- [x] Python・Jupyter Notebook(`ml-dev-environment`のカード内に集約)
+- [x] オープン・イノベーション(`open-innovation`)
+- [x] MLOps(既存`mlops`。crisp-mlのpart_ofエッジを追加しエッジ2本化)
+- [ ] AIプロジェクトの進め方(項目タイトル自体は個別カード化せず、crisp-dm/poc/waterfall/agile等の
+  カード群で表現。既存の運用ルール(1キーワード=1カードとは限らない)どおり)
 
 ### 項目36: データの収集・加工・分析・学習 ✅
 - [x] アノテーション(`annotation`, pipeline: stage-3)
