@@ -256,7 +256,7 @@ export const categoryMeta: ConceptCategoryMeta[] = [
   },
 ];
 
-const demoLinks: Record<string, string> = {
+export const demoLinks: Record<string, string> = {
   classify: "#classify",
   regression: "#regression",
   cluster: "#cluster",

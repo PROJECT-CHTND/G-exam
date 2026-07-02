@@ -1,42 +1,26 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   categoryMeta,
   conceptById,
   concepts,
-  childrenOf,
-  contrastsOf,
-  demoLabels,
-  parentsOf,
   relatedConcepts,
-  relations,
-  siblingsOf,
   type Concept,
   type ConceptCategory,
-  type RelationType,
+  type ConceptRelation,
 } from "../../data/concepts";
+import { demoByHash } from "../../data/demos";
 import ConceptGraph from "./ConceptGraph";
+import { anchorInfo, kindMeta, kindOf, relationGroupHeading, relationGroupOrder, statusOf } from "./cardMeta";
 
 function normalize(text: string) {
   return text.toLowerCase().replace(/\s+/g, "");
 }
 
-const relationLabel: Record<RelationType, string> = {
-  is_a: "上位・下位関係",
-  part_of: "構成要素",
-  evolves_to: "発展関係",
-  solves: "解決する課題",
-  suffers_from: "抱えている課題",
-  used_for: "使われる場面",
-  contrasts_with: "対比して覚える用語",
-  requires: "前提となる技術",
-  pipeline_next: "手順上のつながり",
-  proposed: "提案した人物",
-};
-
 export default function ReferenceHub() {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<ConceptCategory | "all">("all");
   const [selectedId, setSelectedId] = useState(() => window.sessionStorage.getItem("selectedTermId") ?? "ml");
+  const [highlightPing, setHighlightPing] = useState(0);
 
   const results = useMemo(() => {
     const q = normalize(query);
@@ -51,6 +35,11 @@ export default function ReferenceHub() {
     });
   }, [query, category]);
   const selected = conceptById[selectedId] ?? results[0] ?? concepts[0];
+
+  function selectFromMap(id: string) {
+    setSelectedId(id);
+    setHighlightPing((n) => n + 1);
+  }
 
   return (
     <div className="reference-hub">
@@ -80,12 +69,13 @@ export default function ReferenceHub() {
           <TermGrid concepts={results} selectedId={selected.id} onSelect={setSelectedId} />
         </div>
 
-        <TermCard concept={selected} onSelect={setSelectedId} />
+        <TermCard concept={selected} onSelect={setSelectedId} highlightSignal={highlightPing} />
       </div>
 
       <details className="card pad map-details">
         <summary>関係マップで見る</summary>
-        <ConceptGraph />
+        <p className="graph-sync-note">丸をクリックすると、上の用語カードがその用語に切り替わり、強調表示されます。</p>
+        <ConceptGraph onNodeSelect={selectFromMap} />
       </details>
     </div>
   );
@@ -102,56 +92,105 @@ function TermGrid({
 }) {
   return (
     <div className="term-list">
-      {concepts.map((concept) => (
-        <button
-          className={`term-list-item ${concept.id === selectedId ? "active" : ""}`}
-          key={concept.id}
-          onClick={() => {
-            window.sessionStorage.setItem("selectedTermId", concept.id);
-            onSelect(concept.id);
-          }}
-        >
-          <div className="term-card-head">
-            <b>{concept.term}</b>
-            <span>{categoryMeta.find((item) => item.id === concept.category)?.shortLabel}</span>
-          </div>
-          <small>{concept.summary}</small>
-        </button>
-      ))}
+      {concepts.map((concept) => {
+        const kind = kindMeta[kindOf(concept)];
+        const anchor = anchorInfo(concept);
+        return (
+          <button
+            className={`term-list-item ${concept.id === selectedId ? "active" : ""}`}
+            key={concept.id}
+            onClick={() => {
+              window.sessionStorage.setItem("selectedTermId", concept.id);
+              onSelect(concept.id);
+            }}
+          >
+            <div className="term-card-head">
+              <b>{concept.term}</b>
+              <span>{categoryMeta.find((item) => item.id === concept.category)?.shortLabel}</span>
+            </div>
+            <small>{concept.summary}</small>
+            <div className="term-list-meta">
+              <span className={`kind-dot ${kind.className}`} title={kind.label} />
+              {anchor && <span className="mini-chip mini-chip-anchor">{anchor.text}</span>}
+              {statusOf(concept) === "draft" && <span className="mini-chip mini-chip-draft">整備中</span>}
+            </div>
+          </button>
+        );
+      })}
     </div>
   );
+}
+
+/** エッジ型×方向でグループ化した関係一覧。矢印の向き(from/to)は見出しの区別として保存する。 */
+function useRelationGroups(concept: Concept) {
+  return useMemo(() => {
+    const groups = new Map<string, { heading: string; items: { relation: ConceptRelation; other: Concept }[] }>();
+    for (const relation of relatedConcepts(concept.id)) {
+      const isFrom = relation.from === concept.id;
+      const otherId = isFrom ? relation.to : relation.from;
+      const other = conceptById[otherId];
+      if (!other) continue;
+      // contrasts_with は方向によらず見出し文が同一(対称関係)のため、fwd/revを1グループに統合する。
+      const isSymmetric = relation.type === "contrasts_with";
+      const heading = isFrom ? relationGroupHeading[relation.type].forward : relationGroupHeading[relation.type].reverse;
+      const key = isSymmetric ? `${relation.type}:sym` : `${relation.type}:${isFrom ? "fwd" : "rev"}`;
+      if (!groups.has(key)) groups.set(key, { heading, items: [] });
+      groups.get(key)!.items.push({ relation, other });
+    }
+    return relationGroupOrder
+      .flatMap((type) => (type === "contrasts_with" ? [`${type}:sym`] : [`${type}:fwd`, `${type}:rev`]))
+      .map((key) => groups.get(key))
+      .filter((g): g is NonNullable<typeof g> => !!g && g.items.length > 0);
+  }, [concept.id]);
 }
 
 function TermCard({
   concept,
   onSelect,
+  highlightSignal,
 }: {
   concept: Concept;
   onSelect: (id: string) => void;
+  highlightSignal?: number;
 }) {
-  const related = relatedConcepts(concept.id)
-    .map((relation) => {
-      const otherId = relation.from === concept.id ? relation.to : relation.from;
-      const other = conceptById[otherId];
-      return other ? { relation, other } : null;
-    })
-    .filter(Boolean) as { relation: (typeof relations)[number]; other: Concept }[];
+  const relationGroups = useRelationGroups(concept);
   const category = categoryMeta.find((item) => item.id === concept.category);
-  const parents = parentsOf(concept.id);
-  const children = childrenOf(concept.id).slice(0, 10);
-  const similar = [...contrastsOf(concept.id), ...siblingsOf(concept.id)]
-    .filter((item, index, array) => array.findIndex((other) => other.id === item.id) === index)
-    .slice(0, 10);
+  const kind = kindMeta[kindOf(concept)];
+  const anchor = anchorInfo(concept);
+  const status = statusOf(concept);
+  const articleRef = useRef<HTMLElement>(null);
+  const [flash, setFlash] = useState(false);
+
+  useEffect(() => {
+    if (!highlightSignal) return;
+    articleRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    setFlash(true);
+    const timer = setTimeout(() => setFlash(false), 1400);
+    return () => clearTimeout(timer);
+    // highlightSignalが増分するたびに再スクロール・再強調する(concept.idの変化だけでは反応しない)。
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [highlightSignal]);
 
   function select(id: string) {
     window.sessionStorage.setItem("selectedTermId", id);
     onSelect(id);
   }
 
+  const demo = concept.demo ? demoByHash[concept.demo] : undefined;
+
   return (
-    <article className="card pad term-explanation">
+    <article ref={articleRef} className={`card pad term-explanation ${flash ? "term-explanation-flash" : ""}`}>
       <div className="term-explanation-head">
         <span className="tag">{category?.label}</span>
+        <span className={`tag kind-tag ${kind.className}`}>{kind.label}</span>
+        {anchor && (
+          <span className="tag anchor-tag" title={anchor.title}>
+            {anchor.text}
+          </span>
+        )}
+        <span className={`tag status-tag ${status === "draft" ? "status-draft" : "status-complete"}`}>
+          {status === "draft" ? "整備中(draft)" : "整備済み"}
+        </span>
         {concept.unresolved && concept.unresolvedReason === "proven-limit" ? (
           <span className="tag tag-unresolved" title="数学的に証明された恒久的な制約であり、技術の進歩によって将来解消される性質のものではない。">
             原理的制約(証明済み)
@@ -177,21 +216,6 @@ function TermCard({
         <p>{concept.bornToSolve ?? category?.description}</p>
       </section>
 
-      <section>
-        <h4>上位概念</h4>
-        <ConceptChips concepts={parents} empty="このデータ内では上位概念なし" onSelect={select} />
-      </section>
-
-      <section>
-        <h4>下位概念</h4>
-        <ConceptChips concepts={children} empty="この用語の下位概念は未登録" onSelect={select} />
-      </section>
-
-      <section>
-        <h4>似ているもの</h4>
-        <ConceptChips concepts={similar} empty="比較対象は未登録" onSelect={select} />
-      </section>
-
       {concept.beforeAndGap && (
         <section>
           <h4>その前は何が使われ、何が足りなかった？</h4>
@@ -204,49 +228,30 @@ function TermCard({
         <p>{concept.examHint}</p>
       </section>
 
-      {related.length > 0 && (
-        <details className="related-details">
-          <summary>関係エッジを見る</summary>
-          <div className="related-term-chips">
-            {related.slice(0, 10).map(({ relation, other }) => (
-              <button key={`${relation.from}-${relation.to}-${other.id}`} onClick={() => select(other.id)}>
-                <span>{relationLabel[relation.type]}</span>
-                <b>{other.term}</b>
-              </button>
-            ))}
-          </div>
-        </details>
+      {relationGroups.length > 0 && (
+        <section className="relation-groups">
+          <h4>つながり</h4>
+          {relationGroups.map((group) => (
+            <div className="relation-group" key={group.heading}>
+              <p className="relation-group-heading">{group.heading}</p>
+              <div className="related-term-chips">
+                {group.items.map(({ relation, other }) => (
+                  <button key={`${relation.from}-${relation.to}-${other.id}`} onClick={() => select(other.id)}>
+                    <span>{categoryMeta.find((item) => item.id === other.category)?.shortLabel}</span>
+                    <b>{other.term}</b>
+                  </button>
+                ))}
+              </div>
+            </div>
+          ))}
+        </section>
       )}
 
-      {concept.demo && (
-        <a className="btn primary term-demo-link" href={concept.demo}>
-          対応デモで確認する: {demoLabels[concept.demo]}
+      {demo && (
+        <a className="btn primary term-demo-link" href={demo.hash}>
+          ▶ 動かして理解: {demo.title}
         </a>
       )}
     </article>
-  );
-}
-
-function ConceptChips({
-  concepts,
-  empty,
-  onSelect,
-}: {
-  concepts: Concept[];
-  empty: string;
-  onSelect: (id: string) => void;
-}) {
-  if (concepts.length === 0) {
-    return <p className="empty-copy">{empty}</p>;
-  }
-  return (
-    <div className="related-term-chips">
-      {concepts.map((concept) => (
-        <button key={concept.id} onClick={() => onSelect(concept.id)}>
-          <span>{categoryMeta.find((item) => item.id === concept.category)?.shortLabel}</span>
-          <b>{concept.term}</b>
-        </button>
-      ))}
-    </div>
   );
 }
