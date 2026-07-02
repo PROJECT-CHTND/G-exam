@@ -110,6 +110,40 @@ for (const id of Object.keys(conceptAnchors)) {
 }
 
 // ---------------------------------------------------------------------------
+// 3.6. status: complete の前提条件(kind別、レビュー指摘により新設)
+//
+// 「status: complete ⇒ kind別の必須条件を満たす」を機械検査する。
+// 既存カードへ遡って適用すると違反が多数出る可能性があるため、まずは WARNING として
+// 一覧化し、自動での draft 降格は行わない(人間判断で個別に complete 継続 or draft 降格を決める)。
+// ---------------------------------------------------------------------------
+{
+  const edgeCount = new Map<string, number>();
+  for (const rel of relations) {
+    edgeCount.set(rel.from, (edgeCount.get(rel.from) ?? 0) + 1);
+    edgeCount.set(rel.to, (edgeCount.get(rel.to) ?? 0) + 1);
+  }
+  const proposedFrom = new Set(relations.filter((r) => r.type === "proposed").map((r) => r.from));
+
+  for (const c of concepts) {
+    if (statusOf(c) !== "complete") continue;
+    const kind = kindOf(c);
+    if (kind === "concept") {
+      const count = edgeCount.get(c.id) ?? 0;
+      if (count < 2) {
+        warn(
+          "complete前提条件(concept)",
+          `${c.id}: status=complete だがエッジが${count}本しかない(2本以上を推奨。孤立に近いノード)`
+        );
+      }
+    } else if (kind === "person") {
+      if (!proposedFrom.has(c.id)) {
+        warn("complete前提条件(person)", `${c.id}: status=complete(kind=person)だが proposed エッジが1本もない`);
+      }
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
 // 4. 対称性
 // ---------------------------------------------------------------------------
 {

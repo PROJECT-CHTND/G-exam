@@ -2127,7 +2127,6 @@ export const relations: ConceptRelation[] = [
   r("goodfellow", "gan", "proposed"),
 
   // Phase 3 バッチ5: シラバス項目36(データの収集・加工・分析・学習)
-  r("corpus", "statistical-machine-translation", "used_for"),
   r("corpus", "word2vec", "used_for"),
   r("statistical-machine-translation", "corpus", "requires"),
   r("open-dataset", "transfer-learning", "used_for"),
