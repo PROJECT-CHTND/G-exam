@@ -1564,6 +1564,127 @@ export const concepts: Concept[] = [
     recall: "データリーケージが起こる3つの経路を挙げ、それぞれ「データ分割の工夫だけで防げるか」を説明せよ。",
     status: "complete",
   },
+
+  // Phase 3 バッチ6: シラバス項目1(人工知能の定義)
+  {
+    id: "artificial-intelligence",
+    term: "人工知能(AI)",
+    category: "ai-history",
+    kind: "concept",
+    syllabus: ["1"],
+    timeline: "era-01",
+    summary: "人間の知的な振る舞いを人工的に実現しようとする技術・研究分野の総称だが、専門家の間でも単一の定義には一致していない。",
+    bornToSolve:
+      "「知能とは何か」自体の定義が難しい概念を土台にしているため、1956年のダートマス会議で" +
+      "ジョン・マッカーシーが命名して以降も、「人間のように考える/行動するシステム」" +
+      "「合理的に考える/行動するシステム」など複数の切り口の定義が並立してきた。",
+    beforeAndGap:
+      "命名以前は「考える機械」の研究が個々の関心にとどまっていたが、命名以降も定義は一つに" +
+      "定まらない。新しい能力が実現されるたびに「それは単なる自動化で本当の知能ではない」と" +
+      "再定義されがちで、この現象そのものにAI効果という名前が付いている。",
+    examHint: "人工知能には研究者間で一致した単一の定義が存在しない点、AI効果によって定義の範囲が動き続ける点が定番の出題。",
+    recall: "人工知能という言葉の定義について、専門家の間でどのような状況にあるかを、AI効果という語を用いて説明せよ。",
+    status: "complete",
+  },
+  {
+    id: "ai-effect",
+    term: "AI効果",
+    category: "ai-history",
+    kind: "problem",
+    syllabus: ["1"],
+    summary: "人工知能で新しい能力が実現されるたびに、「それは単純な自動化であって本当の知能ではない」とみなされ、人工知能とされる範囲が狭められていく心理的傾向。",
+    bornToSolve:
+      "人間は「解明され、原理が分かってしまった知的作業」を「単なる計算・自動化」とみなし、" +
+      "「まだ解明されていない神秘的な部分」だけを知能と呼びたがる傾向があるために生じる。",
+    beforeAndGap:
+      "放置すると、人工知能が達成した実績がその都度「本当のAIではない」と評価され、人工知能の" +
+      "定義が実現するたびに後退していく。将棋・チェスでAIが勝利したことや、経路探索・画像認識が" +
+      "実用化されたことが、AI効果の実例としてよく挙げられる。",
+    examHint: "「〇〇が実現されたら、それはAIと呼ばれなくなる」という現象そのものを指す語として問われる。将棋・チェスの例とセットで出題されがち。",
+    recall: "AI効果とは何かを説明し、その具体例を1つ挙げよ。",
+    status: "complete",
+    // AI効果は技術的な対策で「解決」できる問題ではなく、人間の認知傾向そのものであるため、
+    // unresolvedの使い分け原則(本質的に未解決)に該当する。solvesエッジは存在しない。
+    unresolved: true,
+  },
+  {
+    id: "simple-control-program",
+    term: "単純な制御プログラム",
+    category: "ai-history",
+    kind: "concept",
+    syllabus: ["1"],
+    summary: "あらかじめ決められたif-thenルールだけで動作する、人工知能のレベル分類における最も基礎的な段階(レベル1)。エアコンの温度制御などが例。",
+    bornToSolve: "外部からの入力に対して、あらかじめ決められた条件分岐で機械的に応答を返すために作られた。エアコンの温度制御や単純なライントレースロボットなどが例。",
+    beforeAndGap:
+      "状況に応じて判断内容自体を学習・変更することはなく、想定していない状況には対応できない。" +
+      "人工知能のレベル分類ではレベル1に位置づけられ、状況に応じた分岐の設計自体を人間があらかじめ" +
+      "全て書き切っている点が、探索・推論を行うレベル2(古典的な人工知能)との違いになる。",
+    examHint: "人工知能のレベル分類のレベル1として、レベル2(古典的な人工知能)との違い(探索・推論を含むかどうか)が問われる。",
+    recall: "単純な制御プログラムが、人工知能のレベル分類のレベル2(古典的な人工知能)とどのように異なるかを説明せよ。",
+    // レビューテンプレ(complete前提条件): timeline/pipelineどちらのアンカーも自然に張れない
+    // (AIブームの歴史的な物語には属さず、レベル分類という現代の教育用フレームワーク内の位置づけの
+    // ため)。era anchorの物語的帰属ルールに従い、単一eraに矮小化せずdraft残置とする。
+  },
+  {
+    id: "classical-ai",
+    term: "古典的な人工知能",
+    category: "ai-history",
+    kind: "concept",
+    syllabus: ["1"],
+    timeline: "era-02",
+    summary: "状況に応じた探索・推論や知識に基づく判断によって単純な制御プログラムより複雑な問題に対応する、初期の記号処理中心のAI。人工知能のレベル分類ではレベル2。",
+    bornToSolve:
+      "単純な制御プログラムでは対応できない、状況に応じて異なる推論の道筋をたどる必要のある問題を" +
+      "扱うために、探索木やルールベースの推論エンジンによる記号処理が発展した。",
+    beforeAndGap:
+      "単純な制御プログラムは固定的なif-thenルールにとどまるのに対し、古典的な人工知能は入力に応じて" +
+      "異なる探索・推論の経路をたどれる。第1次AIブーム(探索・推論)と第2次AIブーム(知識表現)の" +
+      "技術がその中心的な内容にあたる。",
+    examHint: "「対応関係のパターンが事前にすべて設定されている」単純な制御プログラムと、「探索・推論を行う」古典的な人工知能の違いが問われる。",
+    recall: "古典的な人工知能が単純な制御プログラムと比べてどのような点で高度かを説明せよ。",
+    status: "complete",
+  },
+  {
+    id: "ai-level-classification",
+    term: "人工知能のレベル分類",
+    category: "ai-history",
+    kind: "concept",
+    syllabus: ["1"],
+    summary:
+      "人工知能と呼ばれる技術の成熟度の違いを、「レベル1: 単純な制御プログラム」「レベル2: 古典的な" +
+      "人工知能(探索・推論)」「レベル3: 機械学習」「レベル4: 深層学習」の4段階に整理する分類。",
+    bornToSolve:
+      "人工知能と呼ばれる技術の中身は、単純な制御プログラムから深層学習まで技術的な成熟度に大きな" +
+      "差があるため、その違いを整理するために4段階の分類が使われる。",
+    beforeAndGap:
+      "レベルが上がるほど、あらかじめ人間が設計しておく判断ルールの割合が減り、データから自動的に" +
+      "獲得される部分の割合が増えていく。この4分類は歴史的な発展順(第1次・第2次AIブーム→統計的" +
+      "機械学習→深層学習)ともおおむね対応する。",
+    examHint: "4つのレベルの名称と、それぞれどの技術に対応するかの組み合わせが問われる。",
+    recall: "人工知能のレベル分類における4つのレベルを、レベルが上がるにつれて何が変化するかとともに説明せよ。",
+    // レビューテンプレ(complete前提条件): 4レベルがera-01/02/04(レベル2)・era-06(レベル3)・
+    // era-05/07/08(レベル4)と複数eraにまたがるため、todai-robot/question-answering等と同様に
+    // 単一eraへの矮小化を避け、draft残置とする(era anchorの物語的帰属ルール)。
+  },
+  {
+    id: "deep-learning",
+    term: "ディープラーニング(深層学習)",
+    category: "dl-foundation",
+    kind: "concept",
+    syllabus: ["1"],
+    timeline: "era-08",
+    summary: "多数の層を持つニューラルネットワークを用いて、データから特徴量そのものを自動的に学習する機械学習の一分野。人工知能のレベル分類ではレベル4。",
+    bornToSolve:
+      "統計的機械学習が特徴量エンジニアリング(人が特徴量を設計する作業)をボトルネックとして" +
+      "抱えていたことを受け、特徴量そのものをデータから自動的に学習できないかという発想から発展した。",
+    beforeAndGap:
+      "統計的機械学習は人が設計した特徴量の質に性能が依存したが、深層学習は多層のニューラル" +
+      "ネットワークがデータから直接、有効な特徴量に相当する内部表現を学習する。2012年のILSVRCで" +
+      "AlexNetが従来手法を大差で上回ったことで、実用段階に達したことが実証された。",
+    examHint: "特徴量エンジニアリングを人手で行うか、データから自動学習するかという観点で統計的機械学習と対比される。",
+    recall: "深層学習が統計的機械学習と比べてどのような点で異なるかを、特徴量という語を用いて説明せよ。",
+    status: "complete",
+  },
 ];
 
 type ConceptAnchor = Partial<Pick<Concept, "kind" | "syllabus" | "timeline" | "pipeline" | "status" | "recall">>;
@@ -2202,6 +2323,21 @@ export const relations: ConceptRelation[] = [
   r("boosting", "underfitting", "solves"),
   r("bagging", "overfitting", "solves"),
   r("boosting", "overfitting", "suffers_from"),
+
+  // Phase 3 バッチ6: シラバス項目1(人工知能の定義) — レベル分類の入れ子構造(AI ⊃ ML ⊃ DL、古典的AI)
+  r("mccarthy", "artificial-intelligence", "proposed"),
+  r("ml", "artificial-intelligence", "is_a"),
+  r("artificial-intelligence", "ai-effect", "suffers_from"),
+  r("classical-ai", "artificial-intelligence", "is_a"),
+  r("expert-system", "classical-ai", "is_a"),
+  r("search-tree", "classical-ai", "is_a"),
+  r("simple-control-program", "ai-level-classification", "part_of"),
+  r("classical-ai", "ai-level-classification", "part_of"),
+  r("ml", "ai-level-classification", "part_of"),
+  r("deep-learning", "ai-level-classification", "part_of"),
+  r("deep-learning", "ml", "is_a"),
+  r("deep-learning", "neural-network", "requires"),
+  r("hinton", "deep-learning", "proposed"),
 ];
 
 export const demoLabels: Record<string, string> = {
