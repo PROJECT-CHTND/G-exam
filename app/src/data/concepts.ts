@@ -866,6 +866,30 @@ const conceptAnchors: Record<string, ConceptAnchor> = {
   "learning-rate": { syllabus: ["16"], pipeline: "stage-4" },
   "epoch-batch": { syllabus: ["16"], pipeline: "stage-4" },
   "gpu-tpu": { syllabus: ["11"], timeline: "era-07" },
+
+  // --- dl-tech ---
+  activation: { syllabus: ["12"], pipeline: "stage-4", status: "complete" },
+  "step-function": { syllabus: ["12"], pipeline: "stage-4" },
+  tanh: { syllabus: ["12"], pipeline: "stage-4" },
+  relu: { syllabus: ["12"], timeline: "era-07" },
+  "leaky-relu": { syllabus: ["12"], pipeline: "stage-4" },
+  gelu: { syllabus: ["12"], pipeline: "stage-4" },
+  "exploding-gradient": { syllabus: ["15"], timeline: "era-05" },
+  "gradient-clipping": { syllabus: ["16"], pipeline: "stage-4" },
+  sgd: { syllabus: ["16"], pipeline: "stage-4" },
+  momentum: { syllabus: ["16"], pipeline: "stage-4" },
+  adagrad: { syllabus: ["16"], pipeline: "stage-4" },
+  rmsprop: { syllabus: ["16"], pipeline: "stage-4" },
+  adam: { syllabus: ["16"], pipeline: "stage-4" },
+  adamw: { syllabus: ["16"], pipeline: "stage-4" },
+  "early-stopping": { syllabus: ["16"], pipeline: "stage-4" },
+  batchnorm: { syllabus: ["19"], pipeline: "stage-4" },
+  layernorm: { syllabus: ["19"], pipeline: "stage-4" },
+  "data-augmentation": { syllabus: ["25"], pipeline: "stage-4" },
+  "cutout-random-erasing": { syllabus: ["25"], pipeline: "stage-4" },
+  "mixup-cutmix": { syllabus: ["25"], pipeline: "stage-4" },
+  autoencoder: { syllabus: ["24"], timeline: "era-07" },
+  pretraining: { syllabus: ["24", "31"], pipeline: "stage-4" },
 };
 
 for (const concept of concepts) {
