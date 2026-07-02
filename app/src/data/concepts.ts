@@ -1461,6 +1461,64 @@ export const concepts: Concept[] = [
     examHint: "GANの提案者(2014年)として問われる。",
     status: "complete",
   },
+
+  // Phase 3 バッチ5: シラバス項目36(データの収集・加工・分析・学習)
+  {
+    id: "corpus",
+    term: "コーパス",
+    category: "sequence-nlp-speech",
+    kind: "concept",
+    syllabus: ["36"],
+    pipeline: "stage-2",
+    summary: "自然言語処理や機械翻訳のために、大量のテキストを集めて構造化したデータの集合。",
+    bornToSolve: "統計的な言語処理やニューラル言語モデルの学習には大量のテキスト事例が必要なため、その学習データとして整備される。",
+    beforeAndGap: "文法規則を人手で書き下すルールベースの手法と異なり、コーパスは大量の実例そのものを与え、そこから統計的・学習的にパターンを捉えさせる点が異なる。",
+    examHint: "統計的機械翻訳やword2vecなど、データ駆動の言語処理手法の学習データとしてセットで問われる。",
+    recall: "コーパスとは何かを説明し、ルールベースの言語処理との違いを述べよ。",
+    status: "complete",
+  },
+  {
+    id: "open-dataset",
+    term: "オープンデータセット",
+    category: "ml-foundation",
+    kind: "concept",
+    syllabus: ["36"],
+    pipeline: "stage-2",
+    summary: "誰でも利用できるように公開されている、学習・評価用のデータセット。",
+    bornToSolve: "モデルの学習や手法の比較には大量のデータが必要だが、個々の研究者や企業がゼロから収集するのはコストが高いため、共通のベンチマークとして公開・共有される。",
+    beforeAndGap: "各自が独自にデータを収集すると規模も品質もばらつき、手法同士の性能比較が難しい。オープンデータセットは共通の土台を提供し、転移学習の事前学習データとしても使われる。",
+    examHint: "MNISTやImageNetのような具体例とあわせて、転移学習の事前学習に使われる点が問われる。",
+    recall: "オープンデータセットが機械学習の研究・開発でどのような役割を果たすかを説明せよ。",
+    status: "complete",
+  },
+  {
+    id: "annotation",
+    term: "アノテーション",
+    category: "ml-foundation",
+    kind: "concept",
+    syllabus: ["36"],
+    pipeline: "stage-3",
+    summary: "収集したデータに、正解ラベルや意味のあるタグを人手で付与する作業。",
+    bornToSolve: "教師あり学習でモデルを訓練するには入力データに対応する正解ラベルが必要であり、そのラベルを人手で作成するために行う。",
+    beforeAndGap: "生データそのものには正解ラベルが含まれていないため、アノテーションによってはじめて教師あり学習に使えるデータになる。作業者間で基準が揺れると学習データの質がばらつく点が課題となる。",
+    examHint: "外観検査AIなど画像分類の事例で「良品/不良品のラベル付け」として具体的に問われる。",
+    recall: "アノテーションとは何か、なぜ教師あり学習にとって必要かを説明せよ。",
+    status: "complete",
+  },
+  {
+    id: "data-leakage",
+    term: "データリーケージ",
+    category: "evaluation",
+    kind: "problem",
+    syllabus: ["36"],
+    pipeline: "stage-3",
+    summary: "本来モデルが学習時に知り得ないはずの情報が訓練データに混入し、評価時の性能を実際より高く見せてしまう問題。",
+    bornToSolve: "同一ロットや同一撮影セッションの画像が訓練セットとテストセットの両方に混入する、あるいは将来の情報が特徴量に紛れ込むなど、データ分割や前処理の不備によって発生する。",
+    beforeAndGap: "見かけ上の評価指標(正解率など)が実際の運用性能より過大に高く出てしまい、本番環境に投入して初めて性能が出ないことに気づく、という失敗につながる。",
+    examHint: "外観検査AIのデータ加工工程の典型的な失敗例として、訓練・テストデータの分割方法とセットで問われる。",
+    recall: "データリーケージとは何か、具体例を挙げて説明せよ。",
+    status: "complete",
+  },
 ];
 
 type ConceptAnchor = Partial<Pick<Concept, "kind" | "syllabus" | "timeline" | "pipeline" | "status" | "recall">>;
@@ -2050,6 +2108,14 @@ export const relations: ConceptRelation[] = [
   r("lecun", "lenet", "proposed"),
   r("bengio", "attention", "proposed"),
   r("goodfellow", "gan", "proposed"),
+
+  // Phase 3 バッチ5: シラバス項目36(データの収集・加工・分析・学習)
+  r("corpus", "statistical-machine-translation", "used_for"),
+  r("corpus", "word2vec", "used_for"),
+  r("open-dataset", "transfer-learning", "used_for"),
+  r("annotation", "supervised-learning", "used_for"),
+  r("train-valid-test", "data-leakage", "solves"),
+  r("cross-validation", "data-leakage", "suffers_from"),
 ];
 
 export const demoLabels: Record<string, string> = {

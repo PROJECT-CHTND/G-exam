@@ -224,11 +224,11 @@
 - [ ] 産学連携
 - [ ] (既存: `mlops` のみ。ほぼ全キーワードが未収録)
 
-### 項目36: データの収集・加工・分析・学習 ⬜
-- [ ] アノテーション
-- [ ] オープンデータセット
-- [ ] コーパス
-- [ ] データリーケージ
+### 項目36: データの収集・加工・分析・学習 ✅
+- [x] アノテーション(`annotation`, pipeline: stage-3)
+- [x] オープンデータセット(`open-dataset`, pipeline: stage-2)
+- [x] コーパス(`corpus`, pipeline: stage-2)
+- [x] データリーケージ(`data-leakage`, kind: problem, pipeline: stage-3)
 
 ---
 
