@@ -975,6 +975,24 @@ const conceptAnchors: Record<string, ConceptAnchor> = {
   fasttext: { syllabus: ["27"], timeline: "era-11" },
   elmo: { syllabus: ["27"], timeline: "era-11" },
   "morph-syntax": { syllabus: ["27"], pipeline: "stage-4" },
+
+  // --- deep-rl ---
+  "deep-rl": { syllabus: ["29"], timeline: "era-13" },
+  dqn: { syllabus: ["29"], timeline: "era-13", status: "complete" },
+  "experience-replay": { syllabus: ["29"], timeline: "era-13" },
+  "double-dqn": { syllabus: ["29"], timeline: "era-13" },
+  "dueling-network": { syllabus: ["29"], timeline: "era-13" },
+  "noisy-network": { syllabus: ["29"], timeline: "era-13" },
+  rainbow: { syllabus: ["29"], timeline: "era-13" },
+  mcts: { syllabus: ["6", "29"], timeline: "era-13" },
+  alphago: { syllabus: ["6", "29"], timeline: "era-13" },
+  alphazero: { syllabus: ["29"], timeline: "era-13" },
+  "multi-agent": { syllabus: ["29"], timeline: "era-13" },
+  "openai-five": { syllabus: ["29"], timeline: "era-13" },
+  alphastar: { syllabus: ["29"], timeline: "era-13" },
+  sim2real: { syllabus: ["29"], timeline: "era-13" },
+  "domain-randomization": { syllabus: ["29"], timeline: "era-13" },
+  "offline-rl": { syllabus: ["29"], timeline: "era-13" },
 };
 
 for (const concept of concepts) {
