@@ -3,9 +3,13 @@ import {
   categoryMeta,
   conceptById,
   concepts,
+  childrenOf,
+  contrastsOf,
   demoLabels,
+  parentsOf,
   relatedConcepts,
   relations,
+  siblingsOf,
   type Concept,
   type ConceptCategory,
   type RelationType,
@@ -29,7 +33,7 @@ const relationLabel: Record<RelationType, string> = {
 export default function ReferenceHub() {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<ConceptCategory | "all">("all");
-  const [selectedId, setSelectedId] = useState("ml");
+  const [selectedId, setSelectedId] = useState(() => window.sessionStorage.getItem("selectedTermId") ?? "ml");
 
   const results = useMemo(() => {
     const q = normalize(query);
@@ -73,7 +77,7 @@ export default function ReferenceHub() {
           <TermGrid concepts={results} selectedId={selected.id} onSelect={setSelectedId} />
         </div>
 
-        <TermExplanation concept={selected} onSelect={setSelectedId} />
+        <TermCard concept={selected} onSelect={setSelectedId} />
       </div>
 
       <details className="card pad map-details">
@@ -99,7 +103,10 @@ function TermGrid({
         <button
           className={`term-list-item ${concept.id === selectedId ? "active" : ""}`}
           key={concept.id}
-          onClick={() => onSelect(concept.id)}
+          onClick={() => {
+            window.sessionStorage.setItem("selectedTermId", concept.id);
+            onSelect(concept.id);
+          }}
         >
           <div className="term-card-head">
             <b>{concept.term}</b>
@@ -112,7 +119,7 @@ function TermGrid({
   );
 }
 
-function TermExplanation({
+function TermCard({
   concept,
   onSelect,
 }: {
@@ -127,6 +134,16 @@ function TermExplanation({
     })
     .filter(Boolean) as { relation: (typeof relations)[number]; other: Concept }[];
   const category = categoryMeta.find((item) => item.id === concept.category);
+  const parents = parentsOf(concept.id);
+  const children = childrenOf(concept.id).slice(0, 10);
+  const similar = [...contrastsOf(concept.id), ...siblingsOf(concept.id)]
+    .filter((item, index, array) => array.findIndex((other) => other.id === item.id) === index)
+    .slice(0, 10);
+
+  function select(id: string) {
+    window.sessionStorage.setItem("selectedTermId", id);
+    onSelect(id);
+  }
 
   return (
     <article className="card pad term-explanation">
@@ -137,27 +154,54 @@ function TermExplanation({
       </div>
 
       <section>
-        <h4>意味</h4>
+        <h4>一言でいうと</h4>
         <p>{concept.summary}</p>
       </section>
 
       <section>
-        <h4>試験での見分け方</h4>
+        <h4>何のために使う？</h4>
+        <p>{concept.purpose ?? category?.description}</p>
+      </section>
+
+      <section>
+        <h4>上位概念</h4>
+        <ConceptChips concepts={parents} empty="このデータ内では上位概念なし" onSelect={select} />
+      </section>
+
+      <section>
+        <h4>下位概念</h4>
+        <ConceptChips concepts={children} empty="この用語の下位概念は未登録" onSelect={select} />
+      </section>
+
+      <section>
+        <h4>似ているもの</h4>
+        <ConceptChips concepts={similar} empty="比較対象は未登録" onSelect={select} />
+      </section>
+
+      {concept.difference && (
+        <section>
+          <h4>違い</h4>
+          <p>{concept.difference}</p>
+        </section>
+      )}
+
+      <section>
+        <h4>試験で聞かれそうな形</h4>
         <p>{concept.examHint}</p>
       </section>
 
       {related.length > 0 && (
-        <section>
-          <h4>一緒に覚える用語</h4>
+        <details className="related-details">
+          <summary>関係エッジを見る</summary>
           <div className="related-term-chips">
             {related.slice(0, 10).map(({ relation, other }) => (
-              <button key={`${relation.from}-${relation.to}-${other.id}`} onClick={() => onSelect(other.id)}>
+              <button key={`${relation.from}-${relation.to}-${other.id}`} onClick={() => select(other.id)}>
                 <span>{relationLabel[relation.type]}</span>
                 <b>{other.term}</b>
               </button>
             ))}
           </div>
-        </section>
+        </details>
       )}
 
       {concept.demo && (
@@ -166,5 +210,29 @@ function TermExplanation({
         </a>
       )}
     </article>
+  );
+}
+
+function ConceptChips({
+  concepts,
+  empty,
+  onSelect,
+}: {
+  concepts: Concept[];
+  empty: string;
+  onSelect: (id: string) => void;
+}) {
+  if (concepts.length === 0) {
+    return <p className="empty-copy">{empty}</p>;
+  }
+  return (
+    <div className="related-term-chips">
+      {concepts.map((concept) => (
+        <button key={concept.id} onClick={() => onSelect(concept.id)}>
+          <span>{categoryMeta.find((item) => item.id === concept.category)?.shortLabel}</span>
+          <b>{concept.term}</b>
+        </button>
+      ))}
+    </div>
   );
 }

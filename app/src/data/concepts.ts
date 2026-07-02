@@ -27,6 +27,8 @@ export type Concept = {
   reading?: string;
   category: ConceptCategory;
   summary: string;
+  purpose?: string;
+  difference?: string;
   examHint: string;
   demo?: string;
 };
@@ -137,6 +139,197 @@ const demoLinks: Record<string, string> = {
   bandit: "#bandit",
 };
 
+const coreLearningNotes: Record<string, Pick<Concept, "purpose" | "difference">> = {
+  ml: {
+    purpose: "人が明示的なルールを書きにくい判断や予測を、データから学ばせるために使う。",
+    difference: "通常のプログラムは人がルールを書く。機械学習はデータからルールに相当するモデルを作る。",
+  },
+  "supervised-learning": {
+    purpose: "過去の正解付きデータを使って、未知データのラベルや数値を予測するために使う。",
+    difference: "教師なし学習は正解ラベルなしで構造を見つける。強化学習は正解ラベルではなく報酬から行動を学ぶ。",
+  },
+  "unsupervised-learning": {
+    purpose: "正解がないデータから、まとまり・軸・潜在トピック・推薦の手がかりを見つけるために使う。",
+    difference: "教師あり学習は正解ラベルを使う。教師なし学習はラベルなしでデータの構造を探す。",
+  },
+  "reinforcement-learning": {
+    purpose: "試行錯誤しながら、長期的な報酬が大きくなる行動の選び方を学ぶために使う。",
+    difference: "教師あり学習は入力ごとの正解を学ぶ。強化学習は状態・行動・報酬の流れから方策を学ぶ。",
+  },
+  "regression-task": {
+    purpose: "価格、体重、需要、温度など連続値を予測するために使う。",
+    difference: "分類はカテゴリを当てる。回帰は数値を当てる。",
+  },
+  "classification-task": {
+    purpose: "画像の種類、迷惑メール判定、陽性/陰性などカテゴリを予測するために使う。",
+    difference: "回帰は連続値を予測する。分類は離散的なクラスを予測する。",
+  },
+  overfitting: {
+    purpose: "モデルが訓練データだけを覚えていないかを判断し、汎化性能を守るために押さえる概念。",
+    difference: "未学習は訓練データにも合わない。過学習は訓練データには合うが未知データに弱い。",
+  },
+  underfitting: {
+    purpose: "モデルが単純すぎる、学習不足、特徴量不足などで性能が出ない状態を見分けるために使う。",
+    difference: "過学習は訓練性能だけ高い。未学習は訓練性能もテスト性能も低い。",
+  },
+  generalization: {
+    purpose: "試験や実務で本当に欲しい、未知データに対する性能を考えるための中心概念。",
+    difference: "訓練精度は学習済みデータへの当てはまり。汎化は未見データへの強さ。",
+  },
+  regularization: {
+    purpose: "モデルの複雑さを抑え、過学習を防ぐために使う。",
+    difference: "Dropoutはニューロンをランダムに無効化する正則化手法。L1/L2正則化は損失にペナルティを足す。",
+  },
+  dropout: {
+    purpose: "ニューラルネットワークが特定のニューロンに依存しすぎるのを防ぎ、過学習を抑えるために使う。",
+    difference: "L1/L2正則化は重みにペナルティをかける。Dropoutは訓練時に一部ユニットを無効化する。",
+  },
+  "linear-regression": {
+    purpose: "説明変数と目的変数の関係を直線や平面で近似し、連続値を予測するために使う。",
+    difference: "ロジスティック回帰は名前に回帰とあるが分類に使う。線形回帰は連続値予測に使う。",
+  },
+  "logistic-regression": {
+    purpose: "確率を出して二値分類や多クラス分類を行うために使う。",
+    difference: "線形回帰は数値をそのまま予測する。ロジスティック回帰はシグモイドなどで確率に変換して分類する。",
+  },
+  svm: {
+    purpose: "クラス間の境界を、最も余裕のある位置に引いて分類するために使う。",
+    difference: "決定木は条件分岐で分類する。SVMはマージン最大化で境界を決める。",
+  },
+  "decision-tree": {
+    purpose: "条件分岐で予測ルールを表し、解釈しやすい分類・回帰を行うために使う。",
+    difference: "SVMは境界を数式的に決める。決定木はif文のような分岐で決める。",
+  },
+  "random-forest": {
+    purpose: "多数の決定木を組み合わせ、単独の木より安定した予測をするために使う。",
+    difference: "決定木は1本の木。ランダムフォレストは多数の木をバギングで作るアンサンブル。",
+  },
+  kmeans: {
+    purpose: "ラベルなしデータを、近さにもとづいてk個のグループに分けるために使う。",
+    difference: "階層的クラスタリングは樹形図を作る。k-meansは中心点と割り当てを反復更新する。",
+  },
+  pca: {
+    purpose: "高次元データを情報をなるべく保ったまま少ない軸に圧縮・可視化するために使う。",
+    difference: "クラスタリングはグループ化。PCAは軸を取り直して次元を減らす。",
+  },
+  "neural-network": {
+    purpose: "入力から出力への複雑な非線形関係を、多数の重みで表現するために使う。",
+    difference: "線形モデルは単純な関係を仮定する。ニューラルネットワークは層と活性化関数で非線形を表す。",
+  },
+  "gradient-descent": {
+    purpose: "損失を小さくする方向へ重みを少しずつ更新するために使う。",
+    difference: "誤差逆伝播法は勾配を計算する仕組み。勾配降下法はその勾配で重みを更新する方法。",
+  },
+  backprop: {
+    purpose: "各重みが損失にどれだけ影響したかを効率よく計算するために使う。",
+    difference: "勾配降下法は更新方法。誤差逆伝播法は更新に必要な勾配を後ろ向きに計算する方法。",
+  },
+  activation: {
+    purpose: "ニューラルネットワークに非線形性を与え、複雑な関係を学習できるようにするために使う。",
+    difference: "重み付き和だけでは線形変換の重ね合わせに近い。活性化関数を入れると非線形表現ができる。",
+  },
+  relu: {
+    purpose: "中間層で計算を単純にしつつ、勾配消失を起こしにくくするために使う。",
+    difference: "シグモイドは0〜1に圧縮する。ReLUは正の値をそのまま通し、負の値を0にする。",
+  },
+  cnn: {
+    purpose: "画像の局所的な模様や形を段階的に捉えるために使う。",
+    difference: "RNNは系列方向の依存を扱う。CNNは画像などの空間的・局所的特徴を扱う。",
+  },
+  "convolution-layer": {
+    purpose: "小さなフィルタを画像上で動かし、エッジや模様などの局所特徴を取り出すために使う。",
+    difference: "全結合層は全入力を結ぶ。畳み込み層は近い範囲に同じフィルタを適用する。",
+  },
+  pooling: {
+    purpose: "特徴マップを縮小し、位置ずれへの強さと計算量削減を得るために使う。",
+    difference: "畳み込みは特徴を抽出する。プーリングは抽出した特徴を要約する。",
+  },
+  rnn: {
+    purpose: "文章、音声、時系列など、順序のあるデータを扱うために使う。",
+    difference: "CNNは空間的特徴に強い。RNNは前の情報を隠れ状態として次へ渡す。",
+  },
+  lstm: {
+    purpose: "長い系列でも重要な情報を保持し、長期依存を扱うために使う。",
+    difference: "通常のRNNは長期依存で勾配消失しやすい。LSTMはゲートとセル状態で記憶を制御する。",
+  },
+  attention: {
+    purpose: "系列の中で、今見るべき入力部分に重みを置くために使う。",
+    difference: "RNNは順番に処理する。Attentionは入力同士の関係を重みとして直接見る。",
+  },
+  transformer: {
+    purpose: "Self-Attentionで系列全体の関係を並列に扱い、大規模言語モデルの土台にするために使う。",
+    difference: "RNNは逐次処理。TransformerはSelf-Attentionにより並列化しやすい。",
+  },
+  bert: {
+    purpose: "文脈を双方向に読んで、文章理解系タスクに強い表現を作るために使う。",
+    difference: "GPTは次トークンを生成するデコーダ型。BERTはマスク語を当てるエンコーダ型。",
+  },
+  gpt: {
+    purpose: "直前までの文脈から次のトークンを予測し、文章を生成するために使う。",
+    difference: "BERTは理解系のエンコーダ型。GPTは生成系のデコーダ型。",
+  },
+  word2vec: {
+    purpose: "単語の意味的な近さや関係をベクトル空間で扱うために使う。",
+    difference: "ワンホットは単語間の近さを表せない。word2vecは意味の近さを距離や方向で表す。",
+  },
+  "generative-model": {
+    purpose: "学習したデータ分布から、新しい画像・文章・音などを作るために使う。",
+    difference: "識別モデルは入力を分類する。生成モデルはデータそのものを生成する。",
+  },
+  gan: {
+    purpose: "生成器と識別器を競わせて、リアルなデータを生成するために使う。",
+    difference: "VAEは潜在分布から生成する。GANは生成器と識別器の敵対的学習で生成する。",
+  },
+  vae: {
+    purpose: "データを潜在空間に圧縮し、その分布から新しいデータを生成するために使う。",
+    difference: "GANは敵対的学習。VAEは確率的な潜在変数と再構成で学習する。",
+  },
+  diffusion: {
+    purpose: "ノイズを少しずつ取り除く過程として、高品質な画像などを生成するために使う。",
+    difference: "GANは生成器が一気に生成する。拡散モデルはノイズ除去を段階的に行う。",
+  },
+  llm: {
+    purpose: "大量のテキストから言語パターンを学び、理解・生成・要約・対話を行うために使う。",
+    difference: "従来の個別NLPモデルはタスクごとに作る。LLMは大規模事前学習で多様なタスクに使える。",
+  },
+  rag: {
+    purpose: "外部文書を検索して回答に使い、知識不足やハルシネーションを減らすために使う。",
+    difference: "ファインチューニングは重みを変える。RAGは検索結果を入力に足し、重みは基本的に変えない。",
+  },
+  "fine-tuning": {
+    purpose: "学習済みモデルを特定タスクやデータに適応させるために使う。",
+    difference: "転移学習は広い概念。ファインチューニングは学習済みモデルを追加学習する具体的手法。",
+  },
+  "transfer-learning": {
+    purpose: "既に学んだ特徴や知識を別タスクに流用し、少ないデータでも性能を出すために使う。",
+    difference: "ファインチューニングは転移学習の一形態で、学習済みモデルを追加で調整する。",
+  },
+  "confusion-matrix": {
+    purpose: "分類結果の当たり外れをTP/FP/FN/TNに分け、指標を計算するために使う。",
+    difference: "正解率は全体の正しさだけを見る。混同行列は誤検出と見逃しを分けて見る。",
+  },
+  precision: {
+    purpose: "陽性と予測したものの信頼性を測るために使う。",
+    difference: "再現率は実際の陽性をどれだけ拾えたか。適合率は陽性予測がどれだけ正しいか。",
+  },
+  recall: {
+    purpose: "本当に陽性のものをどれだけ見逃さず拾えたかを測るために使う。",
+    difference: "適合率は誤検出の少なさ。再現率は見逃しの少なさ。",
+  },
+  "cross-validation": {
+    purpose: "データ分割の偶然に左右されにくく、汎化性能を見積もるために使う。",
+    difference: "ホールドアウトは一度だけ分割する。交差検証は評価役を入れ替えて平均する。",
+  },
+  "q-learning": {
+    purpose: "状態と行動の価値を学び、将来報酬が高い行動を選ぶために使う。",
+    difference: "SARSAは実際に選んだ次行動で更新する。Q学習は次状態で最大のQ値を使う。",
+  },
+  dqn: {
+    purpose: "Q学習の価値関数をニューラルネットワークで近似し、高次元状態を扱うために使う。",
+    difference: "Q学習は表形式でも扱える。DQNは深層学習でQ値を近似する。",
+  },
+};
+
 function c(
   id: string,
   term: string,
@@ -145,7 +338,15 @@ function c(
   examHint: string,
   demo?: keyof typeof demoLinks
 ): Concept {
-  return { id, term, category, summary, examHint, demo: demo ? demoLinks[demo] : undefined };
+  return {
+    id,
+    term,
+    category,
+    summary,
+    ...coreLearningNotes[id],
+    examHint,
+    demo: demo ? demoLinks[demo] : undefined,
+  };
 }
 
 export const concepts: Concept[] = [
@@ -668,4 +869,55 @@ export function conceptsByCategory(category: ConceptCategory): Concept[] {
 
 export function relatedConcepts(id: string): ConceptRelation[] {
   return relations.filter((relation) => relation.from === id || relation.to === id);
+}
+
+const hierarchyTypes: RelationType[] = ["is_a", "part_of"];
+
+function uniqueConcepts(ids: string[]): Concept[] {
+  return Array.from(new Set(ids))
+    .map((id) => conceptById[id])
+    .filter(Boolean);
+}
+
+export function parentsOf(id: string): Concept[] {
+  return uniqueConcepts(
+    relations
+      .filter((relation) => relation.from === id && hierarchyTypes.includes(relation.type))
+      .map((relation) => relation.to)
+  );
+}
+
+export function childrenOf(id: string): Concept[] {
+  return uniqueConcepts(
+    relations
+      .filter((relation) => relation.to === id && hierarchyTypes.includes(relation.type))
+      .map((relation) => relation.from)
+  );
+}
+
+export function contrastsOf(id: string): Concept[] {
+  return uniqueConcepts(
+    relations
+      .filter((relation) => relation.type === "contrasts_with" && (relation.from === id || relation.to === id))
+      .map((relation) => (relation.from === id ? relation.to : relation.from))
+  );
+}
+
+export function siblingsOf(id: string): Concept[] {
+  const parentIds = new Set(parentsOf(id).map((concept) => concept.id));
+  return uniqueConcepts(
+    relations
+      .filter(
+        (relation) =>
+          relation.from !== id &&
+          hierarchyTypes.includes(relation.type) &&
+          parentIds.has(relation.to)
+      )
+      .map((relation) => relation.from)
+  ).slice(0, 8);
+}
+
+export function selectTerm(id: string) {
+  window.sessionStorage.setItem("selectedTermId", id);
+  window.location.hash = "terms";
 }
