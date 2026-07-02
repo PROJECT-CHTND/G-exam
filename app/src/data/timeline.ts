@@ -30,6 +30,12 @@ export type Era = {
   nextWall: string;
   /** era-09以降の枝。未指定は幹(era-01〜08)。 */
   branch?: EraBranch;
+  /**
+   * この era を詳しく肉付けする章ストーリー(stories.ts)のid。
+   * timeline側は「期待→壁→突破」の骨格のみを持ち、比喩・具体例・固有名詞の詳細は
+   * 章ストーリー側に譲る(承認事項2〜4: 相互リンク必須)。
+   */
+  storyId?: string;
 };
 
 export const eras: Era[] = [
@@ -51,6 +57,7 @@ export const eras: Era[] = [
     nextWall:
       "探索・推論はルールの明確な問題(トイ・プロブレム)には強いが、" +
       "現実の複雑な問題には歯が立たないことがすぐに露呈していく。",
+    storyId: "ch-ai-history-debate",
   },
   {
     id: "era-02",
@@ -71,6 +78,7 @@ export const eras: Era[] = [
     nextWall:
       "「知識さえ与えれば良い」という発想も、後にエキスパートシステム自身の" +
       "限界という新しい壁にぶつかる(era-04)。",
+    storyId: "ch-ai-history-debate",
   },
   {
     id: "era-03",
@@ -109,6 +117,7 @@ export const eras: Era[] = [
     breakthroughConceptIds: [],
     nextWall:
       "機械学習を実現する具体的な学習アルゴリズムは、この時点ではまだ実用段階になかった。",
+    storyId: "ch-ai-history-debate",
   },
   {
     id: "era-05",

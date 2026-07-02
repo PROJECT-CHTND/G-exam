@@ -1,12 +1,11 @@
-import { stories } from "../../data/stories";
+import { stories, type Story } from "../../data/stories";
 import { conceptById, selectTerm } from "../../data/concepts";
 
-export default function StoryFlow() {
-  const story = stories[0];
-
+function StoryCard({ story }: { story: Story }) {
   return (
-    <div className="card pad story-card">
+    <div className="card pad story-card" id={`story-${story.id}`}>
       <h3>{story.title}</h3>
+      {story.eraRange && <p className="story-era-range">この章のtimeline上の位置: {story.eraRange}</p>}
       <div className="story-flow">
         {story.steps.map((step, index) => {
           const concept = step.conceptId ? conceptById[step.conceptId] : undefined;
@@ -27,6 +26,16 @@ export default function StoryFlow() {
           );
         })}
       </div>
+    </div>
+  );
+}
+
+export default function StoryFlow() {
+  return (
+    <div className="story-flow-list">
+      {stories.map((story) => (
+        <StoryCard story={story} key={story.id} />
+      ))}
     </div>
   );
 }

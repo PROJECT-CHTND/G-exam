@@ -1075,8 +1075,17 @@ select {
 .comparison-item a {
   font-size: 12px;
 }
+.story-flow-list {
+  display: grid;
+  gap: 20px;
+}
 .story-card h3 {
   margin-bottom: 16px;
+}
+.story-era-range {
+  color: var(--text-soft);
+  font-size: 13px;
+  margin: -8px 0 16px;
 }
 .story-flow {
   display: grid;
@@ -1268,6 +1277,11 @@ select {
   flex-wrap: wrap;
   gap: 6px;
   margin: 4px 0 10px;
+}
+.era-deep-dive {
+  display: inline-block;
+  margin-top: 8px;
+  font-size: 13px;
 }
 .era-link {
   border: 1px solid var(--border);

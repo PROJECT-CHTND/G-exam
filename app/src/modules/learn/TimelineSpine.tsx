@@ -28,6 +28,13 @@ function ConceptLinks({ ids }: { ids: string[] }) {
   );
 }
 
+function goToStory(storyId: string) {
+  window.location.hash = "story";
+  window.setTimeout(() => {
+    document.getElementById(`story-${storyId}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, 60);
+}
+
 function EraCard({ era }: { era: (typeof eras)[number] }) {
   return (
     <div className="era-card">
@@ -50,6 +57,11 @@ function EraCard({ era }: { era: (typeof eras)[number] }) {
         <span className="era-tag next">次の壁</span>
         {era.nextWall}
       </p>
+      {era.storyId && (
+        <button className="text-link era-deep-dive" onClick={() => goToStory(era.storyId!)}>
+          深掘り: 章ストーリーを読む
+        </button>
+      )}
     </div>
   );
 }
