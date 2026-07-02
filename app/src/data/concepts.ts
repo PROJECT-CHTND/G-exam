@@ -897,7 +897,10 @@ export const concepts: Concept[] = [
       "身体性を重視する立場は、ロボットのように実世界とセンサー・アクチュエータを通じて関わることで、記号に実世界の意味を根付かせようとする。",
     examHint: "シンボルグラウンディング問題への応答の一つとして、行動主義ロボティクス(ブルックス)とセットで問われる。",
     recall: "身体性の考え方が、シンボルグラウンディング問題に対してどのようなアプローチを取るかを説明せよ。",
-    status: "complete",
+    // complete前提条件レビュー(ミニバッチ): エッジが solves→symbol-grounding-problem の1本のみで、
+    // 2本目を教科書的に確立した関係として張れなかったため draft に降格。examHintで言及した
+    // 行動主義ロボティクス(ブルックス)のpersonカードが作成されれば、proposed→embodimentで
+    // 自然に2本目が張れる見込み(P2として保留、無理に別カードへ繋がない)。
   },
   {
     id: "knowledge-acquisition-bottleneck",
@@ -2135,6 +2138,28 @@ export const relations: ConceptRelation[] = [
   // レビュー反映: cross-validation は「単一分割による評価のばらつき」を解決するものであり、
   // データリーケージ対策ではない。孤立解消はholdoutとの対比(contrasts_with)で行う。
   r("cross-validation", "holdout", "contrasts_with"),
+
+  // complete前提条件ミニバッチ: エッジ2本以上を満たすための追加(教科書的に確立した関係のみ)
+  r("depth-first-search", "breadth-first-search", "contrasts_with"),
+  r("bert", "gpt", "contrasts_with"),
+  r("kmeans", "hierarchical-clustering", "contrasts_with"),
+  r("underfitting", "overfitting", "contrasts_with"),
+  r("overfitting", "generalization", "suffers_from"),
+  r("underfitting", "generalization", "suffers_from"),
+  r("cross-validation", "generalization", "used_for"),
+  r("searle", "strong-weak-ai", "proposed"),
+  r("depth-first-search", "hanoi-tower", "used_for"),
+  r("strips", "shrdlu", "contrasts_with"),
+  r("alpha-beta-pruning", "search-tree", "used_for"),
+  r("monte-carlo-method", "search-tree", "used_for"),
+  r("dendral", "mycin", "contrasts_with"),
+  r("ontology", "is-a-has-a-part-of", "used_for"),
+  r("interview-system", "expert-system", "used_for"),
+  r("watson", "corpus", "requires"),
+  r("semantic-web", "knowledge-acquisition-bottleneck", "suffers_from"),
+  r("web-mining", "semantic-web", "contrasts_with"),
+  r("data-mining", "open-dataset", "requires"),
+  r("annotation", "self-supervised", "contrasts_with"),
 ];
 
 export const demoLabels: Record<string, string> = {

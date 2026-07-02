@@ -338,6 +338,12 @@ export type Era = {
 2. 特に穴が確定している領域: **ai-history**(第1次・第2次ブームの用語群、フレーム問題、シンボルグラウンディング問題等)、**ai-project**(CRISP-DM、PoC、アノテーション、データリーケージ、A/Bテスト等)、**person カード**(人名と業績のマッチング対策)
 3. 1バッチ = シラバス1節。バッチごとに validate → コミット
 4. draft カードの complete 昇格(2質問 + エッジ2本 + 背骨アンカーが揃ったもののみ)
+5. **新規カードのcomplete出荷条件(Phase 3バッチ5レビューで明文化)**: 新規作成するカードも、
+   その場で `status: "complete"` にする場合は上記4と同じ条件を満たすこと
+   (kind=concept: 2質問記入 + エッジ2本以上 + 背骨アンカー1つ以上 / kind=problem: cause/consequence
+   相当の記入 + 被solves参照またはunresolvedフラグ / kind=person: proposedエッジ1本以上)。
+   2本目のエッジが教科書的に確立した関係として張れない場合は、無理に張らず `status: "draft"` のまま
+   理由をコメントで残す(`app/scripts/validate.ts` の `3.6. status: complete の前提条件` が機械検査する)。
 
 ### Phase 4: 学習UIの仕上げと検証
 

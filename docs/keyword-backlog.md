@@ -76,6 +76,9 @@ cnn-rnn/attention/transformer/genai)は、削除禁止方針により `stories.t
 - [x] 深さ優先探索
 - [x] ブルートフォース
 - [x] モンテカルロ法(新規`monte-carlo-method`カードを作成し、既存`mcts`から`is_a`エッジ+syllabus`3`を追加で接続)
+- [ ] **組合せ爆発**(Phase 3バッチ5レビューで発見した棚卸し漏れ。`brute-force`/`toy-problem`の本文中で
+  言及されているのみで、専用のproblemカードが存在しない。audit-report.md §2時点では未検出だったため、
+  本ミニバッチでの新規作成は行わず、既存draft昇格バッチ or 個別の小バッチで対応する)
 
 ### 項目4: 知識表現とエキスパートシステム ✅ **(Phase 3バッチ3で完了、レビュー反映バッチでeraアンカー再判定)**
 - [x] Cycプロジェクト
