@@ -180,23 +180,23 @@ cnn-rnn/attention/transformer/genai)は、削除禁止方針により `stories.t
 ### 項目17: 全結合層 ✅ / 項目18: 畳み込み層 ✅ / 項目20: プーリング層 ✅ / 項目21: スキップ結合 ✅ / 項目25: データ拡張 ✅
 未収録キーワードなし、またはグループ化で許容範囲(audit-report.md 時点)。
 
-### 項目19: 正規化層 🟡
-- [ ] グループ正規化
-- [ ] インスタンス正規化
+### 項目19: 正規化層 ✅ **(掃討バッチBで完了)**
+- [x] グループ正規化・インスタンス正規化(掃討バッチBでグループ化新設`group-instance-norm`。
+  バッチ正規化とcontrasts_with)
 
-### 項目22: 回帰結合層(RNN) 🟡
-- [ ] エルマンネットワーク
-- [ ] ジョルダンネットワーク
-- [ ] 教師強制(teacher forcing)
+### 項目22: 回帰結合層(RNN) ✅ **(掃討バッチBで完了)**
+- [x] エルマンネットワーク・ジョルダンネットワーク(掃討バッチBでグループ化新設`elman-jordan-network`。
+  現在のRNNの原型としてevolves_to)
+- [x] 教師強制(teacher forcing)(掃討バッチBで新設`teacher-forcing`。Seq2Seq/RNNの学習で使われる)
 
-### 項目23: Attention 🟡
-- [ ] クエリ・キー・バリューの明示カード(要素技術としての分割)
+### 項目23: Attention ✅ **(掃討バッチBで完了)**
+- [x] クエリ・キー・バリューの明示カード(掃討バッチBで新設`qkv`。Self-Attention/Transformerの
+  構成要素としてpart_of — part_ofの正しい用例: fromが無ければtoが定義として成立しないケース)
 
-### 項目24: オートエンコーダ 🟡
-- [ ] VQ-VAE
-- [ ] InfoVAE
-- [ ] β-VAE
-- [ ] 積層オートエンコーダ
+### 項目24: オートエンコーダ ✅ **(掃討バッチBで完了)**
+- [x] VQ-VAE・InfoVAE・β-VAE(掃討バッチBでグループ化新設`vae-variants`。VAEからのevolves_to)
+- [x] 積層オートエンコーダ(掃討バッチBで新設`stacked-autoencoder`。深層学習黎明期の事前学習の
+  工夫として timeline: era-05)
 
 ---
 
