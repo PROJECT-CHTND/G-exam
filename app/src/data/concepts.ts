@@ -77,6 +77,13 @@ export type Concept = {
   recall?: string;
   /** 省略時 "draft"。2質問・エッジ・背骨アンカーが揃って初めて "complete" にする。 */
   status?: ConceptStatus;
+  /**
+   * kind: problem 専用。特定の技術で「解決済み」とは言えず、部分的な緩和や
+   * 論争が今も続いている問題であることを示す(例: フレーム問題、トイ・プロブレム)。
+   * true の場合、validate の「未解決問題」警告は対象外とし、UIでは
+   * 「本質的に未解決」バッジとして明示する(それ自体が頻出論点のため)。
+   */
+  unresolved?: boolean;
 };
 
 export type ConceptRelation = {
@@ -824,6 +831,7 @@ export const concepts: Concept[] = [
       "第1次AIブームが「使えるAI」に届かなかった主な理由の一つ。",
     examHint: "「おもちゃの問題は解けても現実の問題は解けない」という第1次AIブームの限界の象徴として頻出。",
     recall: "トイ・プロブレムとは何かを説明し、これが第1次AIブームの限界とどう関わったかを述べよ。",
+    unresolved: true,
     status: "complete",
   },
   {
@@ -842,6 +850,7 @@ export const concepts: Concept[] = [
       "第2次AIブームでロボットや知的エージェントの実現を難しくした本質的な壁とされる。",
     examHint: "「ロボットが爆弾を運ぶ際に何を考慮すべきか」という思考実験(マッカーシー&ヘイズ)とセットで問われることが多い。",
     recall: "フレーム問題とはどのような問題かを、行動計画の例を使って説明せよ。",
+    unresolved: true,
     status: "complete",
   },
   {
@@ -1478,10 +1487,14 @@ export const relations: ConceptRelation[] = [
   // Phase 3 バッチ1: シラバス項目2(ai-history)
   r("chinese-room", "turing-test", "contrasts_with"),
   r("chinese-room", "strong-weak-ai", "contrasts_with"),
-  r("loebner-prize", "turing-test", "used_for"),
+  r("loebner-prize", "turing-test", "requires"),
   r("embodiment", "symbol-grounding-problem", "solves"),
   r("ml", "knowledge-acquisition-bottleneck", "solves"),
   r("statistical-machine-translation", "rule-based-machine-translation", "evolves_to"),
+
+  // Phase 3 バッチ1 レビュー反映: 系譜警告の解消(項目2 ⇄ 項目27 の接続点)
+  r("rule-based-machine-translation", "knowledge-acquisition-bottleneck", "suffers_from"),
+  r("statistical-machine-translation", "knowledge-acquisition-bottleneck", "solves"),
 ];
 
 export const demoLabels: Record<string, string> = {

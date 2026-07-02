@@ -156,6 +156,12 @@ a {
 .tag b {
   color: var(--teal);
 }
+.tag-unresolved {
+  color: var(--amber);
+  border-color: rgba(255, 184, 77, 0.4);
+  background: rgba(255, 184, 77, 0.12);
+  font-weight: 800;
+}
 
 /* ---- section ---- */
 .section {
@@ -1090,6 +1096,18 @@ select {
 .story-flow {
   display: grid;
   gap: 12px;
+}
+.story-section-heading {
+  margin: 8px 0 -2px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--border-soft);
+  color: var(--accent);
+  font-size: 13px;
+}
+.story-section-heading:first-child {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: none;
 }
 .story-step {
   display: grid;

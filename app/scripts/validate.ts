@@ -157,7 +157,7 @@ for (const id of Object.keys(conceptAnchors)) {
     if (solvesFrom.has(c.id)) {
       err("未解決問題", `${c.id}: kind=problem のカード自身が solves の from になっている(禁止)`);
     }
-    if (!solvesTo.has(c.id)) {
+    if (!solvesTo.has(c.id) && !c.unresolved) {
       warn("未解決問題", `${c.id}: kind=problem だがこの問題を解決する solves エッジが1本もない`);
     }
   }

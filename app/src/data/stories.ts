@@ -4,6 +4,12 @@ export type StoryStep = {
   title: string;
   problem: string;
   next: string;
+  /**
+   * 章ストーリー内のセクション見出し(例: "議論", "第1次ブーム: 探索・推論")。
+   * 1章=1ストーリー原則のもと、シラバス項目単位でセクションを分けて同一ストーリーに
+   * 追記していく(Phase 3バッチ1レビュー承認事項8)。
+   */
+  section?: string;
 };
 
 export type Story = {
@@ -19,13 +25,14 @@ export type Story = {
 
 export const stories: Story[] = [
   {
-    id: "ch-ai-history-debate",
-    title: "「人工知能とは何か」をめぐる議論 — 第1章・第2章の物語",
-    eraRange: "era-01 〜 era-04(探索・推論/知識表現の技術史は項目3・4の作成時に追記予定)",
+    id: "ch-ai-history",
+    title: "人工知能の歴史と議論(第1章・第2章)",
+    eraRange: "era-01 〜 era-04(探索・推論/知識表現の技術史セクションは項目3・4のバッチで追記予定)",
     steps: [
       {
         id: "dartmouth",
         conceptId: "dartmouth-conference",
+        section: "項目2: 人工知能分野で議論される問題 — 知能とは何かを測る基準",
         title: "「人工知能」と名付けられる",
         problem: "考える機械を研究する人々はいたが、共通の名前も方法論もまだなかった。",
         next: "1956年のダートマス会議で「人工知能」と名付けられ、まず「知能とは何か」を測る基準そのものが問われることになる。",
@@ -68,6 +75,7 @@ export const stories: Story[] = [
       {
         id: "toy-problem-step",
         conceptId: "toy-problem",
+        section: "項目2 → 項目3への橋渡し: 第1次AIブームの壁",
         title: "一方、実装の現場ではもっと具体的な壁にぶつかっていた",
         problem: "哲学的な議論とは別に、第1次AIブームで実際にAIを作ろうとした現場では、探索や推論の手法を試すために「おもちゃの問題(トイ・プロブレム)」が使われていた。",
         next: "しかし現実の問題は変数や制約がはるかに多く、組合せが爆発してそのままでは通用しないことがすぐに露呈する。",
@@ -82,6 +90,7 @@ export const stories: Story[] = [
       {
         id: "knowledge-bottleneck-step",
         conceptId: "knowledge-acquisition-bottleneck",
+        section: "項目2 → 項目4への橋渡し: 第2次AIブームの壁",
         title: "今度は「知識を書き込む」作業そのものが壁になる",
         problem: "第2次AIブームでは知識さえ書き込めば専門家のように賢くなるはずだと考えられたが、専門家の知識を人手でルール化し続ける作業(知識獲得のボトルネック)がすぐに膨大になった。",
         next: "記号だけを操作するシステムは、記号と実世界の意味を結びつけられない(シンボルグラウンディング問題)という、もう一つの本質的な壁にもぶつかる。(→知識表現・エキスパートシステムの技術的な詳細は項目4の章ストーリーで扱う)",

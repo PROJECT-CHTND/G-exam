@@ -9,18 +9,22 @@ function StoryCard({ story }: { story: Story }) {
       <div className="story-flow">
         {story.steps.map((step, index) => {
           const concept = step.conceptId ? conceptById[step.conceptId] : undefined;
+          const showSection = step.section && step.section !== story.steps[index - 1]?.section;
           return (
-            <div className="story-step" key={step.id}>
-              <span className="story-index">{String(index + 1).padStart(2, "0")}</span>
-              <div>
-                <h4>{step.title}</h4>
-                <p>{step.problem}</p>
-                <small>{step.next}</small>
-                {concept && (
-                  <button className="text-link" onClick={() => selectTerm(concept.id)}>
-                    用語カード: {concept.term}
-                  </button>
-                )}
+            <div key={step.id}>
+              {showSection && <h4 className="story-section-heading">{step.section}</h4>}
+              <div className="story-step">
+                <span className="story-index">{String(index + 1).padStart(2, "0")}</span>
+                <div>
+                  <h4>{step.title}</h4>
+                  <p>{step.problem}</p>
+                  <small>{step.next}</small>
+                  {concept && (
+                    <button className="text-link" onClick={() => selectTerm(concept.id)}>
+                      用語カード: {concept.term}
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           );

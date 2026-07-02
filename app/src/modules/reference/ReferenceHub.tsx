@@ -152,6 +152,7 @@ function TermCard({
     <article className="card pad term-explanation">
       <div className="term-explanation-head">
         <span className="tag">{category?.label}</span>
+        {concept.unresolved && <span className="tag tag-unresolved">本質的に未解決</span>}
         <h3>{concept.term}</h3>
         {concept.reading && <p className="reading">{concept.reading}</p>}
       </div>

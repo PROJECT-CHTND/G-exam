@@ -57,7 +57,7 @@ export const eras: Era[] = [
     nextWall:
       "探索・推論はルールの明確な問題(トイ・プロブレム)には強いが、" +
       "現実の複雑な問題には歯が立たないことがすぐに露呈していく。",
-    storyId: "ch-ai-history-debate",
+    storyId: "ch-ai-history",
   },
   {
     id: "era-02",
@@ -78,7 +78,7 @@ export const eras: Era[] = [
     nextWall:
       "「知識さえ与えれば良い」という発想も、後にエキスパートシステム自身の" +
       "限界という新しい壁にぶつかる(era-04)。",
-    storyId: "ch-ai-history-debate",
+    storyId: "ch-ai-history",
   },
   {
     id: "era-03",
@@ -117,7 +117,7 @@ export const eras: Era[] = [
     breakthroughConceptIds: [],
     nextWall:
       "機械学習を実現する具体的な学習アルゴリズムは、この時点ではまだ実用段階になかった。",
-    storyId: "ch-ai-history-debate",
+    storyId: "ch-ai-history",
   },
   {
     id: "era-05",
