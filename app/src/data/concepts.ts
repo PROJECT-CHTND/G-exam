@@ -829,6 +829,25 @@ const conceptAnchors: Record<string, ConceptAnchor> = {
   "exploration-exploitation": { syllabus: ["9"], timeline: "era-13" },
   "epsilon-greedy": { syllabus: ["9"], timeline: "era-13" },
   "reward-shaping": { syllabus: ["29"], timeline: "era-13" },
+
+  // --- evaluation ---
+  "train-valid-test": { syllabus: ["10"], pipeline: "stage-3" },
+  holdout: { syllabus: ["10"], pipeline: "stage-3" },
+  "cross-validation": { syllabus: ["10"], pipeline: "stage-5", status: "complete" },
+  "confusion-matrix": { syllabus: ["10"], pipeline: "stage-5", status: "complete" },
+  accuracy: { syllabus: ["10"], pipeline: "stage-5" },
+  precision: { syllabus: ["10"], pipeline: "stage-5", status: "complete" },
+  recall: { syllabus: ["10"], pipeline: "stage-5", status: "complete" },
+  f1: { syllabus: ["10"], pipeline: "stage-5" },
+  "roc-auc": { syllabus: ["10"], pipeline: "stage-5" },
+  "type-errors": { syllabus: ["10"], pipeline: "stage-5" },
+  mse: { syllabus: ["10", "13"], pipeline: "stage-4" },
+  rmse: { syllabus: ["10"], pipeline: "stage-5" },
+  mae: { syllabus: ["10"], pipeline: "stage-5" },
+  r2: { syllabus: ["10"], pipeline: "stage-5" },
+  "error-function": { syllabus: ["13"], pipeline: "stage-4" },
+  occam: { syllabus: ["10"], pipeline: "stage-5" },
+  "aic-bic": { syllabus: ["10"], pipeline: "stage-5" },
 };
 
 for (const concept of concepts) {
