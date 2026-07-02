@@ -723,6 +723,45 @@ export const concepts: Concept[] = [
   c("data-drift", "データドリフト", "xai-compression", "運用時の入力データ分布が学習時から変わること。", "モデル監視で検知する。"),
 ];
 
+type ConceptAnchor = Partial<Pick<Concept, "kind" | "syllabus" | "timeline" | "pipeline" | "status" | "recall">>;
+
+/**
+ * Phase 2: 既存カードへの背骨アンカー(timeline/pipeline)・syllabus ID付与テーブル。
+ *
+ * 269枚の c() 呼び出しを1枚ずつ書き換える代わりに、id をキーにした差分として
+ * 一括管理する(RESTRUCTURE_PLAN.md 付録Aの「既存の c() ヘルパは拡張フィールドに
+ * 対応させる(オブジェクトリテラル直書きでもよい)」という方針を、既存カードの
+ * 大量更新に適用したもの。1カテゴリ = 1コミットで積み上げる)。
+ *
+ * 判断基準:
+ * - bornToSolve/beforeAndGap が coreLearningNotes に既にあり、今回アンカーも
+ *   付与できたカードのみ status: "complete" とする。
+ * - 2質問をまだ書けないカードはアンカー/syllabusのみ付与し、status は指定せず
+ *   デフォルトの "draft" のまま残す(捏造禁止の原則。RESTRUCTURE_PLAN.md Phase 2 手順2)。
+ * - syllabus ID は docs/audit-report.md のカバレッジ表 および syllabus.ts のキーワードとの
+ *   一致を根拠に付与。キーワードに直接一致しないが章の主題と明確に対応するカードは、
+ *   その章のIDを付与している(完全一致のみに絞ると大半が未分類になってしまうため)。
+ */
+const conceptAnchors: Record<string, ConceptAnchor> = {
+  // --- ml-foundation ---
+  ml: { syllabus: ["1", "5"], timeline: "era-06", status: "complete" },
+  "supervised-learning": { syllabus: ["7"], pipeline: "stage-4", status: "complete" },
+  "unsupervised-learning": { syllabus: ["8"], pipeline: "stage-4", status: "complete" },
+  "reinforcement-learning": { syllabus: ["9"], timeline: "era-13", status: "complete" },
+  "semi-supervised": { syllabus: ["31"], pipeline: "stage-4" },
+  generalization: { syllabus: ["10"], pipeline: "stage-4", status: "complete" },
+  overfitting: { syllabus: ["10"], pipeline: "stage-4", status: "complete" },
+  underfitting: { syllabus: ["10"], pipeline: "stage-4", status: "complete" },
+  "bias-variance": { syllabus: ["10"], pipeline: "stage-4" },
+  feature: { syllabus: ["5"], timeline: "era-06" },
+  "curse-dimensionality": { syllabus: ["5"], pipeline: "stage-4" },
+};
+
+for (const concept of concepts) {
+  const anchor = conceptAnchors[concept.id];
+  if (anchor) Object.assign(concept, anchor);
+}
+
 function r(from: string, to: string, type: RelationType, label?: string): ConceptRelation {
   return { from, to, type, label };
 }
