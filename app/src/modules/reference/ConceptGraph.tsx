@@ -1,5 +1,4 @@
 import { useMemo, useState } from "react";
-import { motion } from "framer-motion";
 import {
   categoryMeta,
   conceptById,
@@ -17,9 +16,12 @@ const relationLabel: Record<RelationType, string> = {
   part_of: "構成",
   evolves_to: "発展",
   solves: "解決",
+  suffers_from: "課題",
   used_for: "用途",
   contrasts_with: "対比",
+  requires: "前提",
   pipeline_next: "手順",
+  proposed: "提案",
 };
 
 const relationColor: Record<RelationType, string> = {
@@ -27,9 +29,12 @@ const relationColor: Record<RelationType, string> = {
   part_of: "#29d3c2",
   evolves_to: "#b98bff",
   solves: "#ffb84d",
+  suffers_from: "#ff6a6a",
   used_for: "#59d98a",
   contrasts_with: "#ff7ea8",
+  requires: "#f2d94e",
   pipeline_next: "#aeb8c6",
+  proposed: "#7ee0ff",
 };
 
 function categoryLabel(category: ConceptCategory) {
@@ -83,6 +88,7 @@ export default function ConceptGraph() {
     (relation) => positions.has(relation.from) && positions.has(relation.to)
   );
   const selected = conceptById[selectedId] ?? nodes[0];
+  const otherCategoryCount = nodes.filter((node) => node.category !== category).length;
 
   function selectCategory(next: ConceptCategory) {
     setCategory(next);
@@ -105,31 +111,71 @@ export default function ConceptGraph() {
           ))}
         </div>
 
+        <p className="graph-intro">
+          丸(ノード)が用語、線(エッジ)がその間の関係です。丸をクリックすると、その用語を中心に置き直され、
+          関係する線に矢印とラベルが表示されます。矢印の向きは「from → to」の意味の向き(例:
+          「AはBの一種」なら A → B)を表します。線にマウスを重ねると、選んでいない関係も内容を確認できます。
+          現在は「{categoryMeta.find((item) => item.id === category)?.label}」を中心に{nodes.length}件のノードを表示中
+          {otherCategoryCount > 0 && `(うち${otherCategoryCount}件は関連する他カテゴリの用語)`}。
+        </p>
+
         <svg viewBox="0 0 660 460" className="concept-graph" role="img" aria-label="用語関係マップ">
+          <defs>
+            {Object.entries(relationColor).map(([key, color]) => (
+              <marker
+                key={key}
+                id={`arrow-${key}`}
+                viewBox="0 0 10 10"
+                refX="8.5"
+                refY="5"
+                markerWidth="7"
+                markerHeight="7"
+                orient="auto-start-reverse"
+              >
+                <path d="M0,0 L10,5 L0,10 z" fill={color} />
+              </marker>
+            ))}
+          </defs>
           {visibleRelations.map((relation, index) => {
             const a = positions.get(relation.from)!;
             const b = positions.get(relation.to)!;
             const active = relation.from === selectedId || relation.to === selectedId;
+            const fromTerm = conceptById[relation.from]?.term ?? relation.from;
+            const toTerm = conceptById[relation.to]?.term ?? relation.to;
+            const label = relation.label ?? relationLabel[relation.type];
             return (
-              <g key={`${relation.from}-${relation.to}-${index}`}>
+              <g key={`${relation.from}-${relation.to}-${index}`} className="graph-edge">
                 <line
                   x1={a.x}
                   y1={a.y}
                   x2={b.x}
                   y2={b.y}
                   stroke={relationColor[relation.type]}
-                  strokeWidth={active ? 2.4 : 1.1}
-                  opacity={active ? 0.85 : 0.22}
+                  strokeWidth={active ? 2.4 : 1.3}
+                  opacity={active ? 0.9 : 0.35}
+                  markerEnd={`url(#arrow-${relation.type})`}
                 />
+                <line
+                  x1={a.x}
+                  y1={a.y}
+                  x2={b.x}
+                  y2={b.y}
+                  stroke="transparent"
+                  strokeWidth={14}
+                  className="graph-edge-hitbox"
+                >
+                  <title>{`${fromTerm} → (${label}) → ${toTerm}`}</title>
+                </line>
                 {active && (
                   <text
                     x={(a.x + b.x) / 2}
                     y={(a.y + b.y) / 2 - 4}
                     textAnchor="middle"
                     fontSize={10}
+                    fontWeight={700}
                     fill={relationColor[relation.type]}
                   >
-                    {relation.label ?? relationLabel[relation.type]}
+                    {label}
                   </text>
                 )}
               </g>
@@ -138,19 +184,20 @@ export default function ConceptGraph() {
           {nodes.map((node) => {
             const p = positions.get(node.id)!;
             const active = node.id === selectedId;
+            const sameCategory = node.category === category;
             return (
-              <motion.g
+              <g
                 key={node.id}
-                animate={{ x: p.x, y: p.y }}
-                transition={{ type: "spring", stiffness: 120, damping: 18 }}
                 onClick={() => setSelectedId(node.id)}
-                style={{ cursor: "pointer" }}
+                style={{ cursor: "pointer", transform: `translate(${p.x}px, ${p.y}px)`, transition: "transform 0.35s ease" }}
               >
+                <title>{`${node.term}(${categoryLabel(node.category)})— クリックして中心に表示`}</title>
                 <circle
                   r={active ? 34 : 27}
-                  fill={active ? "#58b0ff" : "#212936"}
-                  stroke={node.category === category ? "#58b0ff" : "#2b3441"}
-                  strokeWidth={active ? 2.4 : 1.2}
+                  fill={active ? "#58b0ff" : sameCategory ? "#212936" : "#171c24"}
+                  stroke={active ? "#dff0ff" : sameCategory ? "#58b0ff" : "#3a4452"}
+                  strokeDasharray={sameCategory ? undefined : "3 2"}
+                  strokeWidth={active ? 2.6 : 1.2}
                 />
                 <text
                   y={node.term.length > 10 ? -2 : 4}
@@ -166,11 +213,26 @@ export default function ConceptGraph() {
                     {categoryLabel(node.category)}
                   </text>
                 )}
-              </motion.g>
+              </g>
             );
           })}
         </svg>
 
+        <div className="legend legend-nodes">
+          <span>
+            <span className="dot dot-node dot-node-active" />
+            選択中の用語(クリックで切り替え)
+          </span>
+          <span>
+            <span className="dot dot-node dot-node-same" />
+            現在のカテゴリの用語
+          </span>
+          <span>
+            <span className="dot dot-node dot-node-other" />
+            関連する他カテゴリの用語(点線の丸)
+          </span>
+        </div>
+        <p className="graph-legend-caption">線の色 = 関係の種類。矢印の元(from)→先(to)の向きに意味がある(例: 「解決」なら 元が解決策、先が解決される課題)。</p>
         <div className="legend">
           {Object.entries(relationLabel).map(([key, label]) => (
             <span key={key}>

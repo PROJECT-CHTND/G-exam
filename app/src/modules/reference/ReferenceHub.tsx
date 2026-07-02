@@ -25,9 +25,12 @@ const relationLabel: Record<RelationType, string> = {
   part_of: "構成要素",
   evolves_to: "発展関係",
   solves: "解決する課題",
+  suffers_from: "抱えている課題",
   used_for: "使われる場面",
   contrasts_with: "対比して覚える用語",
+  requires: "前提となる技術",
   pipeline_next: "手順上のつながり",
+  proposed: "提案した人物",
 };
 
 export default function ReferenceHub() {
@@ -149,6 +152,7 @@ function TermCard({
     <article className="card pad term-explanation">
       <div className="term-explanation-head">
         <span className="tag">{category?.label}</span>
+        {concept.unresolved && <span className="tag tag-unresolved">本質的に未解決</span>}
         <h3>{concept.term}</h3>
         {concept.reading && <p className="reading">{concept.reading}</p>}
       </div>
@@ -159,8 +163,8 @@ function TermCard({
       </section>
 
       <section>
-        <h4>何のために使う？</h4>
-        <p>{concept.purpose ?? category?.description}</p>
+        <h4>何の問題を解決するために生まれた？</h4>
+        <p>{concept.bornToSolve ?? category?.description}</p>
       </section>
 
       <section>
@@ -178,10 +182,10 @@ function TermCard({
         <ConceptChips concepts={similar} empty="比較対象は未登録" onSelect={select} />
       </section>
 
-      {concept.difference && (
+      {concept.beforeAndGap && (
         <section>
-          <h4>違い</h4>
-          <p>{concept.difference}</p>
+          <h4>その前は何が使われ、何が足りなかった？</h4>
+          <p>{concept.beforeAndGap}</p>
         </section>
       )}
 

@@ -21,6 +21,8 @@ import OverviewMap from "./modules/learn/OverviewMap";
 import ComparisonDeck from "./modules/learn/ComparisonDeck";
 import StoryFlow from "./modules/learn/StoryFlow";
 import RecallCheck from "./modules/learn/RecallCheck";
+import TimelineSpine from "./modules/learn/TimelineSpine";
+import PipelineSpine from "./modules/learn/PipelineSpine";
 
 type Page = {
   id: string;
@@ -49,7 +51,7 @@ const PAGES: Page[] = [
   },
   {
     id: "terms",
-    index: "05",
+    index: "01",
     label: "用語カード",
     group: "学ぶ",
     title: "用語カード",
@@ -58,7 +60,7 @@ const PAGES: Page[] = [
   },
   {
     id: "compare",
-    index: "06",
+    index: "02",
     label: "比較",
     group: "学ぶ",
     title: "比較で覚える",
@@ -67,7 +69,7 @@ const PAGES: Page[] = [
   },
   {
     id: "story",
-    index: "07",
+    index: "03",
     label: "ストーリー",
     group: "学ぶ",
     title: "流れで覚える",
@@ -75,8 +77,26 @@ const PAGES: Page[] = [
     content: <StoryFlow />,
   },
   {
+    id: "timeline",
+    index: "04",
+    label: "技術史年表",
+    group: "学ぶ",
+    title: "技術史年表 — 期待・壁・突破の縦軸",
+    desc: "AI史を「何が期待され、何が壁になり、何が突破したか」の一本道として辿ります。",
+    content: <TimelineSpine />,
+  },
+  {
+    id: "pipeline",
+    index: "05",
+    label: "社会実装",
+    group: "学ぶ",
+    title: "社会実装パイプライン — 企画から運用までの横軸",
+    desc: "外観検査AIを題材に、企画→データ→学習→評価→デプロイ→運用の一連の流れを辿ります。",
+    content: <PipelineSpine />,
+  },
+  {
     id: "recall",
-    index: "08",
+    index: "06",
     label: "白紙再現",
     group: "学ぶ",
     title: "白紙再現チェック",
@@ -85,7 +105,7 @@ const PAGES: Page[] = [
   },
   {
     id: "classify",
-    index: "01",
+    index: "07",
     label: "分類",
     group: "動かす",
     title: "分類 — アヤメを見分ける (Iris実データ)",
@@ -94,7 +114,7 @@ const PAGES: Page[] = [
   },
   {
     id: "regression",
-    index: "02",
+    index: "08",
     label: "回帰",
     group: "動かす",
     title: "回帰 — ペンギンの体重を予測 (Palmer Penguins実データ)",
@@ -103,7 +123,7 @@ const PAGES: Page[] = [
   },
   {
     id: "cluster",
-    index: "03",
+    index: "09",
     label: "クラスタリング",
     group: "動かす",
     title: "クラスタリング — ラベルなしでまとめる (Iris実データ)",
@@ -112,7 +132,7 @@ const PAGES: Page[] = [
   },
   {
     id: "pca",
-    index: "04",
+    index: "10",
     label: "PCA",
     group: "動かす",
     title: "PCA — 4次元のアヤメを2次元に圧縮する",
@@ -121,7 +141,7 @@ const PAGES: Page[] = [
   },
   {
     id: "bandit",
-    index: "09",
+    index: "11",
     label: "強化学習",
     group: "動かす",
     title: "強化学習 — 探索と活用を多腕バンディットで見る",
@@ -130,7 +150,7 @@ const PAGES: Page[] = [
   },
   {
     id: "overfit",
-    index: "10",
+    index: "12",
     label: "過学習",
     group: "動かす",
     title: "過学習 — 複雑さのジレンマ",
@@ -139,7 +159,7 @@ const PAGES: Page[] = [
   },
   {
     id: "metrics",
-    index: "11",
+    index: "13",
     label: "評価",
     group: "動かす",
     title: "分類の評価 — しきい値・混同行列・ROC",
@@ -148,7 +168,7 @@ const PAGES: Page[] = [
   },
   {
     id: "nn",
-    index: "12",
+    index: "14",
     label: "NN",
     group: "動かす",
     title: "ニューラルネットワーク — 順伝播と逆伝播",
@@ -157,7 +177,7 @@ const PAGES: Page[] = [
   },
   {
     id: "cnn",
-    index: "13",
+    index: "15",
     label: "CNN",
     group: "動かす",
     title: "CNN — 手書き数字を畳み込む (MNIST実データ)",
@@ -166,7 +186,7 @@ const PAGES: Page[] = [
   },
   {
     id: "image-tasks",
-    index: "14",
+    index: "16",
     label: "画像タスク",
     group: "動かす",
     title: "画像タスク粒度 — 分類・検出・セグメンテーション・姿勢推定",
@@ -175,7 +195,7 @@ const PAGES: Page[] = [
   },
   {
     id: "attention",
-    index: "15",
+    index: "17",
     label: "Attention",
     group: "動かす",
     title: "Transformer — Attentionで関係を見る",
@@ -184,7 +204,7 @@ const PAGES: Page[] = [
   },
   {
     id: "lstm-gates",
-    index: "16",
+    index: "18",
     label: "LSTM",
     group: "動かす",
     title: "LSTM — ゲートで記憶を制御する",
@@ -193,7 +213,7 @@ const PAGES: Page[] = [
   },
   {
     id: "word2vec",
-    index: "17",
+    index: "19",
     label: "word2vec",
     group: "動かす",
     title: "word2vec — 分散表現のベクトル演算",
@@ -202,7 +222,7 @@ const PAGES: Page[] = [
   },
   {
     id: "genai",
-    index: "18",
+    index: "20",
     label: "生成AI",
     group: "動かす",
     title: "生成AI — RAGの検索と拡散モデル",
@@ -211,21 +231,21 @@ const PAGES: Page[] = [
   },
   {
     id: "exam",
-    index: "19",
+    index: "21",
     label: "試験の視点",
     group: "まとめ",
     title: "試験の視点 — どの関係を問われているか",
     desc: "問題文のキーワードから、どのセクションに戻ればよいかを判断します。",
     content: (
       <div className="grid two-eq">
-        <ExamCard q="正解ラベルがある？" a="あるなら教師あり。カテゴリなら分類(01)、連続値なら回帰(02)。" href="#classify" />
-        <ExamCard q="報酬と行動がある？" a="状態・行動・報酬・方策が出たら強化学習。探索と活用は多腕バンディット(05)。" href="#bandit" />
-        <ExamCard q="ラベルがなく、まとめたい？" a="クラスタリング(k-means)や次元削減(PCA)などの教師なし学習(03/04)。" href="#cluster" />
-        <ExamCard q="訓練だけ良くテストが悪い？" a="過学習(06)。正則化・Dropout・データ拡張・早期終了で抑えます。" href="#overfit" />
-        <ExamCard q="不均衡データの評価？" a="正解率だけでなく適合率・再現率・F値・AUC(07)で見ます。" href="#metrics" />
-        <ExamCard q="画像の局所特徴？" a="畳み込み・フィルタ・特徴マップならCNN(09)。タスク粒度は分類/検出/セグメンテーション。" href="#image-tasks" />
+        <ExamCard q="正解ラベルがある？" a="あるなら教師あり。カテゴリなら分類(07)、連続値なら回帰(08)。" href="#classify" />
+        <ExamCard q="報酬と行動がある？" a="状態・行動・報酬・方策が出たら強化学習。探索と活用は多腕バンディット(11)。" href="#bandit" />
+        <ExamCard q="ラベルがなく、まとめたい？" a="クラスタリング(k-means)や次元削減(PCA)などの教師なし学習(09/10)。" href="#cluster" />
+        <ExamCard q="訓練だけ良くテストが悪い？" a="過学習(12)。正則化・Dropout・データ拡張・早期終了で抑えます。" href="#overfit" />
+        <ExamCard q="不均衡データの評価？" a="正解率だけでなく適合率・再現率・F値・AUC(13)で見ます。" href="#metrics" />
+        <ExamCard q="画像の局所特徴？" a="畳み込み・フィルタ・特徴マップならCNN(15)。タスク粒度は分類/検出/セグメンテーション。" href="#image-tasks" />
         <ExamCard q="系列全体の関係？" a="LSTMはゲート、TransformerはQ/K/V・自己注意。BERT・GPTの基盤。" href="#attention" />
-        <ExamCard q="外部知識を検索して回答？" a="重みを変えず検索結果を使うならRAG(14)。追加学習はファインチューニング。" href="#genai" />
+        <ExamCard q="外部知識を検索して回答？" a="重みを変えず検索結果を使うならRAG(20)。追加学習はファインチューニング。" href="#genai" />
       </div>
     ),
   },

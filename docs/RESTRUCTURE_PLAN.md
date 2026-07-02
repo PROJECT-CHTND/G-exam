@@ -261,6 +261,16 @@ export type Era = {
 - 章(カテゴリ)ごとにストーリーを1本以上持たせる(現状は全体で1本)
 - 既存の StoryStep 形式(problem → next)は初版の「因果接続詞で繋いだ物語」の要件をほぼ満たしている。これを維持し、各ステップは必ず「前の何が足りなかったか」から書き始める
 - 章の冒頭に3〜10文の「この章のストーリー」(何が問題で、どう解決されていく章なのか)を持たせる
+- **「1章=1ストーリー」原則の例外(Phase 3バッチ5レビューで正式承認・確定)**: 第7章(AIの社会実装に
+  向けて、項目35・36)は `stories.ts` に専用の章ストーリーを持たない。`pipeline.ts` の stage-1〜7
+  本文(外観検査AIという一貫した題材で企画からデプロイ・運用まで語る読み物)が、この章にとっての
+  「章ストーリー」を実質的に兼ねる。条件: ①stage-1〜7が一貫した題材で語られていること(現状:
+  外観検査AIで統一、満たしている) ②**項目35バッチのスコープに、stage-1(企画・課題定義)本文の
+  厚み再点検(他stageと比べて薄い場合は加筆)を必須タスクとして含めること**(項目35バッチのカード
+  作成・validateと同一コミット、または直後の1コミットで完了させる。**Phase 3バッチ7で履行済み**:
+  stage-1にcrisp-dm/crisp-ml/poc/waterfall/agile/stakeholder-needs/data-scientist/open-innovation/
+  ai-business-application/ai-level-classification/simple-control-programの11枚をconceptIdsとして
+  接続し、AI適用可否判断の記述を加筆) ③本項目としてこの例外をここに明記すること(本項目、済み)。
 
 ### 5.2 概念地図と白地図(ConceptGraph の拡張)
 
@@ -330,6 +340,12 @@ export type Era = {
 2. 特に穴が確定している領域: **ai-history**(第1次・第2次ブームの用語群、フレーム問題、シンボルグラウンディング問題等)、**ai-project**(CRISP-DM、PoC、アノテーション、データリーケージ、A/Bテスト等)、**person カード**(人名と業績のマッチング対策)
 3. 1バッチ = シラバス1節。バッチごとに validate → コミット
 4. draft カードの complete 昇格(2質問 + エッジ2本 + 背骨アンカーが揃ったもののみ)
+5. **新規カードのcomplete出荷条件(Phase 3バッチ5レビューで明文化)**: 新規作成するカードも、
+   その場で `status: "complete"` にする場合は上記4と同じ条件を満たすこと
+   (kind=concept: 2質問記入 + エッジ2本以上 + 背骨アンカー1つ以上 / kind=problem: cause/consequence
+   相当の記入 + 被solves参照またはunresolvedフラグ / kind=person: proposedエッジ1本以上)。
+   2本目のエッジが教科書的に確立した関係として張れない場合は、無理に張らず `status: "draft"` のまま
+   理由をコメントで残す(`app/scripts/validate.ts` の `3.6. status: complete の前提条件` が機械検査する)。
 
 ### Phase 4: 学習UIの仕上げと検証
 
