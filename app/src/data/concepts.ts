@@ -993,6 +993,32 @@ const conceptAnchors: Record<string, ConceptAnchor> = {
   sim2real: { syllabus: ["29"], timeline: "era-13" },
   "domain-randomization": { syllabus: ["29"], timeline: "era-13" },
   "offline-rl": { syllabus: ["29"], timeline: "era-13" },
+
+  // --- generative-ai ---
+  "generative-model": { syllabus: ["30"], timeline: "era-12", status: "complete" },
+  vae: { syllabus: ["24", "30"], timeline: "era-12", status: "complete" },
+  "latent-variable": { syllabus: ["24"], timeline: "era-12" },
+  gan: { syllabus: ["30"], timeline: "era-12", status: "complete" },
+  "generator-discriminator": { syllabus: ["30"], timeline: "era-12" },
+  "dcgan-pix2pix-cyclegan": { syllabus: ["30"], timeline: "era-12" },
+  diffusion: { syllabus: ["30"], timeline: "era-12", status: "complete" },
+  denoising: { syllabus: ["30"], timeline: "era-12" },
+  "foundation-model": { syllabus: ["32"], timeline: "era-11" },
+  llm: { syllabus: ["6", "27"], timeline: "era-11", status: "complete" },
+  "scaling-law": { syllabus: ["27"], timeline: "era-11" },
+  emergence: { syllabus: ["27"], timeline: "era-11" },
+  "self-supervised": { syllabus: ["31"], timeline: "era-11" },
+  rlhf: { syllabus: ["29"], timeline: "era-11" },
+  "reward-model": { syllabus: ["29"], timeline: "era-11" },
+  ppo: { syllabus: ["29"], timeline: "era-11" },
+  prompt: { syllabus: ["27"], timeline: "era-11" },
+  "few-shot": { syllabus: ["31"], timeline: "era-11" },
+  cot: { syllabus: ["27"], timeline: "era-11" },
+  rag: { syllabus: ["27"], timeline: "era-11", status: "complete" },
+  lora: { syllabus: ["31"], timeline: "era-11" },
+  clip: { syllabus: ["32"], timeline: "era-12" },
+  multimodal: { syllabus: ["32"], timeline: "era-12" },
+  hallucination: { syllabus: ["27"], timeline: "era-11" },
 };
 
 for (const concept of concepts) {
