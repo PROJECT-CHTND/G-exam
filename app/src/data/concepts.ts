@@ -30,6 +30,10 @@ export type ConceptCategory =
  * - used_for:        from は to で採用・応用される/〜に使う
  * - pipeline_next:    手順上、from の次に to が来る
  * - proposed:        (person専用) from は to を提案した。from は必ず kind: "person" のカード
+ *
+ * 【エッジ追加の恒久ルール(Phase 3ミニバッチ再レビューで確定)】
+ * エッジは追加前に必ず from→to を規約どおりの日本語一文として読み下し、文として偽になる組は張らない。
+ * 迷ったら張らず、候補として報告する(自信を持って断定できる関係のみ登録する)。
  */
 export type RelationType =
   | "is_a"
@@ -1568,8 +1572,11 @@ export const conceptAnchors: Record<string, ConceptAnchor> = {
   "reinforcement-learning": { syllabus: ["9"], timeline: "era-13", status: "complete" },
   "semi-supervised": { syllabus: ["31"], pipeline: "stage-4" },
   generalization: { syllabus: ["10"], pipeline: "stage-4", status: "complete" },
-  overfitting: { syllabus: ["10"], pipeline: "stage-4", status: "complete" },
-  underfitting: { syllabus: ["10"], pipeline: "stage-4", status: "complete" },
+  // レビュー反映: overfitting/underfittingは「モデルが陥る問題」であり、suffers_from/solvesの
+  // to側規約(kind:problem)に合わせてkind:"problem"化する(既存のsolves/suffers_fromエッジ群が
+  // 遡って規約と整合する)。
+  overfitting: { syllabus: ["10"], pipeline: "stage-4", status: "complete", kind: "problem" },
+  underfitting: { syllabus: ["10"], pipeline: "stage-4", status: "complete", kind: "problem" },
   "bias-variance": { syllabus: ["10"], pipeline: "stage-4" },
   feature: { syllabus: ["5"], timeline: "era-06" },
   "curse-dimensionality": { syllabus: ["5"], pipeline: "stage-4" },
@@ -1621,7 +1628,8 @@ export const conceptAnchors: Record<string, ConceptAnchor> = {
   recommendation: { syllabus: ["5"], pipeline: "stage-4" },
   "collaborative-filtering": { syllabus: ["8"], pipeline: "stage-4" },
   "content-based-filtering": { syllabus: ["8"], pipeline: "stage-4" },
-  "cold-start": { syllabus: ["8"], pipeline: "stage-4" },
+  // レビュー反映: suffers_from/solves の to側規約(kind:problem)に合わせて kind:"problem" 化
+  "cold-start": { syllabus: ["8"], pipeline: "stage-4", kind: "problem" },
   "topic-model": { syllabus: ["8"], pipeline: "stage-4" },
   lda: { syllabus: ["8"], pipeline: "stage-4" },
   silhouette: { syllabus: ["8"], pipeline: "stage-5" },
@@ -1692,7 +1700,7 @@ export const conceptAnchors: Record<string, ConceptAnchor> = {
   relu: { syllabus: ["12"], timeline: "era-07" },
   "leaky-relu": { syllabus: ["12"], pipeline: "stage-4" },
   gelu: { syllabus: ["12"], pipeline: "stage-4" },
-  "exploding-gradient": { syllabus: ["15"], timeline: "era-05" },
+  "exploding-gradient": { syllabus: ["15"], timeline: "era-05", kind: "problem" },
   "gradient-clipping": { syllabus: ["16"], pipeline: "stage-4" },
   sgd: { syllabus: ["16"], pipeline: "stage-4" },
   momentum: { syllabus: ["16"], pipeline: "stage-4" },
@@ -1836,7 +1844,7 @@ export const conceptAnchors: Record<string, ConceptAnchor> = {
   lora: { syllabus: ["31"], timeline: "era-11" },
   clip: { syllabus: ["32"], timeline: "era-12" },
   multimodal: { syllabus: ["32"], timeline: "era-12" },
-  hallucination: { syllabus: ["27"], timeline: "era-11" },
+  hallucination: { syllabus: ["27"], timeline: "era-11", kind: "problem" },
 
   // --- xai-compression ---
   xai: { syllabus: ["33"], pipeline: "stage-7" },
@@ -2144,8 +2152,10 @@ export const relations: ConceptRelation[] = [
   r("bert", "gpt", "contrasts_with"),
   r("kmeans", "hierarchical-clustering", "contrasts_with"),
   r("underfitting", "overfitting", "contrasts_with"),
-  r("overfitting", "generalization", "suffers_from"),
-  r("underfitting", "generalization", "suffers_from"),
+  // レビュー反映: suffers_from の to側はkind:problem規約のため、from/toを反転
+  // (「汎化はoverfitting/underfittingという問題に阻害される」の向き)
+  r("generalization", "overfitting", "suffers_from"),
+  r("generalization", "underfitting", "suffers_from"),
   r("cross-validation", "generalization", "used_for"),
   r("searle", "strong-weak-ai", "proposed"),
   r("depth-first-search", "hanoi-tower", "used_for"),
@@ -2153,12 +2163,16 @@ export const relations: ConceptRelation[] = [
   r("alpha-beta-pruning", "search-tree", "used_for"),
   r("monte-carlo-method", "search-tree", "used_for"),
   r("dendral", "mycin", "contrasts_with"),
-  r("ontology", "is-a-has-a-part-of", "used_for"),
+  // レビュー反映: 「is-a/has-a/part-ofという関係の型が、それを使ってオントロジーを構築する」向きに反転
+  r("is-a-has-a-part-of", "ontology", "used_for"),
   r("interview-system", "expert-system", "used_for"),
   r("watson", "corpus", "requires"),
   r("semantic-web", "knowledge-acquisition-bottleneck", "suffers_from"),
   r("web-mining", "semantic-web", "contrasts_with"),
-  r("data-mining", "open-dataset", "requires"),
+  // レビュー反映: data-mining → requires → open-dataset を削除し、open-datasetは
+  // pretrainingとの用途接続に差し替え(カード本文の記載と整合)。web-mining↔data-miningの
+  // is_aエッジは既存(バッチ3で登録済み)のため再登録しない。
+  r("open-dataset", "pretraining", "used_for"),
   r("annotation", "self-supervised", "contrasts_with"),
 ];
 

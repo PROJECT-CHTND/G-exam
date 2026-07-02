@@ -164,6 +164,19 @@ for (const id of Object.keys(conceptAnchors)) {
       err("対称性(proposed)", `proposed の from="${rel.from}" が kind:person ではない(to="${rel.to}")`);
     }
   }
+
+  // レビュー指摘: solves/suffers_from の to側は kind:problem であることをスキーマ規約
+  // (Concept型コメント参照)どおりに機械検査する(反転ミスの機械検出用)。
+  for (const rel of relations) {
+    if (rel.type !== "solves" && rel.type !== "suffers_from") continue;
+    const toConcept = conceptById.get(rel.to);
+    if (!toConcept || kindOf(toConcept) !== "problem") {
+      err(
+        `方向規約(${rel.type})`,
+        `${rel.from} → ${rel.to}(${rel.type}): to="${rel.to}" が kind:problem ではない(from/toが逆、またはkind未設定の可能性)`
+      );
+    }
+  }
 }
 
 // ---------------------------------------------------------------------------
