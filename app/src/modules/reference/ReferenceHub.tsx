@@ -152,7 +152,17 @@ function TermCard({
     <article className="card pad term-explanation">
       <div className="term-explanation-head">
         <span className="tag">{category?.label}</span>
-        {concept.unresolved && <span className="tag tag-unresolved">本質的に未解決</span>}
+        {concept.unresolved && concept.unresolvedReason === "proven-limit" ? (
+          <span className="tag tag-unresolved" title="数学的に証明された恒久的な制約であり、技術の進歩によって将来解消される性質のものではない。">
+            原理的制約(証明済み)
+          </span>
+        ) : (
+          concept.unresolved && (
+            <span className="tag tag-unresolved" title="議論・部分的緩和が続くのみで、決着していない問題。">
+              本質的に未解決
+            </span>
+          )
+        )}
         <h3>{concept.term}</h3>
         {concept.reading && <p className="reading">{concept.reading}</p>}
       </div>

@@ -136,6 +136,23 @@ export type Concept = {
    * 後者は無理にフラグで隠さず、validate の WARNING に残す(不足の可視化こそが正しい状態)。
    */
   unresolved?: boolean;
+  /**
+   * unresolved: true の意味分岐(Phase 3掃討バッチA〜Cレビューで確定)。
+   *
+   * フレーム問題型(open)とノーフリーランチの定理型(proven-limit)では「未解決」の意味が
+   * 本質的に異なる。前者は議論・研究が今も続く未決着の問題(将来 solves エッジが張られる
+   * 可能性を排除しない)。後者は数学的に証明された恒久的な制約であり、「未解決」ではなく
+   * 「原理的に解決不可能であることが証明済み」という逆の確定的事実である。この2つを
+   * 同じバッジ文言(「本質的に未解決」)で表示すると、証明済みの定理を指して事実誤りになる。
+   *
+   * - "open"(省略時のデフォルト): 議論・部分的緩和が続くのみで決着していない。
+   *   例: フレーム問題、シンボルグラウンディング問題、AI効果、トイ・プロブレム。
+   *   UI表示:「本質的に未解決」
+   * - "proven-limit": 数学的に証明された恒久的な制約。技術の進歩によって将来解消される
+   *   性質のものではない。例: ノーフリーランチの定理。
+   *   UI表示:「原理的制約(証明済み)」
+   */
+  unresolvedReason?: "open" | "proven-limit";
 };
 
 export type ConceptRelation = {
@@ -910,6 +927,7 @@ export const concepts: Concept[] = [
     examHint: "「おもちゃの問題は解けても現実の問題は解けない」という第1次AIブームの限界の象徴として頻出。",
     recall: "トイ・プロブレムとは何かを説明し、これが第1次AIブームの限界とどう関わったかを述べよ。",
     unresolved: true,
+    unresolvedReason: "open",
     status: "complete",
   },
   {
@@ -929,6 +947,7 @@ export const concepts: Concept[] = [
     examHint: "「ロボットが爆弾を運ぶ際に何を考慮すべきか」という思考実験(マッカーシー&ヘイズ)とセットで問われることが多い。",
     recall: "フレーム問題とはどのような問題かを、行動計画の例を使って説明せよ。",
     unresolved: true,
+    unresolvedReason: "open",
     status: "complete",
   },
   {
@@ -1662,7 +1681,9 @@ export const concepts: Concept[] = [
     status: "complete",
     // AI効果は技術的な対策で「解決」できる問題ではなく、人間の認知傾向そのものであるため、
     // unresolvedの使い分け原則(本質的に未解決)に該当する。solvesエッジは存在しない。
+    // proven-limitではなくopen: 数学的証明ではなく、認知傾向として観測され議論され続けている問題のため。
     unresolved: true,
+    unresolvedReason: "open",
   },
   {
     id: "simple-control-program",
@@ -2184,7 +2205,10 @@ export const concepts: Concept[] = [
     term: "ノーフリーランチの定理",
     category: "ml-foundation",
     kind: "problem",
+    // レビュー反映: 「未解決」ではなく「数学的に証明された恒久的制約」であるため proven-limit。
+    // frame-problem等のopen(議論継続中で決着していない)とは意味が異なる。
     unresolved: true,
+    unresolvedReason: "proven-limit",
     syllabus: ["16"],
     timeline: "era-06",
     summary: "あらゆる問題に対して平均的に見て万能に最良の性能を発揮する単一の学習・最適化アルゴリズムは存在しないことを示す定理。",
@@ -3176,7 +3200,10 @@ export const relations: ConceptRelation[] = [
   r("double-descent", "overfitting", "contrasts_with"),
   r("double-descent", "bias-variance", "contrasts_with"),
   r("ml", "no-free-lunch-theorem", "suffers_from"),
-  r("classical-ai", "no-free-lunch-theorem", "suffers_from"),
+  // レビュー反映: classical-ai(探索木・ルールベース推論)の本文にはモデル選択・アルゴリズム比較の
+  // 記述がなく、NFL(学習・最適化アルゴリズムの平均性能に関する定理)との接続を正当化する根拠が
+  // ないため削除。mlは「データから複数モデルを比較検討して選ぶ」という営み自体がNFLの適用対象と
+  // 直接対応するため存置。
   r("online-learning", "reinforcement-learning", "used_for"),
   r("online-learning", "cross-validation", "contrasts_with"),
 
