@@ -115,13 +115,37 @@ export type Concept = {
   timeline?: EraId;
   /** 社会実装パイプラインへのアンカー。 */
   pipeline?: StageId;
-  /** 質問①(concept)/ cause(problem): 何の問題を解決するために生まれたか。 */
+  /**
+   * 質問①(concept)/ cause(problem): 何の問題を解決するために生まれたか。
+   *
+   * 【bornToSolve / beforeAndGap の目標形式(draft昇格キャンペーン第1バッチ較正レビューで確定)】
+   * ゲートは「2質問が埋まっているか」という真偽だけでなく、内容の深さを見る。目標形式は
+   * 以下の鎖を意識すること:
+   *   ①前任(または無対策状態)が抱えていた具体的な問題を名指す
+   *   →②本手法がそれをどう解くか
+   *   →③本手法にも残る弱点
+   *   →④(あれば)その弱点を引き取った後継技術
+   * セルフチェック: 手法名を伏せて bornToSolve だけを読み、「何に困っていたか」が具体的に
+   * 読み取れるか自問する。「〜を実践するために使う」「〜を区別するために使う」のような、
+   * 手法名の目的をただ言い換えただけの文(困っていた具体的な状況が書かれていない)は
+   * 書き直し対象。模範例: rmse(①MSEは単位が異なり解釈しにくい →②平方根で単位を戻す
+   * →③外れ値への敏感さはMSEと同様に残る、という鎖が本文だけで追える)。
+   */
   bornToSolve?: string;
   /** 質問②(concept)/ consequence(problem): その前は何が使われていて、何が足りなかったか。 */
   beforeAndGap?: string;
   /** この用語を含む白紙再現のお題を1つ。 */
   recall?: string;
-  /** 省略時 "draft"。2質問・エッジ・背骨アンカーが揃って初めて "complete" にする。 */
+  /**
+   * 省略時 "draft"。2質問・エッジ・背骨アンカーが揃って初めて "complete" にする。
+   *
+   * 【draft昇格の鎖基準(第1バッチ較正レビューで追加)】
+   * 上記の形式条件(2質問・エッジ2本・アンカー)に加え、bornToSolve/beforeAndGapが
+   * 前述の「①前任の問題→②解決→③残る弱点→④(あれば)後継」の鎖を実際に満たしているかを
+   * 確認すること。鎖を満たせない(=手法名の目的の言い換えで終わっている)カードは、
+   * 形式条件を満たしていても complete にしない。1カテゴリで100%昇格になった場合は、
+   * この鎖基準を無作為抽出したカードで再確認し、根拠を報告に明記する。
+   */
   status?: ConceptStatus;
   /**
    * kind: problem 専用。特定の技術で「解決済み」とは言えず、部分的な緩和や
@@ -136,6 +160,23 @@ export type Concept = {
    * 後者は無理にフラグで隠さず、validate の WARNING に残す(不足の可視化こそが正しい状態)。
    */
   unresolved?: boolean;
+  /**
+   * unresolved: true の意味分岐(Phase 3掃討バッチA〜Cレビューで確定)。
+   *
+   * フレーム問題型(open)とノーフリーランチの定理型(proven-limit)では「未解決」の意味が
+   * 本質的に異なる。前者は議論・研究が今も続く未決着の問題(将来 solves エッジが張られる
+   * 可能性を排除しない)。後者は数学的に証明された恒久的な制約であり、「未解決」ではなく
+   * 「原理的に解決不可能であることが証明済み」という逆の確定的事実である。この2つを
+   * 同じバッジ文言(「本質的に未解決」)で表示すると、証明済みの定理を指して事実誤りになる。
+   *
+   * - "open"(省略時のデフォルト): 議論・部分的緩和が続くのみで決着していない。
+   *   例: フレーム問題、シンボルグラウンディング問題、AI効果、トイ・プロブレム。
+   *   UI表示:「本質的に未解決」
+   * - "proven-limit": 数学的に証明された恒久的な制約。技術の進歩によって将来解消される
+   *   性質のものではない。例: ノーフリーランチの定理。
+   *   UI表示:「原理的制約(証明済み)」
+   */
+  unresolvedReason?: "open" | "proven-limit";
 };
 
 export type ConceptRelation = {
@@ -239,7 +280,7 @@ export const categoryMeta: ConceptCategoryMeta[] = [
   },
 ];
 
-const demoLinks: Record<string, string> = {
+export const demoLinks: Record<string, string> = {
   classify: "#classify",
   regression: "#regression",
   cluster: "#cluster",
@@ -463,6 +504,67 @@ const coreLearningNotes: Record<string, Pick<Concept, "bornToSolve" | "beforeAnd
     bornToSolve: "Q学習の価値関数をニューラルネットワークで近似し、高次元状態を扱うために使う。",
     beforeAndGap: "Q学習は表形式でも扱える。DQNは深層学習でQ値を近似する。",
   },
+  // Phase 3 draft昇格キャンペーン第1バッチ(evaluationカテゴリ)で追加。
+  "train-valid-test": {
+    bornToSolve: "学習・ハイパーパラメータ調整・最終評価を同じデータで行うと性能を過大評価してしまうため、3つの目的ごとにデータを分けて使う。",
+    beforeAndGap: "訓練データだけで評価すると暗記(過学習)を性能向上と誤認する。3分割はその過大評価を防ぐ最も基本的な設計。",
+  },
+  // レビュー反映(較正バッチ): 目的の言い換え型から、鎖(前任の問題→解決→残る弱点→後継)が
+  // 追える形式に書き直し。
+  holdout: {
+    bornToSolve:
+      "モデルを訓練に使ったデータで評価すると、過学習していても見かけの精度が高く出て、" +
+      "未知データへの汎化性能が測れない。学習に使っていないデータをあらかじめ取り分けておき、" +
+      "そこで性能を測るために使う。",
+    beforeAndGap:
+      "分割せず全データで訓練・評価すると『暗記』と『汎化』の区別がつかない。ホールドアウト法は" +
+      "一度だけ訓練/テスト(必要なら検証も)に分けてこれを解消したが、1回の分割の偏りに結果が" +
+      "左右される弱点が残り、その弱点を分割の繰り返しと平均で引き取ったのが交差検証である。",
+  },
+  accuracy: {
+    bornToSolve: "分類モデルの性能を、直感的な「全体に対する正解の割合」として示すために使う。",
+    beforeAndGap: "混同行列はTP/FP/FN/TNを個別に見るが、正解率はそれらを1つの割合に集約する。クラスに偏り(不均衡)があると、多数派クラスを答え続けるだけで高い値になる欠点がある。",
+  },
+  f1: {
+    bornToSolve: "適合率と再現率はトレードオフの関係にあり片方だけでは評価が偏るため、両方をバランスよく1つの指標にまとめるために使う。",
+    beforeAndGap: "正解率はクラス不均衡があると見かけ上高くなりがちだが、F値は適合率と再現率の両方が高くないと高い値にならないため、不均衡データでの評価に向く。",
+  },
+  "roc-auc": {
+    bornToSolve: "分類のしきい値を1つに固定せず、しきい値を変化させたときの性能全体を1つの指標で評価するために使う。",
+    beforeAndGap: "適合率・再現率・F値は特定のしきい値での性能を見るのに対し、ROC曲線とAUCはしきい値を動かした全体の挙動を要約する。AUC=0.5はランダム予測と同等。",
+  },
+  "type-errors": {
+    bornToSolve: "仮説検定における2種類の誤り(正しいものを誤って棄却する/誤っているものを誤って採択する)を区別するために使う。分類問題ではFP(偽陽性)とFN(偽陰性)にそれぞれ対応づけられる。",
+    beforeAndGap: "混同行列はTP/FP/FN/TNという4象限そのものを示すのに対し、第一種/第二種の過誤はそのうちFP・FNを統計的仮説検定の枠組みで意味づけたもの。",
+  },
+  mse: {
+    bornToSolve: "回帰モデルの予測誤差を1つの数値にまとめ、モデル間で比較できるようにするために使う。",
+    beforeAndGap: "MAEは誤差の絶対値をそのまま平均するのに対し、MSEは誤差を二乗するため、大きく外れた予測(外れ値)をより重く評価する。",
+  },
+  rmse: {
+    bornToSolve: "MSEは誤差を二乗した値のため元の目的変数と単位が異なり解釈しにくい。この単位のズレを解消し、目的変数と同じ単位で誤差の大きさを示すために使う。",
+    beforeAndGap: "MSEは二乗誤差の単位のままだが、RMSEはその平方根を取ることで元の単位に戻す。ただし二乗して平均する計算過程は共通のため、外れ値への敏感さはMSEと同様に残る。",
+  },
+  mae: {
+    bornToSolve: "MSEは外れ値の影響を強く受けすぎることがあるため、それを避けて誤差の大きさを素直に平均するために使う。",
+    beforeAndGap: "MSEは誤差を二乗するため外れ値を重く評価するのに対し、MAEは誤差の絶対値をそのまま平均するため外れ値の影響を受けにくい。",
+  },
+  r2: {
+    bornToSolve: "MSEやMAEは単位に依存し、それ単体では良し悪しの基準が分かりにくい。目的変数の分散に対する説明力という、単位に依存しない通常0〜1(基準モデルより悪いと負になり得る)のスケールで評価するために使う。",
+    beforeAndGap: "MSE・MAEは誤差の絶対的な大きさを示すのに対し、決定係数R²は「目的変数のばらつきの何割を説明できたか」という相対的な指標であり、モデル間の比較がしやすい。",
+  },
+  "error-function": {
+    bornToSolve: "モデルの予測が正解からどれだけズレているかを、学習・評価の両方で扱えるようスカラー値として定義するために使う。",
+    beforeAndGap: "損失関数は主に学習(パラメータ更新)の文脈で使われる用語だが、誤差関数はより一般的にモデル評価の文脈でも使われ、両者はほぼ同じ数式を指すことが多い。",
+  },
+  occam: {
+    bornToSolve: "同じ精度で説明できる複数のモデルがあるとき、どちらを選ぶべきかという基準を与えるために使う(オッカムの剃刀)。",
+    beforeAndGap: "オッカムの剃刀は「不必要に複雑なモデルを避ける」という一般原則であり、それ自体は数式ではない。AIC/BICのような情報量規準は、この一般原則を「当てはまりの良さとモデルの複雑さを数式でトレードオフする」という具体的な基準へ操作化(operationalize)したものにあたる。",
+  },
+  "aic-bic": {
+    bornToSolve: "当てはまりの良さだけでモデルを選ぶと複雑なモデルほど有利になり過学習しやすいモデルを選んでしまう。当てはまりの良さと複雑さの両方を1つの基準にまとめて比較するために使う。",
+    beforeAndGap: "決定係数R²は当てはまりの良さだけを見るため説明変数を増やすほど見かけ上は良くなるが、AIC/BICはそこにモデルの複雑さへのペナルティを加える点が異なる。",
+  },
 };
 
 function c(
@@ -577,7 +679,7 @@ export const concepts: Concept[] = [
   c("recall", "再現率", "evaluation", "実際の陽性のうち見つけられた割合。", "見逃し(FN)を避けたい場面で重視。", "metrics"),
   c("f1", "F値", "evaluation", "適合率と再現率の調和平均。", "不均衡データでバランスを見る。", "metrics"),
   c("roc-auc", "ROC曲線とAUC", "evaluation", "しきい値を変えた分類性能をTPR/FPRで見る指標。", "AUCは1に近いほど良い。0.5はランダム。", "metrics"),
-  c("type-errors", "第一種/第二種の過誤", "evaluation", "偽陽性と偽陰性に対応する統計的な誤り。", "FPとFNの意味を文脈で判断する。"),
+  c("type-errors", "第一種/第二種の過誤", "evaluation", "偽陽性と偽陰性に対応する統計的な誤り。", "FPとFNの意味を文脈で判断する。2つの誤りは同時には減らせないトレードオフで、どちらを重く見るかが閾値・有意水準の設計を決める。"),
   c("mse", "平均二乗誤差関数(MSE)", "evaluation", "誤差の二乗平均。大きな誤差を重く見る回帰指標。", "回帰評価。小さいほど良い。", "regression"),
   c("rmse", "RMSE", "evaluation", "MSEの平方根。目的変数と同じ単位で誤差を表す。", "回帰評価。外れ値に比較的敏感。"),
   c("mae", "MAE", "evaluation", "絶対誤差の平均。外れ値の影響がMSEより小さい。", "回帰評価。小さいほど良い。"),
@@ -910,6 +1012,7 @@ export const concepts: Concept[] = [
     examHint: "「おもちゃの問題は解けても現実の問題は解けない」という第1次AIブームの限界の象徴として頻出。",
     recall: "トイ・プロブレムとは何かを説明し、これが第1次AIブームの限界とどう関わったかを述べよ。",
     unresolved: true,
+    unresolvedReason: "open",
     status: "complete",
   },
   {
@@ -929,6 +1032,7 @@ export const concepts: Concept[] = [
     examHint: "「ロボットが爆弾を運ぶ際に何を考慮すべきか」という思考実験(マッカーシー&ヘイズ)とセットで問われることが多い。",
     recall: "フレーム問題とはどのような問題かを、行動計画の例を使って説明せよ。",
     unresolved: true,
+    unresolvedReason: "open",
     status: "complete",
   },
   {
@@ -1662,7 +1766,9 @@ export const concepts: Concept[] = [
     status: "complete",
     // AI効果は技術的な対策で「解決」できる問題ではなく、人間の認知傾向そのものであるため、
     // unresolvedの使い分け原則(本質的に未解決)に該当する。solvesエッジは存在しない。
+    // proven-limitではなくopen: 数学的証明ではなく、認知傾向として観測され議論され続けている問題のため。
     unresolved: true,
+    unresolvedReason: "open",
   },
   {
     id: "simple-control-program",
@@ -2184,7 +2290,10 @@ export const concepts: Concept[] = [
     term: "ノーフリーランチの定理",
     category: "ml-foundation",
     kind: "problem",
+    // レビュー反映: 「未解決」ではなく「数学的に証明された恒久的制約」であるため proven-limit。
+    // frame-problem等のopen(議論継続中で決着していない)とは意味が異なる。
     unresolved: true,
+    unresolvedReason: "proven-limit",
     syllabus: ["16"],
     timeline: "era-06",
     summary: "あらゆる問題に対して平均的に見て万能に最良の性能を発揮する単一の学習・最適化アルゴリズムは存在しないことを示す定理。",
@@ -2564,23 +2673,24 @@ export const conceptAnchors: Record<string, ConceptAnchor> = {
   "reward-shaping": { syllabus: ["29"], timeline: "era-13" },
 
   // --- evaluation ---
-  "train-valid-test": { syllabus: ["10"], pipeline: "stage-3" },
-  holdout: { syllabus: ["10"], pipeline: "stage-3" },
+  // Phase 3 draft昇格キャンペーン第1バッチ: 13枚をcomplete化(2質問+エッジ2本+アンカーの前提を充足)。
+  "train-valid-test": { syllabus: ["10"], pipeline: "stage-3", status: "complete" },
+  holdout: { syllabus: ["10"], pipeline: "stage-3", status: "complete" },
   "cross-validation": { syllabus: ["10"], pipeline: "stage-5", status: "complete" },
   "confusion-matrix": { syllabus: ["10"], pipeline: "stage-5", status: "complete" },
-  accuracy: { syllabus: ["10"], pipeline: "stage-5" },
+  accuracy: { syllabus: ["10"], pipeline: "stage-5", status: "complete" },
   precision: { syllabus: ["10"], pipeline: "stage-5", status: "complete" },
   recall: { syllabus: ["10"], pipeline: "stage-5", status: "complete" },
-  f1: { syllabus: ["10"], pipeline: "stage-5" },
-  "roc-auc": { syllabus: ["10"], pipeline: "stage-5" },
-  "type-errors": { syllabus: ["10"], pipeline: "stage-5" },
-  mse: { syllabus: ["10", "13"], pipeline: "stage-4" },
-  rmse: { syllabus: ["10"], pipeline: "stage-5" },
-  mae: { syllabus: ["10"], pipeline: "stage-5" },
-  r2: { syllabus: ["10"], pipeline: "stage-5" },
-  "error-function": { syllabus: ["13"], pipeline: "stage-4" },
-  occam: { syllabus: ["10"], pipeline: "stage-5" },
-  "aic-bic": { syllabus: ["10"], pipeline: "stage-5" },
+  f1: { syllabus: ["10"], pipeline: "stage-5", status: "complete" },
+  "roc-auc": { syllabus: ["10"], pipeline: "stage-5", status: "complete" },
+  "type-errors": { syllabus: ["10"], pipeline: "stage-5", status: "complete" },
+  mse: { syllabus: ["10", "13"], pipeline: "stage-4", status: "complete" },
+  rmse: { syllabus: ["10"], pipeline: "stage-5", status: "complete" },
+  mae: { syllabus: ["10"], pipeline: "stage-5", status: "complete" },
+  r2: { syllabus: ["10"], pipeline: "stage-5", status: "complete" },
+  "error-function": { syllabus: ["13"], pipeline: "stage-4", status: "complete" },
+  occam: { syllabus: ["10"], pipeline: "stage-5", status: "complete" },
+  "aic-bic": { syllabus: ["10"], pipeline: "stage-5", status: "complete" },
 
   // --- dl-foundation ---
   "neural-network": { syllabus: ["11"], pipeline: "stage-4", status: "complete" },
@@ -2847,6 +2957,18 @@ export const relations: ConceptRelation[] = [
   r("rmse", "mse", "is_a"),
   r("mae", "regression-task", "used_for"),
   r("aic-bic", "occam", "used_for"),
+  // Phase 3 draft昇格キャンペーン第1バッチ(evaluationカテゴリ)で追加。
+  r("holdout", "train-valid-test", "is_a"),
+  r("accuracy", "f1", "contrasts_with"),
+  r("roc-auc", "confusion-matrix", "requires"),
+  r("type-errors", "confusion-matrix", "used_for"),
+  r("type-errors", "classification-task", "used_for"),
+  r("rmse", "mae", "contrasts_with"),
+  r("r2", "regression-task", "used_for"),
+  r("aic-bic", "r2", "contrasts_with"),
+  r("mse", "error-function", "is_a"),
+  r("mae", "error-function", "is_a"),
+  r("regularization", "occam", "used_for"),
   r("neural-network", "ml", "is_a"),
   r("perceptron", "neural-network", "is_a"),
   r("mlp", "neural-network", "is_a"),
@@ -3176,14 +3298,23 @@ export const relations: ConceptRelation[] = [
   r("double-descent", "overfitting", "contrasts_with"),
   r("double-descent", "bias-variance", "contrasts_with"),
   r("ml", "no-free-lunch-theorem", "suffers_from"),
-  r("classical-ai", "no-free-lunch-theorem", "suffers_from"),
+  // レビュー反映: classical-ai(探索木・ルールベース推論)の本文にはモデル選択・アルゴリズム比較の
+  // 記述がなく、NFL(学習・最適化アルゴリズムの平均性能に関する定理)との接続を正当化する根拠が
+  // ないため削除。mlは「データから複数モデルを比較検討して選ぶ」という営み自体がNFLの適用対象と
+  // 直接対応するため存置。
   r("online-learning", "reinforcement-learning", "used_for"),
   r("online-learning", "cross-validation", "contrasts_with"),
 
   // Phase 3 掃討バッチB: 第5章
   r("group-instance-norm", "batchnorm", "contrasts_with"),
   r("group-instance-norm", "cnn", "used_for"),
-  r("elman-jordan-network", "rnn", "evolves_to"),
+  // レビュー反映(較正バッチ): evolves_to→is_aに訂正。エルマン/ジョルダンはRNNの改良ではなく、
+  // カード本文が「現在のRNNの直接の原型」と述べる初期の代表形(=RNNという分類に属する具体例)。
+  // evolves_toのままだと「RNNの問題を解決した後継」という誤った鎖を主張することになり、
+  // かつrnn自体は既にvanishing-gradientをsuffers_fromで持つため、鎖チェックの対応する
+  // solvesが存在せずWARNINGの原因にもなっていた(elman-jordan-network側がsolvesを一切
+  // 持たないため)。is_aへの訂正でこのWARNINGも解消する。
+  r("elman-jordan-network", "rnn", "is_a"),
   r("elman-jordan-network", "backprop", "requires"),
   r("teacher-forcing", "seq2seq", "used_for"),
   r("teacher-forcing", "rnn", "used_for"),

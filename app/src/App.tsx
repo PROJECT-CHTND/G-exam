@@ -23,16 +23,54 @@ import StoryFlow from "./modules/learn/StoryFlow";
 import RecallCheck from "./modules/learn/RecallCheck";
 import TimelineSpine from "./modules/learn/TimelineSpine";
 import PipelineSpine from "./modules/learn/PipelineSpine";
+import DemoIntro from "./modules/demos/DemoIntro";
+import { demos, demoCategoryMeta, type DemoCategory } from "./data/demos";
 
 type Page = {
   id: string;
   index: string;
   label: string;
   group: "学ぶ" | "動かす" | "まとめ";
+  /** 「動かす」ページのみ設定。サイドバーの章グループ見出しに使う。 */
+  demoCategory?: DemoCategory;
   title: string;
   desc: string;
   content: ReactNode;
 };
+
+/** demos.ts のidと実際のデモコンポーネントの対応(ロジック自体は変更しない)。 */
+const DEMO_COMPONENTS: Record<string, ReactNode> = {
+  classify: <IrisClassifier />,
+  regression: <GradientDescent />,
+  cluster: <KMeansIris />,
+  pca: <PCAIris />,
+  bandit: <BanditDemo />,
+  overfit: <Overfitting />,
+  metrics: <ThresholdROC />,
+  nn: <NeuralNet />,
+  cnn: <CNNMnist />,
+  "image-tasks": <ImageTaskGranularity />,
+  attention: <Attention />,
+  "lstm-gates": <LSTMGates />,
+  word2vec: <WordEmbedding />,
+  genai: <GenAI />,
+};
+
+const DEMO_PAGES: Page[] = demos.map((demo, i) => ({
+  id: demo.id,
+  index: String(7 + i).padStart(2, "0"),
+  label: demo.navLabel,
+  group: "動かす",
+  demoCategory: demo.category,
+  title: demo.title,
+  desc: demo.whatYouSee,
+  content: (
+    <div className="learn-stack">
+      <DemoIntro demo={demo} />
+      {DEMO_COMPONENTS[demo.id]}
+    </div>
+  ),
+}));
 
 const PAGES: Page[] = [
   {
@@ -103,132 +141,7 @@ const PAGES: Page[] = [
     desc: "何も見ずに説明できるか確認します。",
     content: <RecallCheck />,
   },
-  {
-    id: "classify",
-    index: "07",
-    label: "分類",
-    group: "動かす",
-    title: "分類 — アヤメを見分ける (Iris実データ)",
-    desc: "正解ラベル付きの実データ150件から、k近傍法が特徴空間をどう色分けするかを見ます。クリックで未知の花を分類できます。",
-    content: <IrisClassifier />,
-  },
-  {
-    id: "regression",
-    index: "08",
-    label: "回帰",
-    group: "動かす",
-    title: "回帰 — ペンギンの体重を予測 (Palmer Penguins実データ)",
-    desc: "勾配降下法を1ステップずつ動かし、直線がデータに近づき損失が下がる様子を実データで確認します。",
-    content: <GradientDescent />,
-  },
-  {
-    id: "cluster",
-    index: "09",
-    label: "クラスタリング",
-    group: "動かす",
-    title: "クラスタリング — ラベルなしでまとめる (Iris実データ)",
-    desc: "正解を使わずに、k-meansがデータの構造だけで品種をほぼ再現できることを見ます。",
-    content: <KMeansIris />,
-  },
-  {
-    id: "pca",
-    index: "10",
-    label: "PCA",
-    group: "動かす",
-    title: "PCA — 4次元のアヤメを2次元に圧縮する",
-    desc: "Irisの4特徴量を主成分へ射影し、どの程度の情報を2軸で保てるかを寄与率として見ます。",
-    content: <PCAIris />,
-  },
-  {
-    id: "bandit",
-    index: "11",
-    label: "強化学習",
-    group: "動かす",
-    title: "強化学習 — 探索と活用を多腕バンディットで見る",
-    desc: "ε-greedyで未知の選択肢を試すか、今の最善を選ぶかを切り替え、報酬の集まり方を確認します。",
-    content: <BanditDemo />,
-  },
-  {
-    id: "overfit",
-    index: "12",
-    label: "過学習",
-    group: "動かす",
-    title: "過学習 — 複雑さのジレンマ",
-    desc: "多項式の次数を上げると訓練誤差は下がり続けますが、テスト誤差はある点から増加します。この乖離を実際に計算して可視化します。",
-    content: <Overfitting />,
-  },
-  {
-    id: "metrics",
-    index: "13",
-    label: "評価",
-    group: "動かす",
-    title: "分類の評価 — しきい値・混同行列・ROC",
-    desc: "実データで学習したロジスティック回帰のスコアを使い、しきい値を動かすと指標がどう連動するかを見ます。",
-    content: <ThresholdROC />,
-  },
-  {
-    id: "nn",
-    index: "14",
-    label: "NN",
-    group: "動かす",
-    title: "ニューラルネットワーク — 順伝播と逆伝播",
-    desc: "学習ループ(順伝播→損失→逆伝播→更新)を1手ずつ追い、活性化関数の役割も確認します。",
-    content: <NeuralNet />,
-  },
-  {
-    id: "cnn",
-    index: "15",
-    label: "CNN",
-    group: "動かす",
-    title: "CNN — 手書き数字を畳み込む (MNIST実データ)",
-    desc: "実物のMNIST数字にフィルタをスライドさせ、畳み込みが特徴マップを作る過程をそのまま計算します。",
-    content: <CNNMnist />,
-  },
-  {
-    id: "image-tasks",
-    index: "16",
-    label: "画像タスク",
-    group: "動かす",
-    title: "画像タスク粒度 — 分類・検出・セグメンテーション・姿勢推定",
-    desc: "同じ画像に対して、タスクが返す答えの粒度がどう変わるかを重ね表示します。",
-    content: <ImageTaskGranularity />,
-  },
-  {
-    id: "attention",
-    index: "17",
-    label: "Attention",
-    group: "動かす",
-    title: "Transformer — Attentionで関係を見る",
-    desc: "単語ベクトルの内積とsoftmaxから、どの単語がどの単語に注目するかを計算します。",
-    content: <Attention />,
-  },
-  {
-    id: "lstm-gates",
-    index: "18",
-    label: "LSTM",
-    group: "動かす",
-    title: "LSTM — ゲートで記憶を制御する",
-    desc: "忘却・入力・出力ゲートがセル状態をどう変えるかを、系列を1ステップずつ選びながら確認します。",
-    content: <LSTMGates />,
-  },
-  {
-    id: "word2vec",
-    index: "19",
-    label: "word2vec",
-    group: "動かす",
-    title: "word2vec — 分散表現のベクトル演算",
-    desc: "単語の意味や関係がベクトル空間の方向として表れる様子を、2D埋め込みで体験します。",
-    content: <WordEmbedding />,
-  },
-  {
-    id: "genai",
-    index: "20",
-    label: "生成AI",
-    group: "動かす",
-    title: "生成AI — RAGの検索と拡散モデル",
-    desc: "質問と文書の類似度を実際に計算して検索するRAGと、ノイズから形が現れる拡散モデルを分けて見ます。",
-    content: <GenAI />,
-  },
+  ...DEMO_PAGES,
   {
     id: "exam",
     index: "21",
@@ -314,21 +227,33 @@ export default function App() {
               <div style={{ width: `${progress}%` }} />
             </div>
           </div>
-          {NAV_GROUPS.map((group) => (
-            <div className="page-group" key={group}>
-              <PartLabel>{group}</PartLabel>
-              {PAGES.filter((page) => page.group === group).map((page) => (
-                <button
-                  key={page.id}
-                  className={`page-tab ${page.id === activePage.id ? "active" : ""}`}
-                  onClick={() => goTo(page.id)}
-                >
-                  <span>{page.index}</span>
-                  {page.label}
-                </button>
-              ))}
-            </div>
-          ))}
+          {NAV_GROUPS.map((group) => {
+            const groupPages = PAGES.filter((page) => page.group === group);
+            let lastDemoCategory: DemoCategory | undefined;
+            return (
+              <div className="page-group" key={group}>
+                <PartLabel>{group}</PartLabel>
+                {groupPages.map((page) => {
+                  const showCategoryHeading = page.demoCategory && page.demoCategory !== lastDemoCategory;
+                  lastDemoCategory = page.demoCategory;
+                  return (
+                    <div key={page.id}>
+                      {showCategoryHeading && (
+                        <div className="page-subgroup-label">{demoCategoryMeta[page.demoCategory!].label}</div>
+                      )}
+                      <button
+                        className={`page-tab ${page.id === activePage.id ? "active" : ""}`}
+                        onClick={() => goTo(page.id)}
+                      >
+                        <span>{page.index}</span>
+                        {page.label}
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            );
+          })}
         </aside>
 
         <main className="page-main">

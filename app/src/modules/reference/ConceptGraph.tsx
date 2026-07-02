@@ -3,13 +3,14 @@ import {
   categoryMeta,
   conceptById,
   concepts,
-  demoLabels,
   relatedConcepts,
   relations,
   type Concept,
   type ConceptCategory,
   type RelationType,
 } from "../../data/concepts";
+import { demoByHash } from "../../data/demos";
+import { kindMeta, kindOf } from "./cardMeta";
 
 const relationLabel: Record<RelationType, string> = {
   is_a: "分類",
@@ -41,9 +42,14 @@ function categoryLabel(category: ConceptCategory) {
   return categoryMeta.find((item) => item.id === category)?.shortLabel ?? category;
 }
 
-export default function ConceptGraph() {
+export default function ConceptGraph({ onNodeSelect }: { onNodeSelect?: (id: string) => void } = {}) {
   const [category, setCategory] = useState<ConceptCategory>("ml-foundation");
   const [selectedId, setSelectedId] = useState("ml");
+
+  function selectNode(id: string) {
+    setSelectedId(id);
+    onNodeSelect?.(id);
+  }
 
   const scoped = useMemo(() => concepts.filter((concept) => concept.category === category), [category]);
   const scopedIds = useMemo(() => new Set(scoped.map((concept) => concept.id)), [scoped]);
@@ -188,7 +194,7 @@ export default function ConceptGraph() {
             return (
               <g
                 key={node.id}
-                onClick={() => setSelectedId(node.id)}
+                onClick={() => selectNode(node.id)}
                 style={{ cursor: "pointer", transform: `translate(${p.x}px, ${p.y}px)`, transition: "transform 0.35s ease" }}
               >
                 <title>{`${node.term}(${categoryLabel(node.category)})— クリックして中心に表示`}</title>
@@ -243,7 +249,7 @@ export default function ConceptGraph() {
         </div>
       </div>
 
-      <TermDetail concept={selected} onSelect={setSelectedId} />
+      <TermDetail concept={selected} onSelect={selectNode} />
     </div>
   );
 }
@@ -263,17 +269,21 @@ export function TermDetail({
     })
     .filter(Boolean) as { relation: (typeof relations)[number]; other: Concept }[];
 
+  const kind = kindMeta[kindOf(concept)];
+  const demo = concept.demo ? demoByHash[concept.demo] : undefined;
+
   return (
     <aside className="term-detail card pad">
       <span className="tag">{categoryLabel(concept.category)}</span>
+      <span className={`tag kind-tag ${kind.className}`}>{kind.label}</span>
       <h3>{concept.term}</h3>
       <p className="term-summary">{concept.summary}</p>
       <div className="note">
         <b>試験での見分け方:</b> {concept.examHint}
       </div>
-      {concept.demo && (
-        <a className="btn primary" href={concept.demo}>
-          対応デモへ: {demoLabels[concept.demo]}
+      {demo && (
+        <a className="btn primary" href={demo.hash}>
+          ▶ 動かして理解: {demo.title}
         </a>
       )}
       <div>

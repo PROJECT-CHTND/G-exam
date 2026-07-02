@@ -9,6 +9,7 @@ import { concepts, relations, demoLabels, conceptAnchors, type Concept } from ".
 import { syllabus, syllabusItemById } from "../src/data/syllabus";
 import { eras } from "../src/data/timeline";
 import { stages } from "../src/data/pipeline";
+import { demos } from "../src/data/demos";
 
 type Issue = { area: string; message: string };
 
@@ -292,6 +293,21 @@ for (const c of concepts) {
   }
 }
 // recallフィールドの章あたり3個以上チェックはPhase4以降のUI仕上げ後に有効化する(現時点ではスキップ)。
+
+// ---------------------------------------------------------------------------
+// 10. UI整合(デモ↔概念マッピング)
+//
+// UI改善バッチ(承認者より §3)で追加。demos.ts の conceptIds は concepts.ts の Concept.demo
+// フィールドから自動導出しているため通常は不整合が起きないが、conceptAnchors検証の先例(タイポで
+// 無言で落ちる事故の予防)と同様に、将来 demos.ts が手動編集された場合に備えて機械チェックする。
+// ---------------------------------------------------------------------------
+for (const demo of demos) {
+  for (const cid of demo.conceptIds) {
+    if (!conceptIds.has(cid)) {
+      err("UI整合(デモ↔概念)", `demo="${demo.id}": conceptIds に存在しないconcept id "${cid}" が含まれている`);
+    }
+  }
+}
 
 // ---------------------------------------------------------------------------
 // 出力
