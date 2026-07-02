@@ -65,12 +65,24 @@ export type Concept = {
   examHint: string;
   demo?: string;
 
-  /** 省略時 "concept"。problem は cause/consequence、person は業績の読み替えを行う(§3.1)。 */
+  /**
+   * 省略時 "concept"。problem は cause/consequence、person は業績の読み替えを行う(§3.1)。
+   *
+   * 【concept / problem の線引き(Phase 3項目1バッチレビューで明文化)】
+   * - problem: 困難・限界を指すカード。solves/suffers_from の受け皿(to側)になり得る、
+   *   または unresolved(本質的に未解決)であるもの。例: フレーム問題、シンボルグラウンディング
+   *   問題、AI効果(いずれもproblem)。
+   * - concept: 主張・予測・思考実験・区分を指すカード。技術的な「解決」の対象ではなく、
+   *   議論・立場の整理として2質問を読み替える。例: シンギュラリティ、中国語の部屋、
+   *   強いAIと弱いAI(いずれもconcept。「困難」ではなく「立場・仮説」を述べるカードのため)。
+   */
   kind?: ConceptKind;
   /** syllabus.ts の項目ID(複数可)。Phase 0 監査時点では暫定(provisional)。 */
   syllabus?: string[];
   /**
-   * 技術史タイムラインへのアンカー。concept の complete カードは timeline/pipeline の少なくとも一方が必須。
+   * 技術史タイムラインへのアンカー。concept/problem(person以外)の complete カードは
+   * timeline/pipeline の少なくとも一方が必須(Phase 3項目1バッチレビューでproblemにも適用を明確化。
+   * frame-problem/toy-problem/symbol-grounding-problem等の既存problemカードは元々この方針で運用済み)。
    *
    * 【era アンカーの意味規則(Phase 3バッチ2〜4レビューで明文化)】
    * era は「発表年がその年代に属するか」ではなく、「どの物語の文脈で学ぶのが最も理解しやすいか」
@@ -1592,6 +1604,11 @@ export const concepts: Concept[] = [
     category: "ai-history",
     kind: "problem",
     syllabus: ["1"],
+    // era アンカー(物語的帰属): AI効果は「人工知能の定義がなぜ一つに定まらないか」という
+    // artificial-intelligence カードの構造的な理由そのものであり、その定義論争は命名(era-01)
+    // に遡るため era-01 に置く。個々の実例(将棋・チェス等)は複数eraにまたがるが、
+    // 現象自体の起点は命名時点の定義の不安定さにあると判定した。
+    timeline: "era-01",
     summary: "人工知能で新しい能力が実現されるたびに、「それは単純な自動化であって本当の知能ではない」とみなされ、人工知能とされる範囲が狭められていく心理的傾向。",
     bornToSolve:
       "人間は「解明され、原理が分かってしまった知的作業」を「単なる計算・自動化」とみなし、" +
@@ -1683,6 +1700,20 @@ export const concepts: Concept[] = [
       "AlexNetが従来手法を大差で上回ったことで、実用段階に達したことが実証された。",
     examHint: "特徴量エンジニアリングを人手で行うか、データから自動学習するかという観点で統計的機械学習と対比される。",
     recall: "深層学習が統計的機械学習と比べてどのような点で異なるかを、特徴量という語を用いて説明せよ。",
+    status: "complete",
+  },
+  {
+    // レビュー反映: ai-level-classification新設により「直結できるカードがない」という
+    // 見送り理由が失効したため person 化(出典: 松尾豊『人工知能は人間を超えるか』2015、
+    // 複数の独立した書評・要約記事で「レベル1〜4」の分類がこの著書によるものと確認済み)。
+    id: "matsuo-yutaka",
+    term: "松尾豊",
+    reading: "まつお ゆたか",
+    category: "ai-history",
+    kind: "person",
+    syllabus: ["1"],
+    summary: "著書『人工知能は人間を超えるか』(2015年)で人工知能を「単純な制御プログラム/古典的な人工知能/機械学習/深層学習」の4レベルに整理し、日本における第3次AIブームの理解を広めた研究者。",
+    examHint: "人工知能のレベル分類(4段階)の提唱者として問われる。",
     status: "complete",
   },
 ];
@@ -2330,7 +2361,8 @@ export const relations: ConceptRelation[] = [
   r("artificial-intelligence", "ai-effect", "suffers_from"),
   r("classical-ai", "artificial-intelligence", "is_a"),
   r("expert-system", "classical-ai", "is_a"),
-  r("search-tree", "classical-ai", "is_a"),
+  // レビュー精査: 探索木は古典的な人工知能の「一種」ではなく「手法の一つ」のため is_a ではなく part_of
+  r("search-tree", "classical-ai", "part_of"),
   r("simple-control-program", "ai-level-classification", "part_of"),
   r("classical-ai", "ai-level-classification", "part_of"),
   r("ml", "ai-level-classification", "part_of"),
@@ -2338,6 +2370,9 @@ export const relations: ConceptRelation[] = [
   r("deep-learning", "ml", "is_a"),
   r("deep-learning", "neural-network", "requires"),
   r("hinton", "deep-learning", "proposed"),
+
+  // レビュー反映: 松尾豊 person化(ai-level-classification新設により見送り理由が失効)
+  r("matsuo-yutaka", "ai-level-classification", "proposed"),
 ];
 
 export const demoLabels: Record<string, string> = {

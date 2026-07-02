@@ -57,13 +57,18 @@ function statusOf(concept: Concept) {
 }
 
 // ---------------------------------------------------------------------------
-// 2. アンカー必須(kind: concept の complete カードのみ)
+// 2. アンカー必須(kind: concept/problem の complete カード。personは対象外)
+//
+// Phase 3項目1バッチレビューで判明: ai-effect(kind=problem, complete)がアンカー未設定のまま
+// 出荷されていた。既存のproblemカード(frame-problem等)は元々timeline/pipelineを付与する
+// 運用だったため、このチェックをproblemにも適用して機械検出できるようにする。
 // ---------------------------------------------------------------------------
 for (const c of concepts) {
   if (statusOf(c) !== "complete") continue;
-  if (kindOf(c) !== "concept") continue;
+  const kind = kindOf(c);
+  if (kind !== "concept" && kind !== "problem") continue;
   if (!c.timeline && !c.pipeline) {
-    err("背骨アンカー", `${c.id}: status=complete(kind=concept)だが timeline/pipeline のどちらも未設定`);
+    err("背骨アンカー", `${c.id}: status=complete(kind=${kind})だが timeline/pipeline のどちらも未設定`);
   }
 }
 
